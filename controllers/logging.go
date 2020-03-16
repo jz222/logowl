@@ -25,3 +25,9 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 
 	logs.SaveError(errorLog)
 }
+
+func (l *loggingControllers) LoadAllErrors(c *gin.Context) {
+	persistedErrors := logs.GetErrors()
+
+	utils.RespondWithJSON(c, persistedErrors)
+}
