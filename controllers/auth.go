@@ -61,7 +61,7 @@ func (a *authControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	jwt, err := auth.CreateJWT(persistedUser.ID.String())
+	jwt, expirationTime, err := auth.CreateJWT(persistedUser.ID.String())
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -70,8 +70,9 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	persistedUser.Password = ""
 
 	response := models.SignInResponse{
-		User: persistedUser,
-		JWT:  jwt,
+		User:           persistedUser,
+		JWT:            jwt,
+		ExpirationTime: expirationTime,
 	}
 
 	utils.RespondWithJSON(c, response)

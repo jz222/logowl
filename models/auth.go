@@ -12,5 +12,6 @@ type Credentials struct {
 
 type SignInResponse struct {
 	User
-	JWT string `json:"jwt"`
+	JWT            string `json:"jwt"`
+	ExpirationTime int64  `json:"expirationTime"`
 }
