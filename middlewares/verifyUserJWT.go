@@ -9,6 +9,7 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/keys"
 	"github.com/jz222/loggy/utils"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 func VerifyUserJwt(c *gin.Context) {
@@ -32,7 +33,24 @@ func VerifyUserJwt(c *gin.Context) {
 	if err != nil || !token.Valid {
 		utils.RespondWithError(c, http.StatusUnauthorized, "incorrect JWT")
 		c.Abort()
+		return
 	}
+
+	claims, ok := token.Claims.(jwt.MapClaims)
+	if !ok {
+		utils.RespondWithError(c, http.StatusUnauthorized, "incorrect JWT")
+		c.Abort()
+		return
+	}
+
+	userID, err := primitive.ObjectIDFromHex(claims["id"].(string))
+	if err != nil {
+		utils.RespondWithError(c, http.StatusUnauthorized, err.Error())
+		c.Abort()
+		return
+	}
+
+	c.Set("userID", userID)
 
 	c.Next()
 }

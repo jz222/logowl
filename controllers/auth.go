@@ -61,7 +61,7 @@ func (a *authControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	jwt, expirationTime, err := auth.CreateJWT(persistedUser.ID.String())
+	jwt, expirationTime, err := auth.CreateJWT(persistedUser.ID.Hex())
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
