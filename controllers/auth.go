@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"fmt"
 	"net/http"
 
 	"github.com/gin-gonic/gin"
@@ -33,11 +34,15 @@ func (a *authControllers) Setup(c *gin.Context) {
 	}
 
 	setup.User.OrganizationID = organizationID
+	setup.User.Role = "admin"
 
 	_, err = user.Create(setup.User)
 	if err != nil {
+		fmt.Println(err.Error())
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 	}
+
+	utils.RespondWithSuccess(c)
 }
 
 func (a *authControllers) SignIn(c *gin.Context) {

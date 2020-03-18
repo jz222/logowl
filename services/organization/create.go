@@ -4,6 +4,7 @@ import (
 	"context"
 	"errors"
 	"log"
+	"regexp"
 	"time"
 
 	"github.com/jz222/loggy/libs/mongodb"
@@ -19,6 +20,9 @@ func Create(organization models.Organization) (primitive.ObjectID, error) {
 	if !organization.Validate() {
 		return primitive.ObjectID{}, errors.New("the provided organization data is invalid")
 	}
+
+	regex := regexp.MustCompile(`\s+`)
+	organization.Identifier = regex.ReplaceAllString(organization.Name, "")
 
 	collection := mongodb.GetClient().Collection("organizations")
 

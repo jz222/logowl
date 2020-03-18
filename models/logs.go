@@ -7,6 +7,11 @@ type Badge struct {
 	Value string `json:"value" bson:"value"`
 }
 
+type Snippet struct {
+	Number  int    `json:"number" bson:"number"`
+	Snippet string `json:"snippet" bson:"snippet"`
+}
+
 type Error struct {
 	Message       string             `json:"message" bson:"message"`
 	Stacktrace    string             `json:"stacktrace" bson:"stacktrace"`
@@ -15,7 +20,7 @@ type Error struct {
 	Type          string             `json:"type" bson:"type"`
 	Fingerprint   string             `json:"fingerprint" bson:"fingerprint"`
 	Badges        []Badge            `json:"badges" bson:"badges"`
-	Snippet       []string           `json:"snippet" bson:"snippet"`
+	Snippet       []Snippet          `json:"snippet" bson:"snippet"`
 	Logs          []string           `json:"logs" bson:"logs"`
 	ProjectID     primitive.ObjectID `json:"projectId,omitempty" bson:"projectId"`
 	Host          string             `json:"host" bson:"host"`

@@ -24,6 +24,8 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 	}
 
 	logs.SaveError(errorLog)
+
+	utils.RespondWithSuccess(c)
 }
 
 func (l *loggingControllers) LoadAllErrors(c *gin.Context) {
