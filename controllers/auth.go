@@ -6,6 +6,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
+	"github.com/jz222/loggy/keys"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services/auth"
 	"github.com/jz222/loggy/services/organization"
@@ -25,6 +26,19 @@ func (a *authControllers) Setup(c *gin.Context) {
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
+	}
+
+	if keys.GetKeys().IS_SELFHOSTED {
+		exists, err := organization.CheckPresence()
+		if err != nil {
+			utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+			return
+		}
+
+		if exists {
+			utils.RespondWithError(c, http.StatusForbidden, "there can only be one organization in self-hosted mode")
+			return
+		}
 	}
 
 	organizationID, err := organization.Create(setup.Organization)

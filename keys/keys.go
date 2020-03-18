@@ -30,6 +30,7 @@ var envVariables = models.Keys{
 	MONGO_DB_NAME: loadEnv("MONGO_DB_NAME"),
 	PORT:          loadEnv("PORT"),
 	SECRET:        loadEnv("SECRET"),
+	IS_SELFHOSTED: loadEnv("IS_SELFHOSTED") == "true",
 }
 
 // GetKeys returns all environment variables. It can also be
