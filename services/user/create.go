@@ -3,7 +3,6 @@ package user
 import (
 	"context"
 	"errors"
-	"log"
 	"time"
 
 	"github.com/jz222/loggy/libs/mongodb"
@@ -32,7 +31,6 @@ func Create(user models.User) (primitive.ObjectID, error) {
 
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
-		log.Println("Failed to save new user to database with error:", err.Error())
 		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
 	}
 

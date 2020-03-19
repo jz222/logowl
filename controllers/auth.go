@@ -29,7 +29,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 	}
 
 	if keys.GetKeys().IS_SELFHOSTED {
-		exists, err := organization.CheckPresence()
+		exists, err := organization.CheckPresence(bson.M{})
 		if err != nil {
 			utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 			return

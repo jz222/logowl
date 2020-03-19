@@ -7,5 +7,5 @@ import (
 
 func loggingRoutes(router *gin.RouterGroup) {
 	router.POST("/error", controllers.Logging.RegisterError)
-	router.GET("/error", controllers.Logging.LoadAllErrors)
+	// router.GET("/error", controllers.Logging.LoadAllErrors)
 }

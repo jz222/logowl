@@ -3,7 +3,6 @@ package organization
 import (
 	"context"
 	"errors"
-	"log"
 	"regexp"
 	"time"
 
@@ -28,7 +27,6 @@ func Create(organization models.Organization) (primitive.ObjectID, error) {
 
 	result, err := collection.InsertOne(context.TODO(), organization)
 	if err != nil {
-		log.Println("Failed to save new organization to database with error:", err.Error())
 		return primitive.ObjectID{}, errors.New("an error occured while saving organization to database")
 	}
 

@@ -5,11 +5,12 @@ import (
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func CheckPresence() (bool, error) {
+func CheckPresence(filter bson.M) (bool, error) {
 	collection := mongodb.GetClient().Collection("organizations")
-	count, err := collection.CountDocuments(context.TODO(), bson.M{})
+	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
 
 	return count > 0, err
 }

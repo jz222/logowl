@@ -8,13 +8,14 @@ import (
 )
 
 type User struct {
-	ID             primitive.ObjectID `json:"userId,omitempty" bson:"_id,omitempty"`
+	ID             primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	FirstName      string             `json:"firstName" bson:"firstName"`
 	LastName       string             `json:"lastName" bson:"lastName"`
 	Email          string             `json:"email" bson:"email"`
 	Password       string             `json:"password,omitempty" bson:"password"`
 	Role           string             `json:"role" bson:"role"`
 	OrganizationID primitive.ObjectID `json:"organizationId" bson:"organizationId"`
+	Organization   *Organization      `json:"organization,omitempty" bson:"organization,omitempty"`
 	LastLogin      time.Time          `json:"lastLogin" bson:"lastLogin"`
 	IsVerified     bool               `json:"-" bson:"isVerified"`
 	Projects       []Project          `json:"projects,omitempty" bson:"projects,omitempty"`
