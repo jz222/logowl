@@ -1,4 +1,4 @@
-package logs
+package events
 
 import (
 	"crypto/md5"
