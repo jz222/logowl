@@ -41,6 +41,17 @@ func (a *authControllers) Setup(c *gin.Context) {
 		}
 	}
 
+	userExists, err := user.CheckPresence(bson.M{"email": setup.User.Email})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if userExists {
+		utils.RespondWithError(c, http.StatusForbidden, "could not create user")
+		return
+	}
+
 	organizationID, err := organization.Create(setup.Organization)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
