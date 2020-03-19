@@ -24,5 +24,6 @@ type Error struct {
 	Host          string    `json:"host" bson:"host"`
 	RemoteAddress string    `json:"remoteAddress" bson:"remoteAddress"`
 	RequestURL    string    `json:"requestURL" bson:"requestURL"`
+	Count         int       `json:"count,omitempty" bson:"count,omitempty"`
 	Timestamp     string    `json:"timestamp" bson:"timestamp"`
 }

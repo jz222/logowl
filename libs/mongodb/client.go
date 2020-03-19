@@ -6,6 +6,7 @@ import (
 	"time"
 
 	"github.com/jz222/loggy/keys"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 	"go.mongodb.org/mongo-driver/mongo/readpref"
@@ -22,10 +23,7 @@ func InitiateDatabase() {
 
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
-	client, err := mongo.Connect(
-		ctx,
-		options.Client().ApplyURI(keys.GetKeys().MONGO_URI),
-	)
+	client, err := mongo.Connect(ctx, options.Client().ApplyURI(keys.GetKeys().MONGO_URI))
 	if err != nil {
 		log.Fatal(err.Error())
 	}
@@ -38,6 +36,15 @@ func InitiateDatabase() {
 	log.Println("✅ Connection to MongoDB established")
 
 	db = client.Database(keys.GetKeys().MONGO_DB_NAME)
+
+	collection := db.Collection("errors")
+
+	index := mongo.IndexModel{
+		Keys:    bson.M{"fingerprint": 1},
+		Options: options.Index().SetUnique(true),
+	}
+
+	collection.Indexes().CreateOne(ctx, index)
 }
 
 // GetClient returns a MongoDB instance.

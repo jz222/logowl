@@ -4,7 +4,6 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
-	"fmt"
 	"log"
 
 	"github.com/jz222/loggy/libs/mongodb"
@@ -14,8 +13,8 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func SaveError(errorLog models.Error) {
-	projectExists, err := project.CheckPresence(bson.M{"ticket": errorLog.Ticket})
+func SaveError(errorEvent models.Error) {
+	projectExists, err := project.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
 		log.Println("Failed to verify project with error:", err.Error())
 	}
@@ -24,16 +23,20 @@ func SaveError(errorLog models.Error) {
 		return
 	}
 
-	hash := md5.Sum([]byte(errorLog.Message + errorLog.Stacktrace))
-	errorLog.Fingerprint = hex.EncodeToString(hash[:])
+	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace))
+	errorEvent.Fingerprint = hex.EncodeToString(hash[:])
 
 	collection := mongodb.GetClient().Collection("errors")
-	newDoc := collection.FindOneAndUpdate(
+
+	_, err = collection.InsertOne(context.TODO(), errorEvent)
+	if err == nil {
+		return
+	}
+
+	collection.FindOneAndUpdate(
 		context.TODO(),
-		bson.M{"fingerprint": errorLog.Fingerprint},
-		bson.M{"message": "updated"},
+		bson.M{"fingerprint": errorEvent.Fingerprint},
+		bson.M{"$inc": bson.M{"count": 1}},
 		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
 	)
-
-	fmt.Println(newDoc)
 }
