@@ -6,8 +6,8 @@ import (
 	"github.com/jz222/loggy/middlewares"
 )
 
-func UserRoutes(router *gin.RouterGroup) {
+func userRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt)
 
-	router.GET("/", controllers.Users.GetUser)
+	router.GET("/", controllers.User.GetUser)
 }

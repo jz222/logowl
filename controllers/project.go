@@ -12,7 +12,7 @@ import (
 
 type projectControllers struct{}
 
-var Projects projectControllers
+var Project projectControllers
 
 func (p *projectControllers) Create(c *gin.Context) {
 	var newProject models.Project

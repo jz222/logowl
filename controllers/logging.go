@@ -6,15 +6,15 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/event"
+	"github.com/jz222/loggy/services/logging"
 	"github.com/jz222/loggy/utils"
 )
 
-type eventControllers struct{}
+type loggingControllers struct{}
 
-var Logging eventControllers
+var Logging loggingControllers
 
-func (l *eventControllers) RegisterError(c *gin.Context) {
+func (l *loggingControllers) RegisterError(c *gin.Context) {
 	errorEvent := models.Error{
 		Host:      c.Request.Host,
 		ClientIP:  c.ClientIP(),
@@ -28,13 +28,7 @@ func (l *eventControllers) RegisterError(c *gin.Context) {
 		return
 	}
 
-	event.SaveError(errorEvent)
+	logging.SaveError(errorEvent)
 
 	utils.RespondWithSuccess(c)
 }
-
-// func (l *eventControllers) LoadAllErrors(c *gin.Context) {
-// 	persistedErrors := event.GetErrors()
-
-// 	utils.RespondWithJSON(c, persistedErrors)
-// }

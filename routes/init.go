@@ -14,7 +14,8 @@ func InitRoutes(router *gin.Engine) {
 	router.Use(middlewares.Cors)
 
 	authRoutes(createSubrouter("/auth", router))
+	eventRoutes(createSubrouter("/event", router))
 	loggingRoutes(createSubrouter("/logging", router))
 	projectRoutes(createSubrouter("/project", router))
-	UserRoutes(createSubrouter("/user", router))
+	userRoutes(createSubrouter("/user", router))
 }

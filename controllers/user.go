@@ -11,7 +11,7 @@ import (
 
 type userControllers struct{}
 
-var Users userControllers
+var User userControllers
 
 func (u *userControllers) GetUser(c *gin.Context) {
 	userID, ok := c.Get("userID")

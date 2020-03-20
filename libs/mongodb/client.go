@@ -39,12 +39,18 @@ func InitiateDatabase() {
 
 	collection := db.Collection("errors")
 
-	index := mongo.IndexModel{
-		Keys:    bson.M{"fingerprint": 1},
-		Options: options.Index().SetUnique(true),
+	indexModels := []mongo.IndexModel{
+		{
+			Keys:    bson.M{"fingerprint": 1},
+			Options: options.Index().SetUnique(true),
+		},
+		{
+			Keys:    bson.M{"updatedAt": -1},
+			Options: nil,
+		},
 	}
 
-	collection.Indexes().CreateOne(ctx, index)
+	collection.Indexes().CreateMany(ctx, indexModels)
 }
 
 // GetClient returns a MongoDB instance.

@@ -5,41 +5,78 @@ import (
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
-	"log"
+	"strconv"
+	"time"
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/project"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func SaveError(errorEvent models.Error) {
-	fmt.Println(errorEvent.Ticket)
-
-	projectExists, err := project.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
-	if err != nil {
-		log.Println("Failed to verify project with error:", err.Error())
-	}
-
-	if !projectExists || err != nil {
-		return
-	}
-
-	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace))
-	errorEvent.Fingerprint = hex.EncodeToString(hash[:])
-
+func GetErrors(pointer string) (*[]models.Error, error) {
 	collection := mongodb.GetClient().Collection("errors")
 
-	_, err = collection.InsertOne(context.TODO(), errorEvent)
-	if err == nil {
-		return
+	var filter bson.M
+
+	if pointer == "" {
+		filter = bson.M{"ticket": "testticket"}
+	} else {
+		id, err := primitive.ObjectIDFromHex(pointer)
+		if err != nil {
+			return nil, err
+		}
+
+		filter = bson.M{"ticket": "testticket", "_id": bson.M{"$lt": id}}
 	}
 
-	collection.FindOneAndUpdate(
+	cur, err := collection.Find(
 		context.TODO(),
-		bson.M{"fingerprint": errorEvent.Fingerprint},
-		bson.M{"$inc": bson.M{"count": 1}},
-		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
+		filter,
+		options.MergeFindOptions().SetSort(bson.M{"updatedAt": -1}),
+		options.MergeFindOptions().SetLimit(5),
 	)
+	if err != nil {
+		return nil, err
+	}
+
+	var errorEvents []models.Error
+
+	for cur.Next(context.TODO()) {
+		var errorEvent models.Error
+
+		err := cur.Decode(&errorEvent)
+		if err == nil {
+			errorEvents = append(errorEvents, errorEvent)
+		}
+	}
+
+	return &errorEvents, nil
+}
+
+func Populate() {
+	collection := mongodb.GetClient().Collection("errors")
+	var manyEvents []interface{}
+
+	for i := 0; i <= 200000; i++ {
+		event := models.Error{
+			Message:   "some error " + strconv.Itoa(i),
+			Ticket:    "testticket",
+			CreatedAt: time.Now().Add(time.Duration(i) * time.Millisecond),
+			UpdatedAt: time.Now().Add(time.Duration(i) * time.Millisecond),
+		}
+
+		hash := md5.Sum([]byte(event.Message + event.Stacktrace))
+		event.Fingerprint = hex.EncodeToString(hash[:])
+
+		manyEvents = append(manyEvents, event)
+	}
+
+	fmt.Println("uploading")
+
+	_, err := collection.InsertMany(context.TODO(), manyEvents)
+	if err != nil {
+		fmt.Println(err.Error())
+	}
 }

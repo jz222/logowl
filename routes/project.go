@@ -9,5 +9,5 @@ import (
 func projectRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt)
 
-	router.POST("/", controllers.Projects.Create)
+	router.POST("/", controllers.Project.Create)
 }
