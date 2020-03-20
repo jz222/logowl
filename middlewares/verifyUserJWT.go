@@ -8,7 +8,9 @@ import (
 	"github.com/dgrijalva/jwt-go"
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/keys"
+	"github.com/jz222/loggy/services/user"
 	"github.com/jz222/loggy/utils"
+	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
@@ -50,7 +52,13 @@ func VerifyUserJwt(c *gin.Context) {
 		return
 	}
 
-	c.Set("userID", userID)
+	userData, err := user.FindOne(bson.M{"_id": userID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusUnauthorized, err.Error())
+		return
+	}
+
+	c.Set("user", userData)
 
 	c.Next()
 }

@@ -25,7 +25,6 @@ func Create(project models.Project) (primitive.ObjectID, error) {
 	if err != nil {
 		return primitive.ObjectID{}, err
 	}
-
 	if !organizationExists {
 		return primitive.ObjectID{}, errors.New("the provided organization does not exist")
 	}

@@ -23,6 +23,14 @@ func (p *projectControllers) Create(c *gin.Context) {
 		return
 	}
 
+	userData, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
+		return
+	}
+
+	newProject.OrganizationID = userData.(models.User).OrganizationID
+
 	createdProject, err := project.Create(newProject)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
