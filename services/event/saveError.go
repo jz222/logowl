@@ -4,6 +4,7 @@ import (
 	"context"
 	"crypto/md5"
 	"encoding/hex"
+	"fmt"
 	"log"
 
 	"github.com/jz222/loggy/libs/mongodb"
@@ -14,12 +15,14 @@ import (
 )
 
 func SaveError(errorEvent models.Error) {
+	fmt.Println(errorEvent.Ticket)
+
 	projectExists, err := project.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
 		log.Println("Failed to verify project with error:", err.Error())
 	}
 
-	if !projectExists {
+	if !projectExists || err != nil {
 		return
 	}
 

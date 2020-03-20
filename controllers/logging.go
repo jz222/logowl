@@ -15,7 +15,12 @@ type eventControllers struct{}
 var Logging eventControllers
 
 func (l *eventControllers) RegisterError(c *gin.Context) {
-	var errorEvent models.Error
+	errorEvent := models.Error{
+		Host:      c.Request.Host,
+		ClientIP:  c.ClientIP(),
+		UserAgent: c.Request.UserAgent(),
+		Count:     1,
+	}
 
 	err := json.NewDecoder(c.Request.Body).Decode(&errorEvent)
 	if err != nil {
