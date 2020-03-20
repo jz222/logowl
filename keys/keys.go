@@ -14,8 +14,7 @@ var once sync.Once
 
 func loadEnv(key string) string {
 	if err := godotenv.Load(); err != nil {
-		log.Println(err.Error())
-		return ""
+		log.Println("Could not load .env file. Proceeding to read environment variable")
 	}
 
 	if value, ok := os.LookupEnv(key); ok {
