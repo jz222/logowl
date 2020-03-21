@@ -8,6 +8,7 @@ import (
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services/organization"
+	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -28,6 +29,13 @@ func Create(service models.Service) (primitive.ObjectID, error) {
 	if !organizationExists {
 		return primitive.ObjectID{}, errors.New("the provided organization does not exist")
 	}
+
+	ticket, err := utils.GenerateTicket()
+	if err != nil {
+		return primitive.ObjectID{}, err
+	}
+
+	service.Ticket = ticket
 
 	collection := mongodb.GetClient().Collection("services")
 

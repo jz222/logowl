@@ -55,6 +55,7 @@ func VerifyUserJwt(c *gin.Context) {
 	userData, err := user.FindOne(bson.M{"_id": userID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusUnauthorized, err.Error())
+		c.Abort()
 		return
 	}
 

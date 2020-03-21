@@ -24,9 +24,10 @@ func SaveError(errorEvent models.Error) {
 		return
 	}
 
-	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace))
+	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
 
 	errorEvent.Fingerprint = hex.EncodeToString(hash[:])
+	errorEvent.Count = 1
 	errorEvent.CreatedAt = time.Now()
 	errorEvent.UpdatedAt = time.Now()
 
