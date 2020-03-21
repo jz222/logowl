@@ -18,7 +18,7 @@ type User struct {
 	Organization   *Organization      `json:"organization,omitempty" bson:"organization,omitempty"`
 	LastLogin      time.Time          `json:"lastLogin" bson:"lastLogin"`
 	IsVerified     bool               `json:"-" bson:"isVerified"`
-	Projects       []Project          `json:"projects,omitempty" bson:"projects,omitempty"`
+	Services       []Service          `json:"services" bson:"services"`
 	CreatedAt      time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt      time.Time          `json:"updatedAt" bson:"updatedAt"`
 }

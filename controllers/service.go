@@ -6,18 +6,18 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/project"
+	"github.com/jz222/loggy/services/service"
 	"github.com/jz222/loggy/utils"
 )
 
-type projectControllers struct{}
+type serviceController struct{}
 
-var Project projectControllers
+var Service serviceController
 
-func (p *projectControllers) Create(c *gin.Context) {
-	var newProject models.Project
+func (p *serviceController) Create(c *gin.Context) {
+	var newService models.Service
 
-	err := json.NewDecoder(c.Request.Body).Decode(&newProject)
+	err := json.NewDecoder(c.Request.Body).Decode(&newService)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -29,13 +29,13 @@ func (p *projectControllers) Create(c *gin.Context) {
 		return
 	}
 
-	newProject.OrganizationID = userData.(models.User).OrganizationID
+	newService.OrganizationID = userData.(models.User).OrganizationID
 
-	createdProject, err := project.Create(newProject)
+	createdService, err := service.Create(newService)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	utils.RespondWithJSON(c, createdProject)
+	utils.RespondWithJSON(c, createdService)
 }

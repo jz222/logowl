@@ -33,9 +33,9 @@ func FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         "projects",
+				"from":         "services",
 				"foreignField": "organizationId",
-				"as":           "projects",
+				"as":           "services",
 			},
 		},
 	}

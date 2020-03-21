@@ -9,18 +9,18 @@ import (
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/project"
+	"github.com/jz222/loggy/services/service"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 func SaveError(errorEvent models.Error) {
-	projectExists, err := project.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
+	serviceExists, err := service.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
-		log.Println("Failed to verify project with error:", err.Error())
+		log.Println("Failed to verify service with error:", err.Error())
 	}
 
-	if !projectExists || err != nil {
+	if !serviceExists || err != nil {
 		return
 	}
 

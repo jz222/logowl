@@ -6,7 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type Project struct {
+type Service struct {
 	ID             primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name           string             `json:"name" bson:"name"`
 	Description    string             `json:"description" bson:"description"`
@@ -17,8 +17,8 @@ type Project struct {
 	UpdatedAt      time.Time          `json:"updatedAt" bson:"updatedAt"`
 }
 
-func (p *Project) Validate() bool {
-	if p.Name == "" || p.OrganizationID.IsZero() {
+func (s *Service) Validate() bool {
+	if s.Name == "" || s.OrganizationID.IsZero() {
 		return false
 	}
 

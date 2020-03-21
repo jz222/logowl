@@ -1,4 +1,4 @@
-package project
+package service
 
 import (
 	"context"
@@ -9,7 +9,7 @@ import (
 )
 
 func CheckPresence(filter bson.M) (bool, error) {
-	collection := mongodb.GetClient().Collection("projects")
+	collection := mongodb.GetClient().Collection("services")
 	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
 
 	return count > 0, err
