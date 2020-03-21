@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"net/http"
+	"strconv"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
@@ -19,6 +20,11 @@ var Event eventControllers
 func (e *eventControllers) GetErrors(c *gin.Context) {
 	serviceID := c.Param("service")
 	pointer := c.Param("pointer")
+
+	parsedPage, err := strconv.ParseInt(pointer, 10, 64)
+	if err != nil {
+		parsedPage = 0
+	}
 
 	user, ok := c.Get("user")
 	if !ok {
@@ -40,7 +46,7 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 		return
 	}
 
-	persistedErrors, err := event.GetErrors(requestedService.Ticket, pointer)
+	persistedErrors, err := event.GetErrors(requestedService.Ticket, parsedPage)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
