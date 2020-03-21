@@ -28,7 +28,7 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 		return
 	}
 
-	logging.SaveError(errorEvent)
+	go logging.SaveError(errorEvent)
 
 	utils.RespondWithSuccess(c)
 }

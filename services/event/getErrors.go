@@ -15,20 +15,20 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func GetErrors(pointer string) (*[]models.Error, error) {
+func GetErrors(ticket, pointer string) (*[]models.Error, error) {
 	collection := mongodb.GetClient().Collection("errors")
 
 	var filter bson.M
 
 	if pointer == "" {
-		filter = bson.M{"ticket": "testticket"}
+		filter = bson.M{"ticket": ticket}
 	} else {
 		id, err := primitive.ObjectIDFromHex(pointer)
 		if err != nil {
 			return nil, err
 		}
 
-		filter = bson.M{"ticket": "testticket", "_id": bson.M{"$lt": id}}
+		filter = bson.M{"ticket": ticket, "_id": bson.M{"$lt": id}}
 	}
 
 	cur, err := collection.Find(
