@@ -10,6 +10,7 @@ type Error struct {
 	ID          *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Message     string              `json:"message" bson:"message"`
 	Stacktrace  string              `json:"stacktrace" bson:"stacktrace"`
+	Evolution   map[string]int      `json:"evolution" bson:"evolution"`
 	Path        string              `json:"path" bson:"path"`
 	Line        string              `json:"line" bson:"line"`
 	Type        string              `json:"type" bson:"type"`
@@ -22,7 +23,7 @@ type Error struct {
 	UserAgent   string              `json:"userAgent" bson:"userAgent"`
 	ClientIP    string              `json:"clientIp" bson:"clientIp"`
 	Count       int                 `json:"count,omitempty" bson:"count,omitempty"`
-	Timestamp   string              `json:"timestamp" bson:"timestamp"`
+	Timestamp   int64               `json:"timestamp" bson:"timestamp"`
 	CreatedAt   time.Time           `json:"createdAt" bson:"createdAt"`
 	UpdatedAt   time.Time           `json:"updatedAt" bson:"updatedAt"`
 }

@@ -3,6 +3,7 @@ package controllers
 import (
 	"encoding/json"
 	"net/http"
+	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
@@ -20,6 +21,7 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 		ClientIP:  c.ClientIP(),
 		UserAgent: c.Request.UserAgent(),
 		Count:     1,
+		Timestamp: time.Now().Unix(),
 	}
 
 	err := json.NewDecoder(c.Request.Body).Decode(&errorEvent)

@@ -39,6 +39,10 @@ func GetErrors(ticket string, page int64) (*[]models.Error, error) {
 		}
 	}
 
+	if errorEvents == nil {
+		errorEvents = []models.Error{}
+	}
+
 	return &errorEvents, nil
 }
 
