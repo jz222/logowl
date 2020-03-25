@@ -2,6 +2,7 @@ package controllers
 
 import (
 	"encoding/json"
+	"log"
 	"net/http"
 	"time"
 
@@ -17,6 +18,7 @@ var Logging loggingControllers
 
 func (l *loggingControllers) RegisterError(c *gin.Context) {
 	errorEvent := models.Error{
+		Badges:    map[string]string{},
 		Host:      c.Request.Host,
 		ClientIP:  c.ClientIP(),
 		UserAgent: c.Request.UserAgent(),
@@ -26,6 +28,7 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 
 	err := json.NewDecoder(c.Request.Body).Decode(&errorEvent)
 	if err != nil {
+		log.Println(err.Error())
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}

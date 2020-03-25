@@ -18,7 +18,7 @@ type Service struct {
 }
 
 func (s *Service) Validate() bool {
-	if s.Name == "" || s.OrganizationID.IsZero() {
+	if s.Name == "" || s.Type == "" || s.Description == "" || s.OrganizationID.IsZero() {
 		return false
 	}
 

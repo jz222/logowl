@@ -35,10 +35,10 @@ func SaveError(errorEvent models.Error) {
 	}
 
 	errorEvent.Fingerprint = hex.EncodeToString(hash[:])
+	errorEvent.Evolution = map[string]int{convertedTimestamp: 1}
 	errorEvent.Count = 1
 	errorEvent.CreatedAt = time.Now()
 	errorEvent.UpdatedAt = time.Now()
-	errorEvent.Evolution = map[string]int{convertedTimestamp: 1}
 
 	collection := mongodb.GetClient().Collection("errors")
 

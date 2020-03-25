@@ -13,26 +13,26 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-func Create(service models.Service) (primitive.ObjectID, error) {
+func Create(service models.Service) (models.Service, error) {
 	timestamp := time.Now()
 	service.CreatedAt = timestamp
 	service.UpdatedAt = timestamp
 
 	if !service.Validate() {
-		return primitive.ObjectID{}, errors.New("the provided service data is invalid")
+		return models.Service{}, errors.New("the provided service data is invalid")
 	}
 
 	organizationExists, err := organization.CheckPresence(bson.M{"_id": service.OrganizationID})
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return models.Service{}, err
 	}
 	if !organizationExists {
-		return primitive.ObjectID{}, errors.New("the provided organization does not exist")
+		return models.Service{}, errors.New("the provided organization does not exist")
 	}
 
 	ticket, err := utils.GenerateTicket()
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return models.Service{}, err
 	}
 
 	service.Ticket = ticket
@@ -41,8 +41,10 @@ func Create(service models.Service) (primitive.ObjectID, error) {
 
 	result, err := collection.InsertOne(context.TODO(), service)
 	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving service to database")
+		return models.Service{}, errors.New("an error occured while saving service to database")
 	}
 
-	return result.InsertedID.(primitive.ObjectID), nil
+	service.ID = result.InsertedID.(primitive.ObjectID)
+
+	return service, nil
 }
