@@ -10,4 +10,5 @@ func serviceRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt)
 
 	router.POST("/", controllers.Service.Create)
+	router.DELETE("/:id", controllers.Service.Delete)
 }
