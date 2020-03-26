@@ -54,3 +54,45 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 
 	utils.RespondWithJSON(c, persistedErrors)
 }
+
+func (e *eventControllers) DeleteError(c *gin.Context) {
+	serviceID := c.Param("service")
+	errorID := c.Param("id")
+
+	user, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user")
+		return
+	}
+
+	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided service ID is invalid")
+		return
+	}
+
+	parsedErrorID, err := primitive.ObjectIDFromHex(errorID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided error ID is invalid")
+		return
+	}
+
+	service, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	count, err := event.DeleteError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if count == 0 {
+		utils.RespondWithError(c, http.StatusBadRequest, "error with id "+errorID+" does not exist")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}

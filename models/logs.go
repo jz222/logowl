@@ -22,7 +22,7 @@ type Error struct {
 	Type        string              `json:"type" bson:"type"`
 	Adapter     Adapter             `json:"adapter" bson:"adapter"`
 	Fingerprint string              `json:"fingerprint" bson:"fingerprint"`
-	Badges      map[string]string   `json:"badges" bson:"badges"`
+	Badges      map[string]string   `json:"badges,omitempty" bson:"badges,omitempty"`
 	Snippet     map[string]string   `json:"snippet" bson:"snippet"`
 	Logs        []string            `json:"logs" bson:"logs"`
 	Ticket      string              `json:"ticket" bson:"ticket"`
