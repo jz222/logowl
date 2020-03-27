@@ -2,8 +2,6 @@ package server
 
 import (
 	"fmt"
-	"net/http"
-	"time"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/keys"
@@ -21,15 +19,5 @@ func Start() {
 
 	routes.InitRoutes(router)
 
-	server := &http.Server{
-		Addr:              port,
-		Handler:           router,
-		ReadTimeout:       2 * time.Second,
-		WriteTimeout:      2 * time.Second,
-		IdleTimeout:       30 * time.Second,
-		ReadHeaderTimeout: 4 * time.Second,
-		MaxHeaderBytes:    1 << 40,
-	}
-
-	server.ListenAndServe()
+	router.Run(port)
 }

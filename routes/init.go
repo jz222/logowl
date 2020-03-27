@@ -18,4 +18,5 @@ func InitRoutes(router *gin.Engine) {
 	loggingRoutes(createSubrouter("/logging", router))
 	serviceRoutes(createSubrouter("/service", router))
 	userRoutes(createSubrouter("/user", router))
+	organizationRoutes(createSubrouter("/organization", router))
 }
