@@ -2,7 +2,6 @@ package organization
 
 import (
 	"context"
-	"fmt"
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
@@ -43,9 +42,6 @@ func Delete(organizationID primitive.ObjectID) error {
 
 		collection := mongodb.GetClient().Collection("services")
 		_, err := collection.DeleteMany(context.TODO(), bson.M{"_id": bson.M{"$in": allServiceIDs}})
-		if err != nil {
-			fmt.Println("services")
-		}
 		c <- err
 	}()
 
@@ -57,27 +53,18 @@ func Delete(organizationID primitive.ObjectID) error {
 
 		collection := mongodb.GetClient().Collection("errors")
 		_, err := collection.DeleteMany(context.TODO(), bson.M{"ticket": bson.M{"$in": allTickets}})
-		if err != nil {
-			fmt.Println("errors")
-		}
 		c <- err
 	}()
 
 	go func() {
 		collection := mongodb.GetClient().Collection("organizations")
 		_, err := collection.DeleteOne(context.TODO(), bson.M{"_id": organizationID})
-		if err != nil {
-			fmt.Println("orga")
-		}
 		c <- err
 	}()
 
 	go func() {
 		collection := mongodb.GetClient().Collection("users")
 		_, err := collection.DeleteMany(context.TODO(), bson.M{"organizationId": organizationID})
-		if err != nil {
-			fmt.Println("users")
-		}
 		c <- err
 	}()
 
