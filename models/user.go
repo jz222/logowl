@@ -39,3 +39,7 @@ func (u *User) VerifyPassword(password string) bool {
 
 	return true
 }
+
+func (u *User) IsAdmin() bool {
+	return u.Role == "admin"
+}

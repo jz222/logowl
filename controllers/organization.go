@@ -20,6 +20,13 @@ func (o *organizationControllers) Delete(c *gin.Context) {
 		return
 	}
 
+	currentUser := userData.(models.User)
+
+	if !currentUser.IsAdmin() {
+		utils.RespondWithError(c, http.StatusForbidden, "you need to be admin to perform this action")
+		return
+	}
+
 	err := organization.Delete(userData.(models.User).OrganizationID)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
