@@ -14,10 +14,10 @@ type userControllers struct{}
 
 var User userControllers
 
-func (u *userControllers) GetUser(c *gin.Context) {
+func (u *userControllers) Get(c *gin.Context) {
 	userData, ok := c.Get("user")
 	if !ok {
-		utils.RespondWithError(c, http.StatusInternalServerError, "user ID is not available")
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
 		return
 	}
 
@@ -30,4 +30,25 @@ func (u *userControllers) GetUser(c *gin.Context) {
 	userDetails.Password = ""
 
 	utils.RespondWithJSON(c, userDetails)
+}
+
+func (u *userControllers) Delete(c *gin.Context) {
+	userData, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
+		return
+	}
+
+	deleteCount, err := user.Delete(userData.(models.User).ID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if deleteCount == 0 {
+		utils.RespondWithError(c, http.StatusBadRequest, "could not delete user")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
 }

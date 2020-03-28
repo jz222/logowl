@@ -9,5 +9,6 @@ import (
 func userRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt)
 
-	router.GET("/", controllers.User.GetUser)
+	router.GET("/", controllers.User.Get)
+	router.DELETE("/", controllers.User.Delete)
 }
