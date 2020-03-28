@@ -38,6 +38,14 @@ func FetchAllInformation(filter bson.M) (models.User, error) {
 				"as":           "services",
 			},
 		},
+		bson.M{
+			"$lookup": bson.M{
+				"localField":   "organizationId",
+				"from":         "users",
+				"foreignField": "organizationId",
+				"as":           "team",
+			},
+		},
 	}
 
 	cur, err := collection.Aggregate(ctx, pipeline)

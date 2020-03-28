@@ -7,6 +7,14 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+type TeamMember struct {
+	ID        primitive.ObjectID `json:"id" bson:"_id"`
+	FirstName string             `json:"firstName" bson:"firstName"`
+	LastName  string             `json:"lastName" bson:"lastName"`
+	Email     string             `json:"email" bson:"email"`
+	Role      string             `json:"role" bson:"role"`
+}
+
 type User struct {
 	ID                  primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	FirstName           string             `json:"firstName" bson:"firstName"`
@@ -16,10 +24,10 @@ type User struct {
 	Role                string             `json:"role" bson:"role"`
 	OrganizationID      primitive.ObjectID `json:"organizationId" bson:"organizationId"`
 	Organization        *Organization      `json:"organization,omitempty" bson:"organization,omitempty"`
-	LastLogin           time.Time          `json:"lastLogin" bson:"lastLogin"`
 	IsVerified          bool               `json:"-" bson:"isVerified"`
 	IsOrganizationOwner bool               `json:"isOrganizationOwner" bson:"isOrganizationOwner"`
 	Services            []Service          `json:"services" bson:"services"`
+	Team                []TeamMember       `json:"team" bson:"team"`
 	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt           time.Time          `json:"updatedAt" bson:"updatedAt"`
 }
