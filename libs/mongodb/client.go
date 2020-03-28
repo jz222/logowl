@@ -14,6 +14,13 @@ import (
 
 var db *mongo.Database
 
+const (
+	Errors        = "errors"
+	Organizations = "organizations"
+	Services      = "services"
+	Users         = "users"
+)
+
 // InitiateDatabase creates a new connection to MongoDB that can then
 // be retrieved by using the GetClient function.
 func InitiateDatabase() {
@@ -37,7 +44,7 @@ func InitiateDatabase() {
 
 	db = client.Database(keys.GetKeys().MONGO_DB_NAME)
 
-	collection := db.Collection("errors")
+	collection := db.Collection(Errors)
 
 	indexModels := []mongo.IndexModel{
 		{

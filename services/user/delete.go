@@ -9,7 +9,7 @@ import (
 )
 
 func Delete(id primitive.ObjectID) (int64, error) {
-	collection := mongodb.GetClient().Collection("users")
+	collection := mongodb.GetClient().Collection(mongodb.Users)
 
 	res, err := collection.DeleteOne(context.TODO(), bson.M{"_id": id})
 	if err != nil {

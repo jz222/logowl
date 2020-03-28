@@ -8,7 +8,7 @@ import (
 )
 
 func UpdateError(filter, update bson.M) error {
-	collection := mongodb.GetClient().Collection("errors")
+	collection := mongodb.GetClient().Collection(mongodb.Errors)
 
 	res := collection.FindOneAndUpdate(context.TODO(), filter, bson.M{"$set": update})
 	if res.Err() != nil {

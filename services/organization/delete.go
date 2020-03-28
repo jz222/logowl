@@ -10,7 +10,7 @@ import (
 )
 
 func Delete(organizationID primitive.ObjectID) error {
-	collection := mongodb.GetClient().Collection("services")
+	collection := mongodb.GetClient().Collection(mongodb.Services)
 
 	cur, err := collection.Find(context.TODO(), bson.M{"organizationId": organizationID})
 	if err != nil {
@@ -40,7 +40,7 @@ func Delete(organizationID primitive.ObjectID) error {
 			return
 		}
 
-		collection := mongodb.GetClient().Collection("services")
+		collection := mongodb.GetClient().Collection(mongodb.Services)
 		_, err := collection.DeleteMany(context.TODO(), bson.M{"_id": bson.M{"$in": allServiceIDs}})
 		c <- err
 	}()
@@ -51,19 +51,19 @@ func Delete(organizationID primitive.ObjectID) error {
 			return
 		}
 
-		collection := mongodb.GetClient().Collection("errors")
+		collection := mongodb.GetClient().Collection(mongodb.Errors)
 		_, err := collection.DeleteMany(context.TODO(), bson.M{"ticket": bson.M{"$in": allTickets}})
 		c <- err
 	}()
 
 	go func() {
-		collection := mongodb.GetClient().Collection("organizations")
+		collection := mongodb.GetClient().Collection(mongodb.Organizations)
 		_, err := collection.DeleteOne(context.TODO(), bson.M{"_id": organizationID})
 		c <- err
 	}()
 
 	go func() {
-		collection := mongodb.GetClient().Collection("users")
+		collection := mongodb.GetClient().Collection(mongodb.Users)
 		_, err := collection.DeleteMany(context.TODO(), bson.M{"organizationId": organizationID})
 		c <- err
 	}()

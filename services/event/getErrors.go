@@ -10,7 +10,7 @@ import (
 )
 
 func GetErrors(ticket string, page int64) (*[]models.Error, error) {
-	collection := mongodb.GetClient().Collection("errors")
+	collection := mongodb.GetClient().Collection(mongodb.Errors)
 
 	cur, err := collection.Find(
 		context.TODO(),

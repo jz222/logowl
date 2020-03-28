@@ -8,7 +8,7 @@ import (
 )
 
 func Delete(filter bson.M) (int64, error) {
-	collection := mongodb.GetClient().Collection("services")
+	collection := mongodb.GetClient().Collection(mongodb.Services)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {

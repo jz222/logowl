@@ -27,7 +27,7 @@ func Create(user models.User) (primitive.ObjectID, error) {
 
 	user.Password = string(hash)
 
-	collection := mongodb.GetClient().Collection("users")
+	collection := mongodb.GetClient().Collection(mongodb.Users)
 
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {

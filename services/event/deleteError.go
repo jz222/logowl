@@ -8,7 +8,7 @@ import (
 )
 
 func DeleteError(filter bson.M) (int64, error) {
-	collection := mongodb.GetClient().Collection("errors")
+	collection := mongodb.GetClient().Collection(mongodb.Errors)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {

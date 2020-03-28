@@ -9,7 +9,7 @@ import (
 )
 
 func CheckPresence(filter bson.M) (bool, error) {
-	collection := mongodb.GetClient().Collection("services")
+	collection := mongodb.GetClient().Collection(mongodb.Services)
 	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
 
 	return count > 0, err

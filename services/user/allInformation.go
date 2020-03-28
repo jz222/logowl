@@ -10,7 +10,7 @@ import (
 
 func FetchAllInformation(filter bson.M) (models.User, error) {
 	ctx := context.Background()
-	collection := mongodb.GetClient().Collection("users")
+	collection := mongodb.GetClient().Collection(mongodb.Users)
 
 	pipeline := []bson.M{
 		bson.M{
@@ -19,7 +19,7 @@ func FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         "organizations",
+				"from":         mongodb.Organizations,
 				"foreignField": "_id",
 				"as":           "organization",
 			},
@@ -33,7 +33,7 @@ func FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         "services",
+				"from":         mongodb.Services,
 				"foreignField": "organizationId",
 				"as":           "services",
 			},
@@ -41,7 +41,7 @@ func FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         "users",
+				"from":         mongodb.Users,
 				"foreignField": "organizationId",
 				"as":           "team",
 			},

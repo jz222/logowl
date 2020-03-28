@@ -37,7 +37,7 @@ func Create(service models.Service) (models.Service, error) {
 
 	service.Ticket = ticket
 
-	collection := mongodb.GetClient().Collection("services")
+	collection := mongodb.GetClient().Collection(mongodb.Services)
 
 	result, err := collection.InsertOne(context.TODO(), service)
 	if err != nil {

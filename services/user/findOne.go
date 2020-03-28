@@ -11,7 +11,7 @@ import (
 func FindOne(filter bson.M) (models.User, error) {
 	var user models.User
 
-	collection := mongodb.GetClient().Collection("users")
+	collection := mongodb.GetClient().Collection(mongodb.Users)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {

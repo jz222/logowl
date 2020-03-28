@@ -23,7 +23,7 @@ func Create(organization models.Organization) (primitive.ObjectID, error) {
 	regex := regexp.MustCompile(`\s+`)
 	organization.Identifier = regex.ReplaceAllString(organization.Name, "")
 
-	collection := mongodb.GetClient().Collection("organizations")
+	collection := mongodb.GetClient().Collection(mongodb.Organizations)
 
 	result, err := collection.InsertOne(context.TODO(), organization)
 	if err != nil {

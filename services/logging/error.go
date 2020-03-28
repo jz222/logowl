@@ -40,7 +40,7 @@ func SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = time.Now()
 	errorEvent.UpdatedAt = time.Now()
 
-	collection := mongodb.GetClient().Collection("errors")
+	collection := mongodb.GetClient().Collection(mongodb.Errors)
 
 	_, err = collection.InsertOne(context.TODO(), errorEvent)
 	if err == nil {

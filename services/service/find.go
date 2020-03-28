@@ -13,7 +13,7 @@ func Find(filter bson.M) ([]models.Service, error) {
 
 	services = []models.Service{}
 
-	collection := mongodb.GetClient().Collection("services")
+	collection := mongodb.GetClient().Collection(mongodb.Services)
 
 	cur, err := collection.Find(context.TODO(), filter)
 	if err != nil {
