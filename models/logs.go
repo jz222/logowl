@@ -12,6 +12,12 @@ type Adapter struct {
 	Version string `json:"version" bson:"version"`
 }
 
+type Logs struct {
+	Timestamp int64  `json:"timestamp", bson:"timestamp"`
+	Type      string `json:"type", bson:"type"`
+	Log       string `json:"log", bson:"log"`
+}
+
 type Error struct {
 	ID          *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Message     string              `json:"message" bson:"message"`
@@ -24,7 +30,7 @@ type Error struct {
 	Fingerprint string              `json:"fingerprint" bson:"fingerprint"`
 	Badges      map[string]string   `json:"badges,omitempty" bson:"badges,omitempty"`
 	Snippet     map[string]string   `json:"snippet" bson:"snippet"`
-	Logs        []string            `json:"logs" bson:"logs"`
+	Logs        []Logs              `json:"logs" bson:"logs"`
 	Ticket      string              `json:"ticket" bson:"ticket"`
 	Host        string              `json:"host" bson:"host"`
 	UserAgent   string              `json:"userAgent" bson:"userAgent"`
