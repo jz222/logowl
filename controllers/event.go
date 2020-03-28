@@ -1,6 +1,7 @@
 package controllers
 
 import (
+	"encoding/json"
 	"net/http"
 	"strconv"
 
@@ -91,6 +92,51 @@ func (e *eventControllers) DeleteError(c *gin.Context) {
 
 	if count == 0 {
 		utils.RespondWithError(c, http.StatusBadRequest, "error with id "+errorID+" does not exist")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
+func (e *eventControllers) UpdateError(c *gin.Context) {
+	serviceID := c.Param("service")
+	errorID := c.Param("id")
+
+	var update bson.M
+
+	err := json.NewDecoder(c.Request.Body).Decode(&update)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	user, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user")
+		return
+	}
+
+	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "the provided service ID is invalid")
+		return
+	}
+
+	parsedErrorID, err := primitive.ObjectIDFromHex(errorID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "the provided error ID is invalid")
+		return
+	}
+
+	service, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	err = event.UpdateError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket}, update)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
