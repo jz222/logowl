@@ -39,6 +39,11 @@ func (u *userControllers) Delete(c *gin.Context) {
 		return
 	}
 
+	if userData.(models.User).IsOrganizationOwner {
+		utils.RespondWithError(c, http.StatusForbidden, "you can not delete your account as organization owner")
+		return
+	}
+
 	deleteCount, err := user.Delete(userData.(models.User).ID)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())

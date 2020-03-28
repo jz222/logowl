@@ -59,6 +59,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 	}
 
 	setup.User.OrganizationID = organizationID
+	setup.User.IsOrganizationOwner = true
 	setup.User.Role = "admin"
 
 	_, err = user.Create(setup.User)
