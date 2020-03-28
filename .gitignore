@@ -1,1 +1,3 @@
+/build
 .env
+build.prod.sh
