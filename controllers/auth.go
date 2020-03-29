@@ -71,6 +71,57 @@ func (a *authControllers) Setup(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
+func (a *authControllers) SignUp(c *gin.Context) {
+	var credentials models.Credentials
+
+	err := json.NewDecoder(c.Request.Body).Decode(&credentials)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if credentials.Email == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "email address was not provided")
+		return
+	}
+
+	if credentials.Password == "" || len(credentials.Password) < 12 {
+		utils.RespondWithError(c, http.StatusBadRequest, "password was not provided or is invalid")
+		return
+	}
+
+	filter := bson.M{"email": credentials.Email, "inviteCode": credentials.InviteCode, "isVerified": false}
+	update := bson.M{"password": credentials.Password, "isVerified": true}
+
+	err = user.Update(filter, update)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	userData, err := user.FetchAllInformation(bson.M{"email": credentials.Email})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	jwt, expirationTime, err := auth.CreateJWT(userData.ID.Hex())
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	userData.Password = ""
+
+	response := models.SignInResponse{
+		User:           userData,
+		JWT:            jwt,
+		ExpirationTime: expirationTime,
+	}
+
+	utils.RespondWithJSON(c, response)
+}
+
 func (a *authControllers) SignIn(c *gin.Context) {
 	var credentials models.Credentials
 
