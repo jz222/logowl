@@ -8,11 +8,13 @@ import (
 )
 
 type TeamMember struct {
-	ID        primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName string             `json:"firstName" bson:"firstName"`
-	LastName  string             `json:"lastName" bson:"lastName"`
-	Email     string             `json:"email" bson:"email"`
-	Role      string             `json:"role" bson:"role"`
+	ID         primitive.ObjectID `json:"id" bson:"_id"`
+	FirstName  string             `json:"firstName" bson:"firstName"`
+	LastName   string             `json:"lastName" bson:"lastName"`
+	Email      string             `json:"email" bson:"email"`
+	Role       string             `json:"role" bson:"role"`
+	IsVerified bool               `json:"isVerified", bson:"isVerified"`
+	InviteCode string             `json:"inviteCode,omitempty", bson:"inviteCode,omitempty"`
 }
 
 type User struct {

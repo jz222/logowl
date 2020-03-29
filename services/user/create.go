@@ -26,6 +26,7 @@ func Create(user models.User) (primitive.ObjectID, error) {
 	}
 
 	user.Password = string(hash)
+	user.IsVerified = true
 
 	collection := mongodb.GetClient().Collection(mongodb.Users)
 
