@@ -11,5 +11,6 @@ func userRoutes(router *gin.RouterGroup) {
 
 	router.GET("/", controllers.User.Get)
 	router.POST("/invite", controllers.User.Invite)
-	router.DELETE("/", controllers.User.Delete)
+	router.DELETE("/", controllers.User.DeleteUserAccount)
+	router.DELETE("/:id", controllers.User.Delete)
 }

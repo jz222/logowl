@@ -9,6 +9,7 @@ import (
 	"github.com/jz222/loggy/services/user"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type userControllers struct{}
@@ -69,12 +70,46 @@ func (u *userControllers) Delete(c *gin.Context) {
 		return
 	}
 
+	if userData.(models.User).Role != "admin" {
+		utils.RespondWithError(c, http.StatusForbidden, "you need to be admin to delete users")
+		return
+	}
+
+	userID := c.Param("id")
+
+	parsedUserID, err := primitive.ObjectIDFromHex(userID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "the provided user ID is invalid")
+		return
+	}
+
+	deleteCount, err := user.Delete(bson.M{"_id": parsedUserID, "organizationId": userData.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if deleteCount == 0 {
+		utils.RespondWithError(c, http.StatusBadRequest, "the user with the ID "+userID+" does not exist")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
+func (u *userControllers) DeleteUserAccount(c *gin.Context) {
+	userData, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
+		return
+	}
+
 	if userData.(models.User).IsOrganizationOwner {
 		utils.RespondWithError(c, http.StatusForbidden, "you can not delete your account as organization owner")
 		return
 	}
 
-	deleteCount, err := user.Delete(userData.(models.User).ID)
+	deleteCount, err := user.Delete(bson.M{"_id": userData.(models.User).ID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
