@@ -34,11 +34,14 @@ func SaveError(errorEvent models.Error) {
 		return
 	}
 
+	timestamp := time.Now()
+
 	errorEvent.Fingerprint = hex.EncodeToString(hash[:])
 	errorEvent.Evolution = map[string]int{convertedTimestamp: 1}
 	errorEvent.Count = 1
-	errorEvent.CreatedAt = time.Now()
-	errorEvent.UpdatedAt = time.Now()
+	errorEvent.LastSeen = errorEvent.Timestamp
+	errorEvent.CreatedAt = timestamp
+	errorEvent.UpdatedAt = timestamp
 
 	collection := mongodb.GetClient().Collection(mongodb.Errors)
 
@@ -54,7 +57,7 @@ func SaveError(errorEvent models.Error) {
 		bson.M{"fingerprint": errorEvent.Fingerprint},
 		bson.M{
 			"$inc": bson.M{"count": 1, key: 1},
-			"$set": bson.M{"updatedAt": time.Now()},
+			"$set": bson.M{"lastSeen": errorEvent.Timestamp, "updatedAt": timestamp},
 		},
 		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
 	)
