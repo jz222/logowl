@@ -18,6 +18,43 @@ type eventControllers struct{}
 
 var Event eventControllers
 
+func (e *eventControllers) GetError(c *gin.Context) {
+	errorID := c.Param("id")
+	serviceID := c.Param("service")
+
+	parsedErrorID, err := primitive.ObjectIDFromHex(errorID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided error ID is invalid")
+		return
+	}
+
+	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided service ID is invalid")
+		return
+	}
+
+	userData, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "failed to parse user data")
+		return
+	}
+
+	persistedService, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": userData.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	errorEvent, err := event.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithJSON(c, errorEvent)
+}
+
 func (e *eventControllers) GetErrors(c *gin.Context) {
 	serviceID := c.Param("service")
 	pointer := c.Param("pointer")

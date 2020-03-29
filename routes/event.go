@@ -9,8 +9,11 @@ import (
 func eventRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt)
 
-	router.GET(":service/error/all", controllers.Event.GetErrors)
-	router.GET(":service/error/all/:pointer", controllers.Event.GetErrors)
+	router.GET(":service/error/:id", controllers.Event.GetError)
+	router.GET(":service/errors/", controllers.Event.GetErrors)
+	router.GET(":service/errors/:pointer", controllers.Event.GetErrors)
+
 	router.PUT(":service/error/:id", controllers.Event.UpdateError)
+
 	router.DELETE(":service/error/:id", controllers.Event.DeleteError)
 }
