@@ -9,7 +9,7 @@ import (
 
 func CreateJWT(id string) (string, int64, error) {
 	timestamp := time.Now().Unix()
-	expiresAt := timestamp + 1000
+	expiresAt := timestamp + int64((time.Hour.Seconds() * 7))
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,
