@@ -58,6 +58,17 @@ func InitiateDatabase() {
 	}
 
 	collection.Indexes().CreateMany(ctx, indexModels)
+
+	collection = db.Collection(Users)
+
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.M{"email": 1},
+			Options: options.Index().SetUnique(true),
+		},
+	}
+
+	collection.Indexes().CreateMany(ctx, indexModels)
 }
 
 // GetClient returns a MongoDB instance.

@@ -25,9 +25,10 @@ type User struct {
 	OrganizationID      primitive.ObjectID `json:"organizationId" bson:"organizationId"`
 	Organization        *Organization      `json:"organization,omitempty" bson:"organization,omitempty"`
 	IsVerified          bool               `json:"-" bson:"isVerified"`
+	InviteCode          string             `json:"inviteCode" bson:"inviteCode,omitempty"`
 	IsOrganizationOwner bool               `json:"isOrganizationOwner" bson:"isOrganizationOwner"`
-	Services            []Service          `json:"services" bson:"services"`
-	Team                []TeamMember       `json:"team" bson:"team"`
+	Services            []Service          `json:"services,omitempty" bson:"services,omitempty"`
+	Team                []TeamMember       `json:"team,omitempty" bson:"team,omitempty"`
 	CreatedAt           time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt           time.Time          `json:"updatedAt" bson:"updatedAt"`
 }

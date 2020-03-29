@@ -19,3 +19,17 @@ func GenerateTicket() (string, error) {
 
 	return ticket, nil
 }
+
+func GenerateRandomString(length int) (string, error) {
+	buf := make([]byte, length/2)
+
+	_, err := rand.Read(buf)
+	if err != nil {
+		log.Println("Failed to create random string")
+		return "", err
+	}
+
+	randomString := fmt.Sprintf("%X", buf)
+
+	return randomString, nil
+}
