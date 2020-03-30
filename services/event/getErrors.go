@@ -16,8 +16,8 @@ func GetErrors(ticket string, page int64) (*[]models.Error, error) {
 		context.TODO(),
 		bson.M{"ticket": ticket},
 		options.MergeFindOptions().SetSort(bson.M{"updatedAt": -1}),
-		options.MergeFindOptions().SetSkip(page*5),
-		options.MergeFindOptions().SetLimit(5),
+		options.MergeFindOptions().SetSkip(page*10),
+		options.MergeFindOptions().SetLimit(10),
 	)
 	if err != nil {
 		return nil, err
