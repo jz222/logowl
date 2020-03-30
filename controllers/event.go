@@ -16,6 +16,7 @@ import (
 
 type eventControllers struct{}
 
+// Event contains all controllers related to events.
 var Event eventControllers
 
 func (e *eventControllers) GetError(c *gin.Context) {

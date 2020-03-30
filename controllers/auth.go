@@ -17,6 +17,7 @@ import (
 
 type authControllers struct{}
 
+// Auth contains all controllers related to authentication.
 var Auth authControllers
 
 func (a *authControllers) Setup(c *gin.Context) {

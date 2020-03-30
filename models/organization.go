@@ -6,11 +6,13 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// SlackWebhooks contains information about a Slack webhook.
 type SlackWebhooks struct {
 	Name string `json:"name" bson:"name"`
 	URL  string `json:"url" bson:"url"`
 }
 
+// Organization contains all properties of an organization.
 type Organization struct {
 	ID            primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name          string             `json:"name" bson:"name"`
@@ -20,6 +22,7 @@ type Organization struct {
 	UpdatedAt     time.Time          `json:"upadtedAt" bson:"updatedAt"`
 }
 
+// Validate validates the data of an organization.
 func (o *Organization) Validate() bool {
 	if o.Name == "" {
 		return false

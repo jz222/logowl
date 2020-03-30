@@ -14,6 +14,7 @@ import (
 
 type loggingControllers struct{}
 
+// Logging contains all controllers related to logging.
 var Logging loggingControllers
 
 func (l *loggingControllers) RegisterError(c *gin.Context) {

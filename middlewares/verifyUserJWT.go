@@ -14,6 +14,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// VerifyUserJwt checks if a JWT is present in the "Authorization" header and validates it.
 func VerifyUserJwt(c *gin.Context) {
 	authenticationHeader := c.GetHeader("Authorization")
 	splitHeader := strings.Split(authenticationHeader, " ")

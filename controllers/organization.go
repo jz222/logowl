@@ -11,6 +11,7 @@ import (
 
 type organizationControllers struct{}
 
+// Organization contains all controllers related to organizations.
 var Organization organizationControllers
 
 func (o *organizationControllers) Delete(c *gin.Context) {

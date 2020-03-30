@@ -6,6 +6,7 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Service contains all the properties of a service.
 type Service struct {
 	ID             primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Name           string             `json:"name" bson:"name"`
@@ -17,6 +18,7 @@ type Service struct {
 	UpdatedAt      time.Time          `json:"updatedAt" bson:"updatedAt"`
 }
 
+// Validate validates the data of a service.
 func (s *Service) Validate() bool {
 	if s.Name == "" || s.Type == "" || s.Description == "" || s.OrganizationID.IsZero() {
 		return false

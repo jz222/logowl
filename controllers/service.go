@@ -14,6 +14,7 @@ import (
 
 type serviceController struct{}
 
+// Service contains all controllers related to services.
 var Service serviceController
 
 func (s *serviceController) Create(c *gin.Context) {

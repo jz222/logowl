@@ -6,18 +6,21 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
+// Adapter contains information about the adapter.
 type Adapter struct {
 	Name    string `json:"name" bson:"name"`
 	Type    string `json:"type" bson:"type"`
 	Version string `json:"version" bson:"version"`
 }
 
+// Logs contains all properties of a log.
 type Logs struct {
 	Timestamp int64  `json:"timestamp", bson:"timestamp"`
 	Type      string `json:"type", bson:"type"`
 	Log       string `json:"log", bson:"log"`
 }
 
+// Error contains all properties of an error event.
 type Error struct {
 	ID          *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	Message     string              `json:"message" bson:"message"`

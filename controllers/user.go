@@ -14,6 +14,7 @@ import (
 
 type userControllers struct{}
 
+// User contains all controllers related to users.
 var User userControllers
 
 func (u *userControllers) Get(c *gin.Context) {

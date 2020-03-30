@@ -7,6 +7,7 @@ import (
 	"golang.org/x/crypto/bcrypt"
 )
 
+// TeamMember is a leaner version of an user.
 type TeamMember struct {
 	ID         primitive.ObjectID `json:"id" bson:"_id"`
 	FirstName  string             `json:"firstName" bson:"firstName"`
@@ -17,6 +18,8 @@ type TeamMember struct {
 	InviteCode string             `json:"inviteCode,omitempty", bson:"inviteCode,omitempty"`
 }
 
+// User contains information about the user and their
+// organization and all services they have access to.
 type User struct {
 	ID                  primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
 	FirstName           string             `json:"firstName" bson:"firstName"`
@@ -35,6 +38,7 @@ type User struct {
 	UpdatedAt           time.Time          `json:"updatedAt" bson:"updatedAt"`
 }
 
+// Validate validates the data of an user.
 func (u *User) Validate() bool {
 	if u.FirstName == "" || u.LastName == "" || u.Email == "" || u.Role == "" || len(u.Password) < 12 {
 		return false
@@ -43,6 +47,7 @@ func (u *User) Validate() bool {
 	return true
 }
 
+// VerifyPassword verifies a given password against the user's hashed password.
 func (u *User) VerifyPassword(password string) bool {
 	err := bcrypt.CompareHashAndPassword([]byte(u.Password), []byte(password))
 	if err != nil {
@@ -52,6 +57,7 @@ func (u *User) VerifyPassword(password string) bool {
 	return true
 }
 
+// IsAdmin determines if the user is an admin.
 func (u *User) IsAdmin() bool {
 	return u.Role == "admin"
 }
