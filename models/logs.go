@@ -20,6 +20,11 @@ type Logs struct {
 	Log       string `json:"log", bson:"log"`
 }
 
+// Metrics contains information about the system
+type Metrics struct {
+	Platform string `json:"platform" bson:"platform"`
+}
+
 // Error contains all properties of an error event.
 type Error struct {
 	ID          *primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
@@ -37,6 +42,7 @@ type Error struct {
 	Ticket      string              `json:"ticket" bson:"ticket"`
 	Host        string              `json:"host" bson:"host"`
 	UserAgent   string              `json:"userAgent" bson:"userAgent"`
+	Metrics     Metrics             `json:"metrics" bson:"metrics"`
 	ClientIP    string              `json:"clientIp" bson:"clientIp"`
 	Count       int                 `json:"count,omitempty" bson:"count,omitempty"`
 	Timestamp   int64               `json:"timestamp" bson:"timestamp"`
