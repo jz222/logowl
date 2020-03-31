@@ -11,7 +11,7 @@ func createSubrouter(prefix string, router *gin.Engine) *gin.RouterGroup {
 
 // InitRoutes attaches all routes to the router.
 func InitRoutes(router *gin.Engine) {
-	router.Use(middlewares.Cors())
+	router.Use(middlewares.Cors)
 
 	authRoutes(createSubrouter("/auth", router))
 	eventRoutes(createSubrouter("/event", router))
