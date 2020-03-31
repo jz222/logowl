@@ -57,7 +57,7 @@ To build a Docker image run the script `build.dev.sh`. It will create a local Do
 
 Use the NodeJS adapter to register errors or build your own. To register an error, send a `POST` request to `/logging/error` with a JSON body like shown below.
 
-```
+```json
 {
 	"ticket": "2ATNP1AD70",
 	"message": "test is not a function",
