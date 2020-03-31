@@ -25,25 +25,13 @@ docker run \
 jz222/loggy:0.1.0
 ```
 
-#### Port
-
-Determines the port that the server should listen on.
-
-#### Secret
-
-Secret key that is used to sign JWT's. Make sure to provide a strong key.
-
-#### MongoDB URI
-
-The connection string of the MongoDB. Please refer to the [MongoDB documentation](https://docs.mongodb.com/manual/reference/connection-string/) for the format of the connection string.
-
-#### MongoDB Database Name
-
-The name of the actual database.
-
-#### Is Selfhosted
-
-Can either be `true` or `false`. If this environment variable is set to `true`, only one organization can be set up.
+| Environment Variable | Description                                                                                                                                                                              |
+|----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| PORT                 | Determines the port that the server should listen on.                                                                                                                                    |
+| SECRET               | Secret key that is used to sign JWT's. Make sure to provide a strong key.                                                                                                                |
+| MONGO_URI            | The connection string of the MongoDB. Please refer to the [MongoDB documentation](https://docs.mongodb.com/manual/reference/connection-string/) for the format of the connection string. |
+| MONGO_DB_NAME        | The name of the actual database.                                                                                                                                                         |
+| IS_SELFHOSTED        | Can either be `true` or `false`. If this environment variable is set to `true`, only one organization can be set up.                                                                     |
 
 ## Development Setup
 
