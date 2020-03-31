@@ -79,17 +79,17 @@ Use the NodeJS adapter to register errors or build your own. To register an erro
 		}
 	],
 	"snippet": {
-        "10": "        cluster: 'EU',",
-        "11": "        serviceID: '20010-A'",
-        "12": "    }",
-        "13": "});",
-        "14": "",
-        "15": "test();",
-        "16": "",
-        "17": "// Routes",
-        "18": "const routes = require('../routes');",
-        "19": "",
-        "20": "// Configs"
+		"10": "        cluster: 'EU',",
+        	"11": "        serviceID: '20010-A'",
+        	"12": "    }",
+        	"13": "});",
+        	"14": "",
+        	"15": "test();",
+        	"16": "",
+        	"17": "// Routes",
+        	"18": "const routes = require('../routes');",
+        	"19": "",
+        	"20": "// Configs"
 	},
 	"timestamp": 1585689898,
 	"adapter": {
