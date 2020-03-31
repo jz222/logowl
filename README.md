@@ -74,7 +74,7 @@ Use the NodeJS adapter to register errors or build your own. To register an erro
 	"logs": [
 		{
 			"type": "info",
-			"log": "process started"
+			"log": "process started",
 			"timestamp": 1585689440
 		}
 	],
@@ -83,13 +83,13 @@ Use the NodeJS adapter to register errors or build your own. To register an erro
         "11": "        serviceID: '20010-A'",
         "12": "    }",
         "13": "});",
-        "14": ""
+        "14": "",
         "15": "test();",
         "16": "",
         "17": "// Routes",
         "18": "const routes = require('../routes');",
         "19": "",
-        "20": "// Configs",
+        "20": "// Configs"
 	},
 	"timestamp": 1585689898,
 	"adapter": {
