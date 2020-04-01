@@ -5,7 +5,7 @@
     <h3>LOGGY Client</h2>
   </p>
   <p>
-    <i>Monitor your services and track your errors in production. 🚀📈</i>
+    <i>Monitor your services and track errors in production. 🚀📈</i>
   </p>
 </div>
 
