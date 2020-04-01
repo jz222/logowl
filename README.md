@@ -1,3 +1,5 @@
+![loggy header](https://github.com/jz222/loggy/blob/master/assets/header.png?raw=true)
+
 # LOGGY - Monitoring Service
 
 LOGGY allows you to monitor your services and track errors in production.
