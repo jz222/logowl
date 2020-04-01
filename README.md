@@ -60,7 +60,9 @@
 
 Running the LOGGY Docker image is the easiest way to get started. All you need is Docker and a MongoDB instance. You can install MongoDB locally, run it as a separate container or use a remote instance provided by services like mLab or Atlas.
 
-![docker loggy](https://github.com/jz222/loggy/blob/master/assets/docker-loggy.gif?raw=true)
+<div align="center">
+	![docker loggy](https://github.com/jz222/loggy/blob/master/assets/docker-loggy.gif?raw=true)
+</div>
 
 ```
 docker run \
