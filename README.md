@@ -1,13 +1,60 @@
 ![loggy header](https://github.com/jz222/loggy/blob/master/assets/header.png?raw=true)
 
-# LOGGY - Monitoring Service
+<div align="center">
+  <p>
+    <h3>LOGGY Client</h2>
+  </p>
+  <p>
+    <i>Monitor your services and track your errors in production. 🚀📈</i>
+  </p>
+</div>
 
-LOGGY allows you to monitor your services and track errors in production.
+---
 
-This repository contains the API of the service. Please find the client and the NodeJS adapter in the respective repo.
+**Related:**
 
-- [LOGGY Client](https://github.com/jz222/loggy-client)
-- [LOGGY NodeJS Adapter](https://github.com/jz222/loggy-adapter-nodejs)
+💻 [**LOGGY Client**](https://github.com/jz222/loggy-client)
+
+📡 [**LOGGY NodeJS Adapter**](https://github.com/jz222/loggy-adapter-nodejs)
+
+<br />
+
+### Features
+
+🔥 **Flexible**
+
+- Group events by services
+- Easy-to-use adapter
+- Custom adapters for any platform and language
+- Customizable
+- Can be self-hosted
+
+🔥 **Extensive Event Details**
+
+- Platform information
+- Detailed evolution
+- Stacktrace
+- Code Snippets
+- Logs
+- Metrics
+- Individual badges
+- Adapter information
+
+🔥 **Aggregated events**
+
+- Live updates
+- Same events are aggregated
+- Event count
+- Evolution preview
+
+🔥 **User management**
+
+- Invite and remove users from your organization
+
+🔥 **Highly scalable infrastructure**
+
+- Containerized backend
+- Simple to deploy and scale
 
 ## Run Locally
 
