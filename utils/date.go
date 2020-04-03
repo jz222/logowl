@@ -5,6 +5,7 @@ import (
 	"time"
 )
 
+// FormatTimestamp returns a new timestamp for the respective day.
 func FormatTimestamp(timestamp int64) (int64, string, error) {
 	parsed := time.Unix(timestamp, 0)
 
