@@ -21,13 +21,7 @@ const (
 	Users         = "users"
 )
 
-// InitiateDatabase creates a new connection to MongoDB that can then
-// be retrieved by using the GetClient function.
-func InitiateDatabase() {
-	if db != nil {
-		return
-	}
-
+func initiateDatabase() {
 	ctx, _ := context.WithTimeout(context.Background(), 10*time.Second)
 
 	client, err := mongo.Connect(ctx, options.Client().ApplyURI(keys.GetKeys().MONGO_URI))
@@ -37,15 +31,12 @@ func InitiateDatabase() {
 
 	err = client.Ping(ctx, readpref.Primary())
 	if err != nil {
-		log.Fatal("❌", err.Error())
+		log.Fatal("❌ Failed to connect to MongoDB with error: ", err.Error())
 	}
-
-	log.Println("✅ Connection to MongoDB established")
 
 	db = client.Database(keys.GetKeys().MONGO_DB_NAME)
 
 	collection := db.Collection(Errors)
-
 	indexModels := []mongo.IndexModel{
 		{
 			Keys:    bson.M{"fingerprint": 1},
@@ -56,19 +47,18 @@ func InitiateDatabase() {
 			Options: nil,
 		},
 	}
-
 	collection.Indexes().CreateMany(ctx, indexModels)
 
 	collection = db.Collection(Users)
-
 	indexModels = []mongo.IndexModel{
 		{
 			Keys:    bson.M{"email": 1},
 			Options: options.Index().SetUnique(true),
 		},
 	}
-
 	collection.Indexes().CreateMany(ctx, indexModels)
+
+	log.Println("✅ Connection to MongoDB established")
 }
 
 // GetClient returns a MongoDB instance.
@@ -77,7 +67,7 @@ func GetClient() *mongo.Database {
 		return db
 	}
 
-	InitiateDatabase()
+	initiateDatabase()
 
 	return db
 }
