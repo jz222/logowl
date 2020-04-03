@@ -24,7 +24,7 @@ func (s *instance) Start() {
 	defer db.Client().Disconnect(context.TODO())
 
 	s.DB = db
-	s.Keys = *keys.GetKeys()
+	s.Keys = keys.GetKeys()
 	s.Server = gin.Default()
 
 	routes.InitRoutes(s.Server)

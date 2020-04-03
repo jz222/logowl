@@ -9,8 +9,10 @@ import (
 	"github.com/jz222/loggy/models"
 )
 
-var instance *models.Keys
-var once sync.Once
+var (
+	instance models.Keys
+	once     sync.Once
+)
 
 func loadEnv(key string) string {
 	if err := godotenv.Load(); err != nil {
@@ -34,9 +36,9 @@ var envVariables = models.Keys{
 
 // GetKeys returns all environment variables. It can also be
 // executed to just load all environment variables.
-func GetKeys() *models.Keys {
+func GetKeys() models.Keys {
 	once.Do(func() {
-		instance = &envVariables
+		instance = envVariables
 	})
 
 	return instance
