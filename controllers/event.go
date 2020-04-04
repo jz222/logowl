@@ -8,10 +8,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type eventControllers struct {
@@ -181,7 +181,7 @@ func (e *eventControllers) UpdateError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetEventController(db *mongo.Database) eventControllers {
+func GetEventController(db store.InterfaceStore) eventControllers {
 	eventService := services.GetEventService(db)
 	serviceService := services.GetServiceService(db)
 

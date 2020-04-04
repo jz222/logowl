@@ -9,9 +9,9 @@ import (
 	"github.com/jz222/loggy/keys"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type authControllers struct {
@@ -115,7 +115,7 @@ func (a *authControllers) SignUp(c *gin.Context) {
 	userData.Password = ""
 
 	response := models.SignInResponse{
-		User:           userData,
+		User:           *userData,
 		JWT:            jwt,
 		ExpirationTime: expirationTime,
 	}
@@ -153,7 +153,7 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	persistedUser.Password = ""
 
 	response := models.SignInResponse{
-		User:           persistedUser,
+		User:           *persistedUser,
 		JWT:            jwt,
 		ExpirationTime: expirationTime,
 	}
@@ -161,9 +161,9 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	utils.RespondWithJSON(c, response)
 }
 
-func GetAuthControllers(db *mongo.Database) authControllers {
-	organizationService := services.GetOrganizationService(db)
-	userService := services.GetUserService(db)
+func GetAuthControllers(store store.InterfaceStore) authControllers {
+	organizationService := services.GetOrganizationService(store)
+	userService := services.GetUserService(store)
 	authService := services.GetAuthService()
 
 	return authControllers{

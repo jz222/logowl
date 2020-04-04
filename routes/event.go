@@ -3,14 +3,14 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/controllers"
-	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/middlewares"
+	"github.com/jz222/loggy/store"
 )
 
-func eventRoutes(router *gin.RouterGroup) {
-	router.Use(middlewares.VerifyUserJwt(mongodb.GetClient()))
+func eventRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
+	router.Use(middlewares.VerifyUserJwt(store))
 
-	controller := controllers.GetEventController(mongodb.GetClient())
+	controller := controllers.GetEventController(store)
 
 	router.GET(":service/error/:id", controller.GetError)
 	router.GET(":service/errors/", controller.GetErrors)

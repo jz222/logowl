@@ -9,11 +9,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type InterfaceErrorEvent interface {
+type interfaceErrorEvent interface {
 	DeleteOne(bson.M) (int64, error)
+	DeleteMany(bson.M) (int64, error)
 	FindOne(bson.M) (*models.Error, error)
-	FindOneAndUpdate(bson.M, bson.M) error
+	FindOneAndUpdate(bson.M, bson.M, bool) error
 	FindPaged(bson.M, int64) (*[]models.Error, error)
+	InsertOne(models.Error) error
 }
 
 type errorEvent struct {
@@ -24,6 +26,17 @@ func (e *errorEvent) DeleteOne(filter bson.M) (int64, error) {
 	collection := e.db.Collection(collectionErrors)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.DeletedCount, nil
+}
+
+func (e *errorEvent) DeleteMany(filter bson.M) (int64, error) {
+	collection := e.db.Collection(collectionErrors)
+
+	res, err := collection.DeleteMany(context.TODO(), filter)
 	if err != nil {
 		return 0, err
 	}
@@ -81,12 +94,27 @@ func (e *errorEvent) FindPaged(filter bson.M, page int64) (*[]models.Error, erro
 	return &errorEvents, nil
 }
 
-func (e *errorEvent) FindOneAndUpdate(filter, update bson.M) error {
+func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) error {
 	collection := e.db.Collection(collectionErrors)
 
-	res := collection.FindOneAndUpdate(context.TODO(), filter, bson.M{"$set": update})
+	res := collection.FindOneAndUpdate(
+		context.TODO(),
+		filter,
+		update,
+		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
+	)
 	if res.Err() != nil {
 		return res.Err()
+	}
+
+	return nil
+}
+
+func (e *errorEvent) InsertOne(errorEvent models.Error) error {
+	collection := e.db.Collection(collectionErrors)
+	_, err := collection.InsertOne(context.TODO(), errorEvent)
+	if err != nil {
+		return err
 	}
 
 	return nil

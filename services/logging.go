@@ -1,19 +1,16 @@
 package services
 
 import (
-	"context"
 	"crypto/md5"
 	"encoding/hex"
 	"fmt"
 	"log"
 	"time"
 
-	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type InterfaceLogging interface {
@@ -21,17 +18,15 @@ type InterfaceLogging interface {
 }
 
 type logging struct {
-	DB *mongo.Database
+	DB store.InterfaceStore
 }
 
 func (l *logging) SaveError(errorEvent models.Error) {
-	serviceService := GetServiceService(l.DB)
 
-	serviceExists, err := serviceService.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
+	serviceExists, err := l.DB.Service().CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
 		log.Println("Failed to verify service with error:", err.Error())
 	}
-
 	if !serviceExists || err != nil {
 		return
 	}
@@ -53,27 +48,24 @@ func (l *logging) SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = timestamp
 	errorEvent.UpdatedAt = timestamp
 
-	collection := l.DB.Collection(mongodb.Errors)
-
-	_, err = collection.InsertOne(context.TODO(), errorEvent)
+	err = l.DB.Error().InsertOne(errorEvent)
 	if err == nil {
 		return
 	}
 
 	key := fmt.Sprintf("%s.%s", "evolution", convertedTimestamp)
 
-	collection.FindOneAndUpdate(
-		context.TODO(),
+	l.DB.Error().FindOneAndUpdate(
 		bson.M{"fingerprint": errorEvent.Fingerprint},
 		bson.M{
 			"$inc": bson.M{"count": 1, key: 1},
 			"$set": bson.M{"lastSeen": errorEvent.Timestamp, "updatedAt": timestamp},
 		},
-		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
+		true,
 	)
 }
 
-func GetLoggingService(db *mongo.Database) logging {
+func GetLoggingService(db store.InterfaceStore) logging {
 	return logging{
 		DB: db,
 	}

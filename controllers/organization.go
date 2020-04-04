@@ -6,8 +6,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type organizationControllers struct {
@@ -37,8 +37,8 @@ func (o *organizationControllers) Delete(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetOrganizationController(db *mongo.Database) organizationControllers {
-	organizationService := services.GetOrganizationService(db)
+func GetOrganizationController(store store.InterfaceStore) organizationControllers {
+	organizationService := services.GetOrganizationService(store)
 
 	return organizationControllers{
 		OrganizationService: &organizationService,

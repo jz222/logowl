@@ -9,8 +9,8 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type loggingControllers struct {
@@ -39,8 +39,8 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetLoggingController(db *mongo.Database) loggingControllers {
-	loggingService := services.GetLoggingService(db)
+func GetLoggingController(store store.InterfaceStore) loggingControllers {
+	loggingService := services.GetLoggingService(store)
 
 	return loggingControllers{
 		LoggingService: &loggingService,

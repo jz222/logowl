@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type serviceController struct {
@@ -74,8 +74,8 @@ func (s *serviceController) Delete(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetServiceController(db *mongo.Database) serviceController {
-	serviceService := services.GetServiceService(db)
+func GetServiceController(store store.InterfaceStore) serviceController {
+	serviceService := services.GetServiceService(store)
 
 	return serviceController{
 		ServiceService: &serviceService,

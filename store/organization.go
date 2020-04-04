@@ -8,9 +8,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type InterfaceOrganization interface {
+type interfaceOrganization interface {
+	CheckPresence(bson.M) (bool, error)
 	InsertOne(models.Organization) (primitive.ObjectID, error)
 	DeleteOne(bson.M) (int64, error)
 	FindOne(bson.M) (*models.Organization, error)
@@ -18,6 +20,13 @@ type InterfaceOrganization interface {
 
 type organization struct {
 	db *mongo.Database
+}
+
+func (o *organization) CheckPresence(filter bson.M) (bool, error) {
+	collection := o.db.Collection(collectionOrganizations)
+	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
+
+	return count > 0, err
 }
 
 func (o *organization) InsertOne(organization models.Organization) (primitive.ObjectID, error) {

@@ -11,12 +11,13 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type InterfaceUser interface {
+type interfaceUser interface {
 	InsertOne(models.User) (primitive.ObjectID, error)
-	Aggregate(bson.M) (*models.User, error)
+	Aggregate([]bson.M) (*models.User, error)
 	CheckPresence(bson.M) (bool, error)
 	DeleteOne(bson.M) (int64, error)
-	FindOne(bson.M) (models.User, error)
+	DeleteMany(bson.M) (int64, error)
+	FindOne(bson.M) (*models.User, error)
 	FindOneAndUpdate(bson.M, bson.M) error
 }
 
@@ -35,7 +36,7 @@ func (u *user) InsertOne(user models.User) (primitive.ObjectID, error) {
 	return result.InsertedID.(primitive.ObjectID), nil
 }
 
-func (u *user) Aggregate(pipeline bson.M) (*models.User, error) {
+func (u *user) Aggregate(pipeline []bson.M) (*models.User, error) {
 	ctx := context.TODO()
 	collection := u.db.Collection(collectionUsers)
 
@@ -71,22 +72,33 @@ func (u *user) DeleteOne(filter bson.M) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (u *user) FindOne(filter bson.M) (models.User, error) {
+func (u *user) DeleteMany(filter bson.M) (int64, error) {
+	collection := u.db.Collection(collectionUsers)
+
+	res, err := collection.DeleteMany(context.TODO(), filter)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.DeletedCount, nil
+}
+
+func (u *user) FindOne(filter bson.M) (*models.User, error) {
 	var user models.User
 
 	collection := u.db.Collection(collectionUsers)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
-		return models.User{}, queryResult.Err()
+		return nil, queryResult.Err()
 	}
 
 	err := queryResult.Decode(&user)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	return user, nil
+	return &user, nil
 }
 
 func (u *user) FindOneAndUpdate(filter, update bson.M) error {

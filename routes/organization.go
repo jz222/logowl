@@ -3,14 +3,14 @@ package routes
 import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/controllers"
-	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/middlewares"
+	"github.com/jz222/loggy/store"
 )
 
-func organizationRoutes(router *gin.RouterGroup) {
-	router.Use(middlewares.VerifyUserJwt(mongodb.GetClient()))
+func organizationRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
+	router.Use(middlewares.VerifyUserJwt(store))
 
-	controller := controllers.GetOrganizationController(mongodb.GetClient())
+	controller := controllers.GetOrganizationController(store)
 
 	router.DELETE("/", controller.Delete)
 }

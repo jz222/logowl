@@ -9,14 +9,14 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/keys"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 // VerifyUserJwt checks if a JWT is present in the "Authorization" header and validates it.
-func VerifyUserJwt(db *mongo.Database) func(*gin.Context) {
+func VerifyUserJwt(store store.InterfaceStore) func(*gin.Context) {
 	return func(c *gin.Context) {
 		authenticationHeader := c.GetHeader("Authorization")
 		splitHeader := strings.Split(authenticationHeader, " ")
@@ -55,7 +55,7 @@ func VerifyUserJwt(db *mongo.Database) func(*gin.Context) {
 			return
 		}
 
-		user := services.GetUserService(db)
+		user := services.GetUserService(store)
 
 		userData, err := user.FindOne(bson.M{"_id": userID})
 		if err != nil {
@@ -64,7 +64,7 @@ func VerifyUserJwt(db *mongo.Database) func(*gin.Context) {
 			return
 		}
 
-		c.Set("user", userData)
+		c.Set("user", *userData)
 
 		c.Next()
 	}

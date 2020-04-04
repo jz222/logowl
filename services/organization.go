@@ -1,35 +1,29 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"regexp"
 	"time"
 
-	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
+	"github.com/jz222/loggy/store"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type InterfaceOrganization interface {
 	CheckPresence(bson.M) (bool, error)
 	Create(models.Organization) (primitive.ObjectID, error)
 	Delete(primitive.ObjectID) error
-	FindOne(bson.M) (models.Organization, error)
+	FindOne(bson.M) (*models.Organization, error)
 }
 
 type organization struct {
-	DB *mongo.Database
+	DB store.InterfaceStore
 }
 
 func (o *organization) CheckPresence(filter bson.M) (bool, error) {
-	collection := o.DB.Collection(mongodb.Organizations)
-	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
-
-	return count > 0, err
+	return o.DB.Organization().CheckPresence(filter)
 }
 
 func (o *organization) Create(organization models.Organization) (primitive.ObjectID, error) {
@@ -44,20 +38,11 @@ func (o *organization) Create(organization models.Organization) (primitive.Objec
 	regex := regexp.MustCompile(`\s+`)
 	organization.Identifier = regex.ReplaceAllString(organization.Name, "")
 
-	collection := o.DB.Collection(mongodb.Organizations)
-
-	result, err := collection.InsertOne(context.TODO(), organization)
-	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving organization to database")
-	}
-
-	return result.InsertedID.(primitive.ObjectID), nil
+	return o.DB.Organization().InsertOne(organization)
 }
 
 func (o *organization) Delete(organizationID primitive.ObjectID) error {
-	collection := o.DB.Collection(mongodb.Services)
-
-	cur, err := collection.Find(context.TODO(), bson.M{"organizationId": organizationID})
+	allServices, err := o.DB.Service().Find(bson.M{"organizationId": organizationID})
 	if err != nil {
 		return err
 	}
@@ -65,14 +50,7 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 	var allServiceIDs []primitive.ObjectID
 	var allTickets []string
 
-	for cur.Next(context.TODO()) {
-		var service models.Service
-
-		err := cur.Decode(&service)
-		if err != nil {
-			return nil
-		}
-
+	for _, service := range *allServices {
 		allServiceIDs = append(allServiceIDs, service.ID)
 		allTickets = append(allTickets, service.Ticket)
 	}
@@ -85,8 +63,7 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 			return
 		}
 
-		collection := mongodb.GetClient().Collection(mongodb.Services)
-		_, err := collection.DeleteMany(context.TODO(), bson.M{"_id": bson.M{"$in": allServiceIDs}})
+		_, err := o.DB.Service().DeleteMany(bson.M{"_id": bson.M{"$in": allServiceIDs}})
 		c <- err
 	}()
 
@@ -96,20 +73,17 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 			return
 		}
 
-		collection := mongodb.GetClient().Collection(mongodb.Errors)
-		_, err := collection.DeleteMany(context.TODO(), bson.M{"ticket": bson.M{"$in": allTickets}})
+		_, err := o.DB.Error().DeleteMany(bson.M{"ticket": bson.M{"$in": allTickets}})
 		c <- err
 	}()
 
 	go func() {
-		collection := mongodb.GetClient().Collection(mongodb.Organizations)
-		_, err := collection.DeleteOne(context.TODO(), bson.M{"_id": organizationID})
+		_, err := o.DB.Organization().DeleteOne(bson.M{"_id": organizationID})
 		c <- err
 	}()
 
 	go func() {
-		collection := mongodb.GetClient().Collection(mongodb.Users)
-		_, err := collection.DeleteMany(context.TODO(), bson.M{"organizationId": organizationID})
+		_, err := o.DB.User().DeleteMany(bson.M{"organizationId": organizationID})
 		c <- err
 	}()
 
@@ -126,25 +100,11 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 	return failed
 }
 
-func (o *organization) FindOne(filter bson.M) (models.Organization, error) {
-	var organization models.Organization
-
-	collection := o.DB.Collection(mongodb.Organizations)
-
-	queryResult := collection.FindOne(context.TODO(), filter)
-	if queryResult.Err() != nil {
-		return models.Organization{}, queryResult.Err()
-	}
-
-	err := queryResult.Decode(&organization)
-	if err != nil {
-		return models.Organization{}, err
-	}
-
-	return organization, nil
+func (o *organization) FindOne(filter bson.M) (*models.Organization, error) {
+	return o.DB.Organization().FindOne(filter)
 }
 
-func GetOrganizationService(db *mongo.Database) organization {
+func GetOrganizationService(db store.InterfaceStore) organization {
 	return organization{
 		DB: db,
 	}

@@ -22,10 +22,10 @@ const (
 type InterfaceStore interface {
 	Connect()
 	Disconnect()
-	User() InterfaceUser
-	Service() InterfaceService
-	Organization() InterfaceOrganization
-	Error() InterfaceErrorEvent
+	User() interfaceUser
+	Service() interfaceService
+	Organization() interfaceOrganization
+	Error() interfaceErrorEvent
 }
 
 type store struct {
@@ -78,19 +78,19 @@ func (s *store) Disconnect() {
 	log.Println("✅ Successfully disconnected from MongoDB")
 }
 
-func (s *store) User() InterfaceUser {
+func (s *store) User() interfaceUser {
 	return &user{s.db}
 }
 
-func (s *store) Service() InterfaceService {
+func (s *store) Service() interfaceService {
 	return &service{s.db}
 }
 
-func (s *store) Organization() InterfaceOrganization {
+func (s *store) Organization() interfaceOrganization {
 	return &organization{s.db}
 }
 
-func (s *store) Error() InterfaceErrorEvent {
+func (s *store) Error() interfaceErrorEvent {
 	return &errorEvent{s.db}
 }
 

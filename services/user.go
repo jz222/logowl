@@ -1,38 +1,33 @@
 package services
 
 import (
-	"context"
 	"errors"
 	"time"
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 	"golang.org/x/crypto/bcrypt"
 )
 
 type InterfaceUser interface {
-	FetchAllInformation(bson.M) (models.User, error)
+	FetchAllInformation(bson.M) (*models.User, error)
 	CheckPresence(bson.M) (bool, error)
 	Create(models.User) (primitive.ObjectID, error)
 	Delete(bson.M) (int64, error)
-	FindOne(bson.M) (models.User, error)
-	Invite(models.User) (models.User, error)
+	FindOne(bson.M) (*models.User, error)
+	Invite(models.User) (*models.User, error)
 	Update(bson.M, bson.M) error
 }
 
 type user struct {
-	DB *mongo.Database
+	DB store.InterfaceStore
 }
 
-func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
-	ctx := context.Background()
-	collection := u.DB.Collection(mongodb.Users)
-
+func (u *user) FetchAllInformation(filter bson.M) (*models.User, error) {
 	pipeline := []bson.M{
 		bson.M{
 			"$match": filter,
@@ -69,25 +64,16 @@ func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 		},
 	}
 
-	cur, err := collection.Aggregate(ctx, pipeline)
+	user, err := u.DB.User().Aggregate(pipeline)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
-	defer cur.Close(ctx)
 
-	var doc models.User
-
-	cur.Next(ctx)
-	cur.Decode(&doc)
-
-	return doc, nil
+	return user, nil
 }
 
 func (u *user) CheckPresence(filter bson.M) (bool, error) {
-	collection := u.DB.Collection(mongodb.Users)
-	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
-
-	return count > 0, err
+	return u.DB.User().CheckPresence(filter)
 }
 
 func (u *user) Create(user models.User) (primitive.ObjectID, error) {
@@ -107,92 +93,65 @@ func (u *user) Create(user models.User) (primitive.ObjectID, error) {
 	user.Password = string(hash)
 	user.IsVerified = true
 
-	collection := u.DB.Collection(mongodb.Users)
-
-	result, err := collection.InsertOne(context.TODO(), user)
+	result, err := u.DB.User().InsertOne(user)
 	if err != nil {
 		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
 	}
 
-	return result.InsertedID.(primitive.ObjectID), nil
+	return result, nil
 }
 
 func (u *user) Delete(filter bson.M) (int64, error) {
-	collection := u.DB.Collection(mongodb.Users)
-
-	res, err := collection.DeleteOne(context.TODO(), filter)
-	if err != nil {
-		return 0, err
-	}
-
-	return res.DeletedCount, nil
+	return u.DB.User().DeleteOne(filter)
 }
 
-func (u *user) FindOne(filter bson.M) (models.User, error) {
-	var user models.User
-
-	collection := u.DB.Collection(mongodb.Users)
-
-	queryResult := collection.FindOne(context.TODO(), filter)
-	if queryResult.Err() != nil {
-		return models.User{}, queryResult.Err()
-	}
-
-	err := queryResult.Decode(&user)
-	if err != nil {
-		return models.User{}, err
-	}
-
-	return user, nil
+func (u *user) FindOne(filter bson.M) (*models.User, error) {
+	return u.DB.User().FindOne(filter)
 }
 
-func (u *user) Invite(userData models.User) (models.User, error) {
+func (u *user) Invite(userData models.User) (*models.User, error) {
 	timestamp := time.Now()
 	userData.CreatedAt = timestamp
 	userData.UpdatedAt = timestamp
 
 	randomString, err := utils.GenerateRandomString(12)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	userData.Password = randomString
 
 	if !userData.Validate() {
-		return models.User{}, errors.New("the provided user data is invalid")
+		return nil, errors.New("the provided user data is invalid")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 12)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
 	userData.Password = string(hash)
 
 	inviteCode, err := utils.GenerateRandomString(20)
 	if err != nil {
-		return models.User{}, nil
+		return nil, err
 	}
 
 	userData.InviteCode = inviteCode
 	userData.IsVerified = false
 
-	collection := u.DB.Collection(mongodb.Users)
-
-	result, err := collection.InsertOne(context.TODO(), userData)
+	result, err := u.DB.User().InsertOne(userData)
 	if err != nil {
-		return models.User{}, err
+		return nil, err
 	}
 
-	userData.ID = result.InsertedID.(primitive.ObjectID)
+	userData.ID = result
 	userData.Password = ""
 
-	return userData, nil
+	return &userData, nil
 }
 
 func (u *user) Update(filter, update bson.M) error {
-	collection := u.DB.Collection(mongodb.Users)
-
 	newPassword, ok := update["password"]
 	if ok {
 		hash, err := bcrypt.GenerateFromPassword([]byte(newPassword.(string)), 12)
@@ -205,15 +164,15 @@ func (u *user) Update(filter, update bson.M) error {
 
 	update["updatedAt"] = time.Now()
 
-	res := collection.FindOneAndUpdate(context.TODO(), filter, bson.M{"$set": update})
-	if res.Err() != nil {
-		return res.Err()
+	err := u.DB.User().FindOneAndUpdate(filter, bson.M{"$set": update})
+	if err != nil {
+		return err
 	}
 
 	return nil
 }
 
-func GetUserService(db *mongo.Database) user {
+func GetUserService(db store.InterfaceStore) user {
 	return user{
 		DB: db,
 	}

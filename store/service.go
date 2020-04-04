@@ -11,10 +11,11 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-type InterfaceService interface {
+type interfaceService interface {
 	CheckPresence(bson.M) (bool, error)
 	InsertOne(models.Service) (primitive.ObjectID, error)
 	DeleteOne(bson.M) (int64, error)
+	DeleteMany(bson.M) (int64, error)
 	Find(bson.M) (*[]models.Service, error)
 	FindOne(bson.M) (*models.Service, error)
 }
@@ -45,6 +46,17 @@ func (s *service) DeleteOne(filter bson.M) (int64, error) {
 	collection := s.db.Collection(collectionServices)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.DeletedCount, nil
+}
+
+func (s *service) DeleteMany(filter bson.M) (int64, error) {
+	collection := s.db.Collection(collectionServices)
+	res, err := collection.DeleteMany(context.TODO(), filter)
+
 	if err != nil {
 		return 0, err
 	}

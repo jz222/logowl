@@ -7,10 +7,10 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
-	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type userControllers struct {
@@ -124,8 +124,8 @@ func (u *userControllers) DeleteUserAccount(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetUserController(db *mongo.Database) userControllers {
-	userService := services.GetUserService(db)
+func GetUserController(store store.InterfaceStore) userControllers {
+	userService := services.GetUserService(store)
 
 	return userControllers{
 		UserService: &userService,
