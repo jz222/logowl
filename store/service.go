@@ -1,0 +1,95 @@
+package store
+
+import (
+	"context"
+	"errors"
+
+	"github.com/jz222/loggy/models"
+	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
+	"go.mongodb.org/mongo-driver/mongo/options"
+)
+
+type InterfaceService interface {
+	CheckPresence(bson.M) (bool, error)
+	InsertOne(models.Service) (primitive.ObjectID, error)
+	DeleteOne(bson.M) (int64, error)
+	Find(bson.M) (*[]models.Service, error)
+	FindOne(bson.M) (*models.Service, error)
+}
+
+type service struct {
+	db *mongo.Database
+}
+
+func (s *service) CheckPresence(filter bson.M) (bool, error) {
+	collection := s.db.Collection(collectionServices)
+	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
+
+	return count > 0, err
+}
+
+func (s *service) InsertOne(service models.Service) (primitive.ObjectID, error) {
+	collection := s.db.Collection(collectionServices)
+
+	result, err := collection.InsertOne(context.TODO(), service)
+	if err != nil {
+		return primitive.NewObjectID(), errors.New("an error occured while saving service to database")
+	}
+
+	return result.InsertedID.(primitive.ObjectID), nil
+}
+
+func (s *service) DeleteOne(filter bson.M) (int64, error) {
+	collection := s.db.Collection(collectionServices)
+
+	res, err := collection.DeleteOne(context.TODO(), filter)
+	if err != nil {
+		return 0, err
+	}
+
+	return res.DeletedCount, nil
+}
+
+func (s *service) Find(filter bson.M) (*[]models.Service, error) {
+	var services []models.Service
+
+	collection := s.db.Collection(collectionServices)
+
+	cur, err := collection.Find(context.TODO(), filter)
+	if err != nil {
+		return nil, err
+	}
+
+	for cur.Next(context.TODO()) {
+		var service models.Service
+
+		err = cur.Decode(&service)
+		if err != nil {
+			return nil, err
+		}
+
+		services = append(services, service)
+	}
+
+	return &services, nil
+}
+
+func (s *service) FindOne(filter bson.M) (*models.Service, error) {
+	var service models.Service
+
+	collection := s.db.Collection(collectionServices)
+
+	queryResult := collection.FindOne(context.TODO(), filter)
+	if queryResult.Err() != nil {
+		return nil, queryResult.Err()
+	}
+
+	err := queryResult.Decode(&service)
+	if err != nil {
+		return nil, err
+	}
+
+	return &service, nil
+}
