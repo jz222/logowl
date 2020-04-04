@@ -1,4 +1,4 @@
-package logging
+package services
 
 import (
 	"context"
@@ -10,14 +10,24 @@ import (
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/service"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
-func SaveError(errorEvent models.Error) {
-	serviceExists, err := service.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
+type InterfaceLogging interface {
+	SaveError(models.Error)
+}
+
+type logging struct {
+	DB *mongo.Database
+}
+
+func (l *logging) SaveError(errorEvent models.Error) {
+	serviceService := GetServiceService(l.DB)
+
+	serviceExists, err := serviceService.CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
 		log.Println("Failed to verify service with error:", err.Error())
 	}
@@ -43,7 +53,7 @@ func SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = timestamp
 	errorEvent.UpdatedAt = timestamp
 
-	collection := mongodb.GetClient().Collection(mongodb.Errors)
+	collection := l.DB.Collection(mongodb.Errors)
 
 	_, err = collection.InsertOne(context.TODO(), errorEvent)
 	if err == nil {
@@ -61,4 +71,10 @@ func SaveError(errorEvent models.Error) {
 		},
 		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
 	)
+}
+
+func GetLoggingService(db *mongo.Database) logging {
+	return logging{
+		DB: db,
+	}
 }

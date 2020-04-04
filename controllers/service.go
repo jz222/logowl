@@ -6,16 +6,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/service"
+	"github.com/jz222/loggy/services"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type serviceController struct{}
-
-// Service contains all controllers related to services.
-var Service serviceController
+type serviceController struct {
+	ServiceService services.InterfaceService
+}
 
 func (s *serviceController) Create(c *gin.Context) {
 	var newService models.Service
@@ -34,7 +34,7 @@ func (s *serviceController) Create(c *gin.Context) {
 
 	newService.OrganizationID = userData.(models.User).OrganizationID
 
-	createdService, err := service.Create(newService)
+	createdService, err := s.ServiceService.Create(newService)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -60,7 +60,7 @@ func (s *serviceController) Delete(c *gin.Context) {
 
 	filter := bson.M{"_id": serviceID, "organizationId": userData.(models.User).OrganizationID}
 
-	count, err := service.Delete(filter)
+	count, err := s.ServiceService.Delete(filter)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusForbidden, err.Error())
 		return
@@ -72,4 +72,12 @@ func (s *serviceController) Delete(c *gin.Context) {
 	}
 
 	utils.RespondWithSuccess(c)
+}
+
+func GetServiceController(db *mongo.Database) serviceController {
+	serviceService := services.GetServiceService(db)
+
+	return serviceController{
+		ServiceService: &serviceService,
+	}
 }

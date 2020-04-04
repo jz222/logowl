@@ -10,6 +10,8 @@ import (
 func serviceRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt(mongodb.GetClient()))
 
-	router.POST("/", controllers.Service.Create)
-	router.DELETE("/:id", controllers.Service.Delete)
+	controller := controllers.GetServiceController(mongodb.GetClient())
+
+	router.POST("/", controller.Create)
+	router.DELETE("/:id", controller.Delete)
 }
