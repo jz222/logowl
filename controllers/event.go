@@ -7,19 +7,21 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/event"
+	"github.com/jz222/loggy/services"
 	"github.com/jz222/loggy/services/service"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type eventControllers struct{}
-
-// Event contains all controllers related to events.
-var Event eventControllers
+type eventControllers struct {
+	DB *mongo.Database
+}
 
 func (e *eventControllers) GetError(c *gin.Context) {
+	event := services.GetEventService(e.DB)
+
 	errorID := c.Param("id")
 	serviceID := c.Param("service")
 
@@ -57,6 +59,8 @@ func (e *eventControllers) GetError(c *gin.Context) {
 }
 
 func (e *eventControllers) GetErrors(c *gin.Context) {
+	event := services.GetEventService(e.DB)
+
 	serviceID := c.Param("service")
 	pointer := c.Param("pointer")
 
@@ -95,6 +99,8 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 }
 
 func (e *eventControllers) DeleteError(c *gin.Context) {
+	event := services.GetEventService(e.DB)
+
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
 
@@ -137,6 +143,8 @@ func (e *eventControllers) DeleteError(c *gin.Context) {
 }
 
 func (e *eventControllers) UpdateError(c *gin.Context) {
+	event := services.GetEventService(e.DB)
+
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
 
@@ -179,4 +187,10 @@ func (e *eventControllers) UpdateError(c *gin.Context) {
 	}
 
 	utils.RespondWithSuccess(c)
+}
+
+func GetEventController(db *mongo.Database) eventControllers {
+	return eventControllers{
+		DB: db,
+	}
 }
