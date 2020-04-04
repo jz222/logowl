@@ -9,7 +9,6 @@ import (
 	"github.com/jz222/loggy/keys"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
-	"github.com/jz222/loggy/services/auth"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -18,6 +17,7 @@ import (
 type authControllers struct {
 	UserService         services.InterfaceUser
 	OrganizationService services.InterfaceOrganization
+	AuthService         services.InterfaceAuth
 }
 
 func (a *authControllers) Setup(c *gin.Context) {
@@ -106,7 +106,7 @@ func (a *authControllers) SignUp(c *gin.Context) {
 		return
 	}
 
-	jwt, expirationTime, err := auth.CreateJWT(userData.ID.Hex())
+	jwt, expirationTime, err := a.AuthService.CreateJWT(userData.ID.Hex())
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -144,7 +144,7 @@ func (a *authControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	jwt, expirationTime, err := auth.CreateJWT(persistedUser.ID.Hex())
+	jwt, expirationTime, err := a.AuthService.CreateJWT(persistedUser.ID.Hex())
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -162,11 +162,13 @@ func (a *authControllers) SignIn(c *gin.Context) {
 }
 
 func GetAuthControllers(db *mongo.Database) authControllers {
-	userService := services.GetUserService(db)
 	organizationService := services.GetOrganizationService(db)
+	userService := services.GetUserService(db)
+	authService := services.GetAuthService()
 
 	return authControllers{
 		UserService:         &userService,
 		OrganizationService: &organizationService,
+		AuthService:         &authService,
 	}
 }
