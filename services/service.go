@@ -7,7 +7,6 @@ import (
 
 	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/organization"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
@@ -42,6 +41,8 @@ func (s *service) Create(service models.Service) (models.Service, error) {
 	if !service.Validate() {
 		return models.Service{}, errors.New("the provided service data is invalid")
 	}
+
+	organization := GetOrganizationService(s.DB)
 
 	organizationExists, err := organization.CheckPresence(bson.M{"_id": service.OrganizationID})
 	if err != nil {

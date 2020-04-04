@@ -10,5 +10,7 @@ import (
 func organizationRoutes(router *gin.RouterGroup) {
 	router.Use(middlewares.VerifyUserJwt(mongodb.GetClient()))
 
-	router.DELETE("/", controllers.Organization.Delete)
+	controller := controllers.GetOrganizationController(mongodb.GetClient())
+
+	router.DELETE("/", controller.Delete)
 }

@@ -5,14 +5,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/organization"
+	"github.com/jz222/loggy/services"
 	"github.com/jz222/loggy/utils"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type organizationControllers struct{}
-
-// Organization contains all controllers related to organizations.
-var Organization organizationControllers
+type organizationControllers struct {
+	OrganizationService services.InterfaceOrganization
+}
 
 func (o *organizationControllers) Delete(c *gin.Context) {
 	userData, ok := c.Get("user")
@@ -28,11 +28,19 @@ func (o *organizationControllers) Delete(c *gin.Context) {
 		return
 	}
 
-	err := organization.Delete(userData.(models.User).OrganizationID)
+	err := o.OrganizationService.Delete(userData.(models.User).OrganizationID)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	utils.RespondWithSuccess(c)
+}
+
+func GetOrganizationController(db *mongo.Database) organizationControllers {
+	organizationService := services.GetOrganizationService(db)
+
+	return organizationControllers{
+		OrganizationService: &organizationService,
+	}
 }

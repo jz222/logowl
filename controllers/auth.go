@@ -10,14 +10,14 @@ import (
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/services"
 	"github.com/jz222/loggy/services/auth"
-	"github.com/jz222/loggy/services/organization"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 )
 
 type authControllers struct {
-	UserService services.InterfaceUser
+	UserService         services.InterfaceUser
+	OrganizationService services.InterfaceOrganization
 }
 
 func (a *authControllers) Setup(c *gin.Context) {
@@ -30,7 +30,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 	}
 
 	if keys.GetKeys().IS_SELFHOSTED {
-		exists, err := organization.CheckPresence(bson.M{})
+		exists, err := a.OrganizationService.CheckPresence(bson.M{})
 		if err != nil {
 			utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 			return
@@ -53,7 +53,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 		return
 	}
 
-	organizationID, err := organization.Create(setup.Organization)
+	organizationID, err := a.OrganizationService.Create(setup.Organization)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 		return
@@ -163,8 +163,10 @@ func (a *authControllers) SignIn(c *gin.Context) {
 
 func GetAuthControllers(db *mongo.Database) authControllers {
 	userService := services.GetUserService(db)
+	organizationService := services.GetOrganizationService(db)
 
 	return authControllers{
-		UserService: &userService,
+		UserService:         &userService,
+		OrganizationService: &organizationService,
 	}
 }
