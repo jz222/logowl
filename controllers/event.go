@@ -16,12 +16,11 @@ import (
 )
 
 type eventControllers struct {
-	DB *mongo.Database
+	DB           *mongo.Database
+	EventService services.InterfaceEvent
 }
 
 func (e *eventControllers) GetError(c *gin.Context) {
-	event := services.GetEventService(e.DB)
-
 	errorID := c.Param("id")
 	serviceID := c.Param("service")
 
@@ -49,7 +48,7 @@ func (e *eventControllers) GetError(c *gin.Context) {
 		return
 	}
 
-	errorEvent, err := event.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket})
+	errorEvent, err := e.EventService.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -59,8 +58,6 @@ func (e *eventControllers) GetError(c *gin.Context) {
 }
 
 func (e *eventControllers) GetErrors(c *gin.Context) {
-	event := services.GetEventService(e.DB)
-
 	serviceID := c.Param("service")
 	pointer := c.Param("pointer")
 
@@ -89,7 +86,7 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 		return
 	}
 
-	persistedErrors, err := event.GetErrors(requestedService.Ticket, parsedPage)
+	persistedErrors, err := e.EventService.GetErrors(requestedService.Ticket, parsedPage)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -99,8 +96,6 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 }
 
 func (e *eventControllers) DeleteError(c *gin.Context) {
-	event := services.GetEventService(e.DB)
-
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
 
@@ -128,7 +123,7 @@ func (e *eventControllers) DeleteError(c *gin.Context) {
 		return
 	}
 
-	count, err := event.DeleteError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket})
+	count, err := e.EventService.DeleteError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -143,8 +138,6 @@ func (e *eventControllers) DeleteError(c *gin.Context) {
 }
 
 func (e *eventControllers) UpdateError(c *gin.Context) {
-	event := services.GetEventService(e.DB)
-
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
 
@@ -180,7 +173,7 @@ func (e *eventControllers) UpdateError(c *gin.Context) {
 		return
 	}
 
-	err = event.UpdateError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket}, update)
+	err = e.EventService.UpdateError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket}, update)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -190,7 +183,10 @@ func (e *eventControllers) UpdateError(c *gin.Context) {
 }
 
 func GetEventController(db *mongo.Database) eventControllers {
+	eventService := services.GetEventService(db)
+
 	return eventControllers{
-		DB: db,
+		DB:           db,
+		EventService: &eventService,
 	}
 }

@@ -11,12 +11,19 @@ import (
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
+type InterfaceEvent interface {
+	GetError(bson.M) (*models.Error, error)
+	GetErrors(string, int64) (*[]models.Error, error)
+	DeleteError(bson.M) (int64, error)
+	UpdateError(bson.M, bson.M) error
+}
+
 type event struct {
 	DB *mongo.Database
 }
 
 func (e *event) DeleteError(filter bson.M) (int64, error) {
-	collection := mongodb.GetClient().Collection(mongodb.Errors)
+	collection := e.DB.Collection(mongodb.Errors)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -29,7 +36,7 @@ func (e *event) DeleteError(filter bson.M) (int64, error) {
 func (e *event) GetError(filter bson.M) (*models.Error, error) {
 	var errorEvent models.Error
 
-	collection := mongodb.GetClient().Collection(mongodb.Errors)
+	collection := e.DB.Collection(mongodb.Errors)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
@@ -45,7 +52,7 @@ func (e *event) GetError(filter bson.M) (*models.Error, error) {
 }
 
 func (e *event) GetErrors(ticket string, page int64) (*[]models.Error, error) {
-	collection := mongodb.GetClient().Collection(mongodb.Errors)
+	collection := e.DB.Collection(mongodb.Errors)
 
 	cur, err := collection.Find(
 		context.TODO(),
@@ -77,7 +84,7 @@ func (e *event) GetErrors(ticket string, page int64) (*[]models.Error, error) {
 }
 
 func (e *event) UpdateError(filter, update bson.M) error {
-	collection := mongodb.GetClient().Collection(mongodb.Errors)
+	collection := e.DB.Collection(mongodb.Errors)
 
 	update["updatedAt"] = time.Now()
 

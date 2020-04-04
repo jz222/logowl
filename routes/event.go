@@ -15,8 +15,6 @@ func eventRoutes(router *gin.RouterGroup) {
 	router.GET(":service/error/:id", eventController.GetError)
 	router.GET(":service/errors/", eventController.GetErrors)
 	router.GET(":service/errors/:pointer", eventController.GetErrors)
-
 	router.PUT(":service/error/:id", eventController.UpdateError)
-
 	router.DELETE(":service/error/:id", eventController.DeleteError)
 }
