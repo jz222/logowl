@@ -16,7 +16,6 @@ import (
 )
 
 type eventControllers struct {
-	DB           *mongo.Database
 	EventService services.InterfaceEvent
 }
 
@@ -186,7 +185,6 @@ func GetEventController(db *mongo.Database) eventControllers {
 	eventService := services.GetEventService(db)
 
 	return eventControllers{
-		DB:           db,
 		EventService: &eventService,
 	}
 }

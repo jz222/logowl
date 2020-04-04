@@ -8,13 +8,13 @@ import (
 )
 
 func eventRoutes(router *gin.RouterGroup) {
-	router.Use(middlewares.VerifyUserJwt)
+	router.Use(middlewares.VerifyUserJwt(mongodb.GetClient()))
 
-	eventController := controllers.GetEventController(mongodb.GetClient())
+	controller := controllers.GetEventController(mongodb.GetClient())
 
-	router.GET(":service/error/:id", eventController.GetError)
-	router.GET(":service/errors/", eventController.GetErrors)
-	router.GET(":service/errors/:pointer", eventController.GetErrors)
-	router.PUT(":service/error/:id", eventController.UpdateError)
-	router.DELETE(":service/error/:id", eventController.DeleteError)
+	router.GET(":service/error/:id", controller.GetError)
+	router.GET(":service/errors/", controller.GetErrors)
+	router.GET(":service/errors/:pointer", controller.GetErrors)
+	router.PUT(":service/error/:id", controller.UpdateError)
+	router.DELETE(":service/error/:id", controller.DeleteError)
 }

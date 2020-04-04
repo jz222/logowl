@@ -8,17 +8,17 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/keys"
 	"github.com/jz222/loggy/models"
+	"github.com/jz222/loggy/services"
 	"github.com/jz222/loggy/services/auth"
 	"github.com/jz222/loggy/services/organization"
-	"github.com/jz222/loggy/services/user"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/mongo"
 )
 
-type authControllers struct{}
-
-// Auth contains all controllers related to authentication.
-var Auth authControllers
+type authControllers struct {
+	UserService services.InterfaceUser
+}
 
 func (a *authControllers) Setup(c *gin.Context) {
 	var setup models.Setup
@@ -42,7 +42,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 		}
 	}
 
-	userExists, err := user.CheckPresence(bson.M{"email": setup.User.Email})
+	userExists, err := a.UserService.CheckPresence(bson.M{"email": setup.User.Email})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -63,7 +63,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 	setup.User.IsOrganizationOwner = true
 	setup.User.Role = "admin"
 
-	_, err = user.Create(setup.User)
+	_, err = a.UserService.Create(setup.User)
 	if err != nil {
 		fmt.Println(err.Error())
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
@@ -94,13 +94,13 @@ func (a *authControllers) SignUp(c *gin.Context) {
 	filter := bson.M{"email": credentials.Email, "inviteCode": credentials.InviteCode, "isVerified": false}
 	update := bson.M{"password": credentials.Password, "isVerified": true}
 
-	err = user.Update(filter, update)
+	err = a.UserService.Update(filter, update)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	userData, err := user.FetchAllInformation(bson.M{"email": credentials.Email})
+	userData, err := a.UserService.FetchAllInformation(bson.M{"email": credentials.Email})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -132,7 +132,7 @@ func (a *authControllers) SignIn(c *gin.Context) {
 		return
 	}
 
-	persistedUser, err := user.FetchAllInformation(bson.M{"email": credentials.Email})
+	persistedUser, err := a.UserService.FetchAllInformation(bson.M{"email": credentials.Email})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusUnauthorized, "the provided email and password don't match")
 		return
@@ -159,4 +159,12 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	}
 
 	utils.RespondWithJSON(c, response)
+}
+
+func GetAuthControllers(db *mongo.Database) authControllers {
+	userService := services.GetUserService(db)
+
+	return authControllers{
+		UserService: &userService,
+	}
 }
