@@ -7,17 +7,17 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/event"
-	"github.com/jz222/loggy/services/service"
+	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type eventControllers struct{}
-
-// Event contains all controllers related to events.
-var Event eventControllers
+type eventControllers struct {
+	EventService   services.InterfaceEvent
+	ServiceService services.InterfaceService
+}
 
 func (e *eventControllers) GetError(c *gin.Context) {
 	errorID := c.Param("id")
@@ -41,13 +41,13 @@ func (e *eventControllers) GetError(c *gin.Context) {
 		return
 	}
 
-	persistedService, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": userData.(models.User).OrganizationID})
+	persistedService, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": userData.(models.User).OrganizationID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	errorEvent, err := event.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket})
+	errorEvent, err := e.EventService.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -79,13 +79,13 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 		return
 	}
 
-	requestedService, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": organizationID})
+	requestedService, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": organizationID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	persistedErrors, err := event.GetErrors(requestedService.Ticket, parsedPage)
+	persistedErrors, err := e.EventService.GetErrors(requestedService.Ticket, parsedPage)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -116,13 +116,13 @@ func (e *eventControllers) DeleteError(c *gin.Context) {
 		return
 	}
 
-	service, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	service, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	count, err := event.DeleteError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket})
+	count, err := e.EventService.DeleteError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -166,17 +166,27 @@ func (e *eventControllers) UpdateError(c *gin.Context) {
 		return
 	}
 
-	service, err := service.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	service, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
-	err = event.UpdateError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket}, update)
+	err = e.EventService.UpdateError(bson.M{"_id": parsedErrorID, "ticket": service.Ticket}, update)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	utils.RespondWithSuccess(c)
+}
+
+func GetEventController(db store.InterfaceStore) eventControllers {
+	eventService := services.GetEventService(db)
+	serviceService := services.GetServiceService(db)
+
+	return eventControllers{
+		EventService:   &eventService,
+		ServiceService: &serviceService,
+	}
 }

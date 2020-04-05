@@ -8,14 +8,14 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/logging"
+	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 )
 
-type loggingControllers struct{}
-
-// Logging contains all controllers related to logging.
-var Logging loggingControllers
+type loggingControllers struct {
+	LoggingService services.InterfaceLogging
+}
 
 func (l *loggingControllers) RegisterError(c *gin.Context) {
 	errorEvent := models.Error{
@@ -34,7 +34,15 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 		return
 	}
 
-	go logging.SaveError(errorEvent)
+	go l.LoggingService.SaveError(errorEvent)
 
 	utils.RespondWithSuccess(c)
+}
+
+func GetLoggingController(store store.InterfaceStore) loggingControllers {
+	loggingService := services.GetLoggingService(store)
+
+	return loggingControllers{
+		LoggingService: &loggingService,
+	}
 }

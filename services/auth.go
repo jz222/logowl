@@ -1,4 +1,4 @@
-package auth
+package services
 
 import (
 	"time"
@@ -7,7 +7,13 @@ import (
 	"github.com/jz222/loggy/keys"
 )
 
-func CreateJWT(id string) (string, int64, error) {
+type InterfaceAuth interface {
+	CreateJWT(string) (string, int64, error)
+}
+
+type auth struct{}
+
+func (a *auth) CreateJWT(id string) (string, int64, error) {
 	timestamp := time.Now().Unix()
 	expiresAt := timestamp + int64((time.Hour.Seconds() * 7))
 
@@ -23,4 +29,8 @@ func CreateJWT(id string) (string, int64, error) {
 	}
 
 	return signedToken, expiresAt * 1000, nil
+}
+
+func GetAuthService() auth {
+	return auth{}
 }

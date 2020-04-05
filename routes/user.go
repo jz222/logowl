@@ -4,13 +4,16 @@ import (
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/controllers"
 	"github.com/jz222/loggy/middlewares"
+	"github.com/jz222/loggy/store"
 )
 
-func userRoutes(router *gin.RouterGroup) {
-	router.Use(middlewares.VerifyUserJwt)
+func userRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
+	router.Use(middlewares.VerifyUserJwt(store))
 
-	router.GET("/", controllers.User.Get)
-	router.POST("/invite", controllers.User.Invite)
-	router.DELETE("/", controllers.User.DeleteUserAccount)
-	router.DELETE("/:id", controllers.User.Delete)
+	controller := controllers.GetUserController(store)
+
+	router.GET("/", controller.Get)
+	router.POST("/invite", controller.Invite)
+	router.DELETE("/", controller.DeleteUserAccount)
+	router.DELETE("/:id", controller.Delete)
 }

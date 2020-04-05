@@ -6,16 +6,16 @@ import (
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/models"
-	"github.com/jz222/loggy/services/user"
+	"github.com/jz222/loggy/services"
+	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type userControllers struct{}
-
-// User contains all controllers related to users.
-var User userControllers
+type userControllers struct {
+	UserService services.InterfaceUser
+}
 
 func (u *userControllers) Get(c *gin.Context) {
 	userData, ok := c.Get("user")
@@ -24,7 +24,7 @@ func (u *userControllers) Get(c *gin.Context) {
 		return
 	}
 
-	userDetails, err := user.FetchAllInformation(bson.M{"_id": userData.(models.User).ID})
+	userDetails, err := u.UserService.FetchAllInformation(bson.M{"_id": userData.(models.User).ID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -55,7 +55,7 @@ func (u *userControllers) Invite(c *gin.Context) {
 
 	newUser.OrganizationID = userData.(models.User).OrganizationID
 
-	persistedUser, err := user.Invite(newUser)
+	persistedUser, err := u.UserService.Invite(newUser)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -84,7 +84,7 @@ func (u *userControllers) Delete(c *gin.Context) {
 		return
 	}
 
-	deleteCount, err := user.Delete(bson.M{"_id": parsedUserID, "organizationId": userData.(models.User).OrganizationID})
+	deleteCount, err := u.UserService.Delete(bson.M{"_id": parsedUserID, "organizationId": userData.(models.User).OrganizationID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -110,7 +110,7 @@ func (u *userControllers) DeleteUserAccount(c *gin.Context) {
 		return
 	}
 
-	deleteCount, err := user.Delete(bson.M{"_id": userData.(models.User).ID})
+	deleteCount, err := u.UserService.Delete(bson.M{"_id": userData.(models.User).ID})
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
@@ -122,4 +122,12 @@ func (u *userControllers) DeleteUserAccount(c *gin.Context) {
 	}
 
 	utils.RespondWithSuccess(c)
+}
+
+func GetUserController(store store.InterfaceStore) userControllers {
+	userService := services.GetUserService(store)
+
+	return userControllers{
+		UserService: &userService,
+	}
 }
