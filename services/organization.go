@@ -15,15 +15,15 @@ type InterfaceOrganization interface {
 	CheckPresence(bson.M) (bool, error)
 	Create(models.Organization) (primitive.ObjectID, error)
 	Delete(primitive.ObjectID) error
-	FindOne(bson.M) (*models.Organization, error)
+	FindOne(bson.M) (models.Organization, error)
 }
 
 type organization struct {
-	DB store.InterfaceStore
+	store store.InterfaceStore
 }
 
 func (o *organization) CheckPresence(filter bson.M) (bool, error) {
-	return o.DB.Organization().CheckPresence(filter)
+	return o.store.Organization().CheckPresence(filter)
 }
 
 func (o *organization) Create(organization models.Organization) (primitive.ObjectID, error) {
@@ -38,11 +38,11 @@ func (o *organization) Create(organization models.Organization) (primitive.Objec
 	regex := regexp.MustCompile(`\s+`)
 	organization.Identifier = regex.ReplaceAllString(organization.Name, "")
 
-	return o.DB.Organization().InsertOne(organization)
+	return o.store.Organization().InsertOne(organization)
 }
 
 func (o *organization) Delete(organizationID primitive.ObjectID) error {
-	allServices, err := o.DB.Service().Find(bson.M{"organizationId": organizationID})
+	allServices, err := o.store.Service().Find(bson.M{"organizationId": organizationID})
 	if err != nil {
 		return err
 	}
@@ -50,7 +50,7 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 	var allServiceIDs []primitive.ObjectID
 	var allTickets []string
 
-	for _, service := range *allServices {
+	for _, service := range allServices {
 		allServiceIDs = append(allServiceIDs, service.ID)
 		allTickets = append(allTickets, service.Ticket)
 	}
@@ -63,7 +63,7 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 			return
 		}
 
-		_, err := o.DB.Service().DeleteMany(bson.M{"_id": bson.M{"$in": allServiceIDs}})
+		_, err := o.store.Service().DeleteMany(bson.M{"_id": bson.M{"$in": allServiceIDs}})
 		c <- err
 	}()
 
@@ -73,17 +73,17 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 			return
 		}
 
-		_, err := o.DB.Error().DeleteMany(bson.M{"ticket": bson.M{"$in": allTickets}})
+		_, err := o.store.Error().DeleteMany(bson.M{"ticket": bson.M{"$in": allTickets}})
 		c <- err
 	}()
 
 	go func() {
-		_, err := o.DB.Organization().DeleteOne(bson.M{"_id": organizationID})
+		_, err := o.store.Organization().DeleteOne(bson.M{"_id": organizationID})
 		c <- err
 	}()
 
 	go func() {
-		_, err := o.DB.User().DeleteMany(bson.M{"organizationId": organizationID})
+		_, err := o.store.User().DeleteMany(bson.M{"organizationId": organizationID})
 		c <- err
 	}()
 
@@ -100,12 +100,10 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 	return failed
 }
 
-func (o *organization) FindOne(filter bson.M) (*models.Organization, error) {
-	return o.DB.Organization().FindOne(filter)
+func (o *organization) FindOne(filter bson.M) (models.Organization, error) {
+	return o.store.Organization().FindOne(filter)
 }
 
-func GetOrganizationService(db store.InterfaceStore) organization {
-	return organization{
-		DB: db,
-	}
+func GetOrganizationService(store store.InterfaceStore) organization {
+	return organization{store}
 }

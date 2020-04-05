@@ -115,7 +115,7 @@ func (a *authControllers) SignUp(c *gin.Context) {
 	userData.Password = ""
 
 	response := models.SignInResponse{
-		User:           *userData,
+		User:           userData,
 		JWT:            jwt,
 		ExpirationTime: expirationTime,
 	}
@@ -153,7 +153,7 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	persistedUser.Password = ""
 
 	response := models.SignInResponse{
-		User:           *persistedUser,
+		User:           persistedUser,
 		JWT:            jwt,
 		ExpirationTime: expirationTime,
 	}

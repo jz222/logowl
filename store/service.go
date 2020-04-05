@@ -16,8 +16,8 @@ type interfaceService interface {
 	InsertOne(models.Service) (primitive.ObjectID, error)
 	DeleteOne(bson.M) (int64, error)
 	DeleteMany(bson.M) (int64, error)
-	Find(bson.M) (*[]models.Service, error)
-	FindOne(bson.M) (*models.Service, error)
+	Find(bson.M) ([]models.Service, error)
+	FindOne(bson.M) (models.Service, error)
 }
 
 type service struct {
@@ -64,7 +64,7 @@ func (s *service) DeleteMany(filter bson.M) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (s *service) Find(filter bson.M) (*[]models.Service, error) {
+func (s *service) Find(filter bson.M) ([]models.Service, error) {
 	var services []models.Service
 
 	collection := s.db.Collection(collectionServices)
@@ -85,23 +85,23 @@ func (s *service) Find(filter bson.M) (*[]models.Service, error) {
 		services = append(services, service)
 	}
 
-	return &services, nil
+	return services, nil
 }
 
-func (s *service) FindOne(filter bson.M) (*models.Service, error) {
+func (s *service) FindOne(filter bson.M) (models.Service, error) {
 	var service models.Service
 
 	collection := s.db.Collection(collectionServices)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
-		return nil, queryResult.Err()
+		return models.Service{}, queryResult.Err()
 	}
 
 	err := queryResult.Decode(&service)
 	if err != nil {
-		return nil, err
+		return models.Service{}, err
 	}
 
-	return &service, nil
+	return service, nil
 }

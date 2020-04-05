@@ -9,32 +9,32 @@ import (
 )
 
 type InterfaceEvent interface {
-	GetError(bson.M) (*models.Error, error)
-	GetErrors(string, int64) (*[]models.Error, error)
+	GetError(bson.M) (models.Error, error)
+	GetErrors(string, int64) ([]models.Error, error)
 	DeleteError(bson.M) (int64, error)
 	UpdateError(bson.M, bson.M) error
 }
 
 type event struct {
-	DB store.InterfaceStore
+	store store.InterfaceStore
 }
 
 func (e *event) DeleteError(filter bson.M) (int64, error) {
-	return e.DB.Error().DeleteOne(filter)
+	return e.store.Error().DeleteOne(filter)
 }
 
-func (e *event) GetError(filter bson.M) (*models.Error, error) {
-	return e.DB.Error().FindOne(filter)
+func (e *event) GetError(filter bson.M) (models.Error, error) {
+	return e.store.Error().FindOne(filter)
 }
 
-func (e *event) GetErrors(ticket string, page int64) (*[]models.Error, error) {
-	return e.DB.Error().FindPaged(bson.M{"ticket": ticket}, page)
+func (e *event) GetErrors(ticket string, page int64) ([]models.Error, error) {
+	return e.store.Error().FindPaged(bson.M{"ticket": ticket}, page)
 }
 
 func (e *event) UpdateError(filter, update bson.M) error {
 	update["updatedAt"] = time.Now()
 
-	err := e.DB.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
+	err := e.store.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
 	if err != nil {
 		return err
 	}
@@ -42,8 +42,6 @@ func (e *event) UpdateError(filter, update bson.M) error {
 	return nil
 }
 
-func GetEventService(db store.InterfaceStore) event {
-	return event{
-		DB: db,
-	}
+func GetEventService(store store.InterfaceStore) event {
+	return event{store}
 }

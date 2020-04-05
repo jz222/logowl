@@ -18,12 +18,12 @@ type InterfaceLogging interface {
 }
 
 type logging struct {
-	DB store.InterfaceStore
+	store store.InterfaceStore
 }
 
 func (l *logging) SaveError(errorEvent models.Error) {
 
-	serviceExists, err := l.DB.Service().CheckPresence(bson.M{"ticket": errorEvent.Ticket})
+	serviceExists, err := l.store.Service().CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
 		log.Println("Failed to verify service with error:", err.Error())
 	}
@@ -48,14 +48,14 @@ func (l *logging) SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = timestamp
 	errorEvent.UpdatedAt = timestamp
 
-	err = l.DB.Error().InsertOne(errorEvent)
+	err = l.store.Error().InsertOne(errorEvent)
 	if err == nil {
 		return
 	}
 
 	key := fmt.Sprintf("%s.%s", "evolution", convertedTimestamp)
 
-	l.DB.Error().FindOneAndUpdate(
+	l.store.Error().FindOneAndUpdate(
 		bson.M{"fingerprint": errorEvent.Fingerprint},
 		bson.M{
 			"$inc": bson.M{"count": 1, key: 1},
@@ -65,8 +65,6 @@ func (l *logging) SaveError(errorEvent models.Error) {
 	)
 }
 
-func GetLoggingService(db store.InterfaceStore) logging {
-	return logging{
-		DB: db,
-	}
+func GetLoggingService(store store.InterfaceStore) logging {
+	return logging{store}
 }

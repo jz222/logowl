@@ -13,11 +13,11 @@ import (
 
 type interfaceUser interface {
 	InsertOne(models.User) (primitive.ObjectID, error)
-	Aggregate([]bson.M) (*models.User, error)
+	Aggregate([]bson.M) (models.User, error)
 	CheckPresence(bson.M) (bool, error)
 	DeleteOne(bson.M) (int64, error)
 	DeleteMany(bson.M) (int64, error)
-	FindOne(bson.M) (*models.User, error)
+	FindOne(bson.M) (models.User, error)
 	FindOneAndUpdate(bson.M, bson.M) error
 }
 
@@ -36,13 +36,13 @@ func (u *user) InsertOne(user models.User) (primitive.ObjectID, error) {
 	return result.InsertedID.(primitive.ObjectID), nil
 }
 
-func (u *user) Aggregate(pipeline []bson.M) (*models.User, error) {
+func (u *user) Aggregate(pipeline []bson.M) (models.User, error) {
 	ctx := context.TODO()
 	collection := u.db.Collection(collectionUsers)
 
 	cur, err := collection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 	defer cur.Close(ctx)
 
@@ -51,7 +51,7 @@ func (u *user) Aggregate(pipeline []bson.M) (*models.User, error) {
 	cur.Next(ctx)
 	cur.Decode(&user)
 
-	return &user, nil
+	return user, nil
 }
 
 func (u *user) CheckPresence(filter bson.M) (bool, error) {
@@ -83,28 +83,28 @@ func (u *user) DeleteMany(filter bson.M) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (u *user) FindOne(filter bson.M) (*models.User, error) {
+func (u *user) FindOne(filter bson.M) (models.User, error) {
 	var user models.User
 
 	collection := u.db.Collection(collectionUsers)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
-		return nil, queryResult.Err()
+		return models.User{}, queryResult.Err()
 	}
 
 	err := queryResult.Decode(&user)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 
-	return &user, nil
+	return user, nil
 }
 
 func (u *user) FindOneAndUpdate(filter, update bson.M) error {
 	collection := u.db.Collection(collectionUsers)
 
-	res := collection.FindOneAndUpdate(context.TODO(), filter, bson.M{"$set": update})
+	res := collection.FindOneAndUpdate(context.TODO(), filter, update)
 	if res.Err() != nil {
 		return res.Err()
 	}

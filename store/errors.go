@@ -12,9 +12,9 @@ import (
 type interfaceErrorEvent interface {
 	DeleteOne(bson.M) (int64, error)
 	DeleteMany(bson.M) (int64, error)
-	FindOne(bson.M) (*models.Error, error)
+	FindOne(bson.M) (models.Error, error)
 	FindOneAndUpdate(bson.M, bson.M, bool) error
-	FindPaged(bson.M, int64) (*[]models.Error, error)
+	FindPaged(bson.M, int64) ([]models.Error, error)
 	InsertOne(models.Error) error
 }
 
@@ -44,25 +44,25 @@ func (e *errorEvent) DeleteMany(filter bson.M) (int64, error) {
 	return res.DeletedCount, nil
 }
 
-func (e *errorEvent) FindOne(filter bson.M) (*models.Error, error) {
+func (e *errorEvent) FindOne(filter bson.M) (models.Error, error) {
 	var errorEvent models.Error
 
 	collection := e.db.Collection(collectionErrors)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
-		return nil, queryResult.Err()
+		return models.Error{}, queryResult.Err()
 	}
 
 	err := queryResult.Decode(&errorEvent)
 	if err != nil {
-		return nil, err
+		return models.Error{}, err
 	}
 
-	return &errorEvent, nil
+	return errorEvent, nil
 }
 
-func (e *errorEvent) FindPaged(filter bson.M, page int64) (*[]models.Error, error) {
+func (e *errorEvent) FindPaged(filter bson.M, page int64) ([]models.Error, error) {
 	collection := e.db.Collection(collectionErrors)
 
 	cur, err := collection.Find(
@@ -91,7 +91,7 @@ func (e *errorEvent) FindPaged(filter bson.M, page int64) (*[]models.Error, erro
 		errorEvents = []models.Error{}
 	}
 
-	return &errorEvents, nil
+	return errorEvents, nil
 }
 
 func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) error {

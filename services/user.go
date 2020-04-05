@@ -14,20 +14,20 @@ import (
 )
 
 type InterfaceUser interface {
-	FetchAllInformation(bson.M) (*models.User, error)
+	FetchAllInformation(bson.M) (models.User, error)
 	CheckPresence(bson.M) (bool, error)
 	Create(models.User) (primitive.ObjectID, error)
 	Delete(bson.M) (int64, error)
-	FindOne(bson.M) (*models.User, error)
-	Invite(models.User) (*models.User, error)
+	FindOne(bson.M) (models.User, error)
+	Invite(models.User) (models.User, error)
 	Update(bson.M, bson.M) error
 }
 
 type user struct {
-	DB store.InterfaceStore
+	store store.InterfaceStore
 }
 
-func (u *user) FetchAllInformation(filter bson.M) (*models.User, error) {
+func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 	pipeline := []bson.M{
 		bson.M{
 			"$match": filter,
@@ -64,16 +64,16 @@ func (u *user) FetchAllInformation(filter bson.M) (*models.User, error) {
 		},
 	}
 
-	user, err := u.DB.User().Aggregate(pipeline)
+	user, err := u.store.User().Aggregate(pipeline)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 
 	return user, nil
 }
 
 func (u *user) CheckPresence(filter bson.M) (bool, error) {
-	return u.DB.User().CheckPresence(filter)
+	return u.store.User().CheckPresence(filter)
 }
 
 func (u *user) Create(user models.User) (primitive.ObjectID, error) {
@@ -93,7 +93,7 @@ func (u *user) Create(user models.User) (primitive.ObjectID, error) {
 	user.Password = string(hash)
 	user.IsVerified = true
 
-	result, err := u.DB.User().InsertOne(user)
+	result, err := u.store.User().InsertOne(user)
 	if err != nil {
 		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
 	}
@@ -102,53 +102,53 @@ func (u *user) Create(user models.User) (primitive.ObjectID, error) {
 }
 
 func (u *user) Delete(filter bson.M) (int64, error) {
-	return u.DB.User().DeleteOne(filter)
+	return u.store.User().DeleteOne(filter)
 }
 
-func (u *user) FindOne(filter bson.M) (*models.User, error) {
-	return u.DB.User().FindOne(filter)
+func (u *user) FindOne(filter bson.M) (models.User, error) {
+	return u.store.User().FindOne(filter)
 }
 
-func (u *user) Invite(userData models.User) (*models.User, error) {
+func (u *user) Invite(userData models.User) (models.User, error) {
 	timestamp := time.Now()
 	userData.CreatedAt = timestamp
 	userData.UpdatedAt = timestamp
 
 	randomString, err := utils.GenerateRandomString(12)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 
 	userData.Password = randomString
 
 	if !userData.Validate() {
-		return nil, errors.New("the provided user data is invalid")
+		return models.User{}, errors.New("the provided user data is invalid")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(userData.Password), 12)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 
 	userData.Password = string(hash)
 
 	inviteCode, err := utils.GenerateRandomString(20)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 
 	userData.InviteCode = inviteCode
 	userData.IsVerified = false
 
-	result, err := u.DB.User().InsertOne(userData)
+	result, err := u.store.User().InsertOne(userData)
 	if err != nil {
-		return nil, err
+		return models.User{}, err
 	}
 
 	userData.ID = result
 	userData.Password = ""
 
-	return &userData, nil
+	return userData, nil
 }
 
 func (u *user) Update(filter, update bson.M) error {
@@ -164,7 +164,7 @@ func (u *user) Update(filter, update bson.M) error {
 
 	update["updatedAt"] = time.Now()
 
-	err := u.DB.User().FindOneAndUpdate(filter, bson.M{"$set": update})
+	err := u.store.User().FindOneAndUpdate(filter, bson.M{"$set": update})
 	if err != nil {
 		return err
 	}
@@ -172,8 +172,6 @@ func (u *user) Update(filter, update bson.M) error {
 	return nil
 }
 
-func GetUserService(db store.InterfaceStore) user {
-	return user{
-		DB: db,
-	}
+func GetUserService(store store.InterfaceStore) user {
+	return user{store}
 }

@@ -64,7 +64,7 @@ func VerifyUserJwt(store store.InterfaceStore) func(*gin.Context) {
 			return
 		}
 
-		c.Set("user", *userData)
+		c.Set("user", userData)
 
 		c.Next()
 	}
