@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jz222/loggy/libs/mongodb"
 	"github.com/jz222/loggy/models"
 	"github.com/jz222/loggy/store"
 	"github.com/jz222/loggy/utils"
@@ -35,7 +34,7 @@ func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         mongodb.Organizations,
+				"from":         store.CollectionOrganizations,
 				"foreignField": "_id",
 				"as":           "organization",
 			},
@@ -49,7 +48,7 @@ func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         mongodb.Services,
+				"from":         store.CollectionServices,
 				"foreignField": "organizationId",
 				"as":           "services",
 			},
@@ -57,7 +56,7 @@ func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 		bson.M{
 			"$lookup": bson.M{
 				"localField":   "organizationId",
-				"from":         mongodb.Users,
+				"from":         store.CollectionUsers,
 				"foreignField": "organizationId",
 				"as":           "team",
 			},

@@ -23,14 +23,14 @@ type organization struct {
 }
 
 func (o *organization) CheckPresence(filter bson.M) (bool, error) {
-	collection := o.db.Collection(collectionOrganizations)
+	collection := o.db.Collection(CollectionOrganizations)
 	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
 
 	return count > 0, err
 }
 
 func (o *organization) InsertOne(organization models.Organization) (primitive.ObjectID, error) {
-	collection := o.db.Collection(collectionOrganizations)
+	collection := o.db.Collection(CollectionOrganizations)
 
 	result, err := collection.InsertOne(context.TODO(), organization)
 	if err != nil {
@@ -41,7 +41,7 @@ func (o *organization) InsertOne(organization models.Organization) (primitive.Ob
 }
 
 func (o *organization) DeleteOne(filter bson.M) (int64, error) {
-	collection := o.db.Collection(collectionOrganizations)
+	collection := o.db.Collection(CollectionOrganizations)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -54,7 +54,7 @@ func (o *organization) DeleteOne(filter bson.M) (int64, error) {
 func (o *organization) FindOne(filter bson.M) (models.Organization, error) {
 	var organization models.Organization
 
-	collection := o.db.Collection(collectionOrganizations)
+	collection := o.db.Collection(CollectionOrganizations)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {

@@ -23,7 +23,7 @@ type errorEvent struct {
 }
 
 func (e *errorEvent) DeleteOne(filter bson.M) (int64, error) {
-	collection := e.db.Collection(collectionErrors)
+	collection := e.db.Collection(CollectionErrors)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -34,7 +34,7 @@ func (e *errorEvent) DeleteOne(filter bson.M) (int64, error) {
 }
 
 func (e *errorEvent) DeleteMany(filter bson.M) (int64, error) {
-	collection := e.db.Collection(collectionErrors)
+	collection := e.db.Collection(CollectionErrors)
 
 	res, err := collection.DeleteMany(context.TODO(), filter)
 	if err != nil {
@@ -47,7 +47,7 @@ func (e *errorEvent) DeleteMany(filter bson.M) (int64, error) {
 func (e *errorEvent) FindOne(filter bson.M) (models.Error, error) {
 	var errorEvent models.Error
 
-	collection := e.db.Collection(collectionErrors)
+	collection := e.db.Collection(CollectionErrors)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
@@ -63,7 +63,7 @@ func (e *errorEvent) FindOne(filter bson.M) (models.Error, error) {
 }
 
 func (e *errorEvent) FindPaged(filter bson.M, page int64) ([]models.Error, error) {
-	collection := e.db.Collection(collectionErrors)
+	collection := e.db.Collection(CollectionErrors)
 
 	cur, err := collection.Find(
 		context.TODO(),
@@ -95,7 +95,7 @@ func (e *errorEvent) FindPaged(filter bson.M, page int64) ([]models.Error, error
 }
 
 func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) error {
-	collection := e.db.Collection(collectionErrors)
+	collection := e.db.Collection(CollectionErrors)
 
 	res := collection.FindOneAndUpdate(
 		context.TODO(),
@@ -111,7 +111,7 @@ func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) error 
 }
 
 func (e *errorEvent) InsertOne(errorEvent models.Error) error {
-	collection := e.db.Collection(collectionErrors)
+	collection := e.db.Collection(CollectionErrors)
 	_, err := collection.InsertOne(context.TODO(), errorEvent)
 	if err != nil {
 		return err

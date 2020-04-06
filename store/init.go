@@ -13,10 +13,10 @@ import (
 )
 
 const (
-	collectionErrors        = "errors"
-	collectionOrganizations = "organizations"
-	collectionServices      = "services"
-	collectionUsers         = "users"
+	CollectionErrors        = "errors"
+	CollectionOrganizations = "organizations"
+	CollectionServices      = "services"
+	CollectionUsers         = "users"
 )
 
 type InterfaceStore interface {
@@ -47,7 +47,7 @@ func (s *store) Connect() {
 
 	s.db = client.Database(keys.GetKeys().MONGO_DB_NAME)
 
-	collection := s.db.Collection(collectionErrors)
+	collection := s.db.Collection(CollectionErrors)
 	indexModels := []mongo.IndexModel{
 		{
 			Keys:    bson.M{"fingerprint": 1},
@@ -60,7 +60,7 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
-	collection = s.db.Collection(collectionUsers)
+	collection = s.db.Collection(CollectionUsers)
 	indexModels = []mongo.IndexModel{
 		{
 			Keys:    bson.M{"email": 1},

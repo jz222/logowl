@@ -25,14 +25,14 @@ type service struct {
 }
 
 func (s *service) CheckPresence(filter bson.M) (bool, error) {
-	collection := s.db.Collection(collectionServices)
+	collection := s.db.Collection(CollectionServices)
 	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
 
 	return count > 0, err
 }
 
 func (s *service) InsertOne(service models.Service) (primitive.ObjectID, error) {
-	collection := s.db.Collection(collectionServices)
+	collection := s.db.Collection(CollectionServices)
 
 	result, err := collection.InsertOne(context.TODO(), service)
 	if err != nil {
@@ -43,7 +43,7 @@ func (s *service) InsertOne(service models.Service) (primitive.ObjectID, error) 
 }
 
 func (s *service) DeleteOne(filter bson.M) (int64, error) {
-	collection := s.db.Collection(collectionServices)
+	collection := s.db.Collection(CollectionServices)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -54,7 +54,7 @@ func (s *service) DeleteOne(filter bson.M) (int64, error) {
 }
 
 func (s *service) DeleteMany(filter bson.M) (int64, error) {
-	collection := s.db.Collection(collectionServices)
+	collection := s.db.Collection(CollectionServices)
 	res, err := collection.DeleteMany(context.TODO(), filter)
 
 	if err != nil {
@@ -67,7 +67,7 @@ func (s *service) DeleteMany(filter bson.M) (int64, error) {
 func (s *service) Find(filter bson.M) ([]models.Service, error) {
 	var services []models.Service
 
-	collection := s.db.Collection(collectionServices)
+	collection := s.db.Collection(CollectionServices)
 
 	cur, err := collection.Find(context.TODO(), filter)
 	if err != nil {
@@ -91,7 +91,7 @@ func (s *service) Find(filter bson.M) ([]models.Service, error) {
 func (s *service) FindOne(filter bson.M) (models.Service, error) {
 	var service models.Service
 
-	collection := s.db.Collection(collectionServices)
+	collection := s.db.Collection(CollectionServices)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {

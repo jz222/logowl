@@ -26,7 +26,7 @@ type user struct {
 }
 
 func (u *user) InsertOne(user models.User) (primitive.ObjectID, error) {
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
@@ -38,7 +38,7 @@ func (u *user) InsertOne(user models.User) (primitive.ObjectID, error) {
 
 func (u *user) Aggregate(pipeline []bson.M) (models.User, error) {
 	ctx := context.TODO()
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 
 	cur, err := collection.Aggregate(context.TODO(), pipeline)
 	if err != nil {
@@ -55,14 +55,14 @@ func (u *user) Aggregate(pipeline []bson.M) (models.User, error) {
 }
 
 func (u *user) CheckPresence(filter bson.M) (bool, error) {
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
 
 	return count > 0, err
 }
 
 func (u *user) DeleteOne(filter bson.M) (int64, error) {
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 
 	res, err := collection.DeleteOne(context.TODO(), filter)
 	if err != nil {
@@ -73,7 +73,7 @@ func (u *user) DeleteOne(filter bson.M) (int64, error) {
 }
 
 func (u *user) DeleteMany(filter bson.M) (int64, error) {
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 
 	res, err := collection.DeleteMany(context.TODO(), filter)
 	if err != nil {
@@ -86,7 +86,7 @@ func (u *user) DeleteMany(filter bson.M) (int64, error) {
 func (u *user) FindOne(filter bson.M) (models.User, error) {
 	var user models.User
 
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 
 	queryResult := collection.FindOne(context.TODO(), filter)
 	if queryResult.Err() != nil {
@@ -102,7 +102,7 @@ func (u *user) FindOne(filter bson.M) (models.User, error) {
 }
 
 func (u *user) FindOneAndUpdate(filter, update bson.M) error {
-	collection := u.db.Collection(collectionUsers)
+	collection := u.db.Collection(CollectionUsers)
 
 	res := collection.FindOneAndUpdate(context.TODO(), filter, update)
 	if res.Err() != nil {
