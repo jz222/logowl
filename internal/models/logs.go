@@ -37,8 +37,8 @@ type Error struct {
 	Adapter     Adapter             `json:"adapter" bson:"adapter"`
 	Fingerprint string              `json:"fingerprint" bson:"fingerprint"`
 	Badges      map[string]string   `json:"badges,omitempty" bson:"badges,omitempty"`
-	Snippet     map[string]string   `json:"snippet" bson:"snippet"`
-	Logs        []Logs              `json:"logs" bson:"logs"`
+	Snippet     map[string]string   `json:"snippet,omitempty" bson:"snippet,omitempty"`
+	Logs        []Logs              `json:"logs,omitempty" bson:"logs,omitempty"`
 	Ticket      string              `json:"ticket" bson:"ticket"`
 	Host        string              `json:"host" bson:"host"`
 	UserAgent   string              `json:"userAgent" bson:"userAgent"`
