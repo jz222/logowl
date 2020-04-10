@@ -6,10 +6,11 @@ import (
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
 type InterfaceEvent interface {
-	GetError(bson.M) (models.Error, error)
+	GetError(bson.M, primitive.ObjectID) (models.Error, error)
 	GetErrors(string, int64) ([]models.Error, error)
 	DeleteError(bson.M) (int64, error)
 	UpdateError(bson.M, bson.M) error
@@ -23,8 +24,8 @@ func (e *event) DeleteError(filter bson.M) (int64, error) {
 	return e.store.Error().DeleteOne(filter)
 }
 
-func (e *event) GetError(filter bson.M) (models.Error, error) {
-	return e.store.Error().FindOne(filter)
+func (e *event) GetError(filter bson.M, viewer primitive.ObjectID) (models.Error, error) {
+	return e.store.Error().FindOneAndUpdate(filter, bson.M{"$addToSet": bson.M{"seenBy": viewer}}, true)
 }
 
 func (e *event) GetErrors(ticket string, page int64) ([]models.Error, error) {
@@ -34,7 +35,7 @@ func (e *event) GetErrors(ticket string, page int64) ([]models.Error, error) {
 func (e *event) UpdateError(filter, update bson.M) error {
 	update["updatedAt"] = time.Now()
 
-	err := e.store.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
+	_, err := e.store.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
 	if err != nil {
 		return err
 	}

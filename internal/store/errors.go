@@ -13,7 +13,7 @@ type interfaceErrorEvent interface {
 	DeleteOne(bson.M) (int64, error)
 	DeleteMany(bson.M) (int64, error)
 	FindOne(bson.M) (models.Error, error)
-	FindOneAndUpdate(bson.M, bson.M, bool) error
+	FindOneAndUpdate(bson.M, bson.M, bool) (models.Error, error)
 	FindPaged(bson.M, int64) ([]models.Error, error)
 	InsertOne(models.Error) error
 }
@@ -94,20 +94,27 @@ func (e *errorEvent) FindPaged(filter bson.M, page int64) ([]models.Error, error
 	return errorEvents, nil
 }
 
-func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) error {
+func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) (models.Error, error) {
 	collection := e.db.Collection(CollectionErrors)
 
 	res := collection.FindOneAndUpdate(
 		context.TODO(),
 		filter,
 		update,
-		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
+		options.MergeFindOneAndUpdateOptions().SetUpsert(upsert),
 	)
 	if res.Err() != nil {
-		return res.Err()
+		return models.Error{}, res.Err()
 	}
 
-	return nil
+	var errorEvent models.Error
+
+	err := res.Decode(&errorEvent)
+	if err != nil {
+		return models.Error{}, err
+	}
+
+	return errorEvent, nil
 }
 
 func (e *errorEvent) InsertOne(errorEvent models.Error) error {

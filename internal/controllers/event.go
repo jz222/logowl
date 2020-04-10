@@ -47,7 +47,7 @@ func (e *eventControllers) GetError(c *gin.Context) {
 		return
 	}
 
-	errorEvent, err := e.EventService.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket})
+	errorEvent, err := e.EventService.GetError(bson.M{"_id": parsedErrorID, "ticket": persistedService.Ticket}, userData.(models.User).ID)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
