@@ -47,7 +47,7 @@ type Error struct {
 	Count       int                  `json:"count,omitempty" bson:"count,omitempty"`
 	Timestamp   int64                `json:"timestamp" bson:"timestamp"`
 	Resolved    bool                 `json:"resolved" bson:"resolved"`
-	SeenBy      []primitive.ObjectID `json:"seenBy" bson:"seenBy"`
+	SeenBy      []primitive.ObjectID `json:"seenBy,omitempty" bson:"seenBy,omitempty"`
 	LastSeen    int64                `json:"lastSeen" bson:"lastSeen"`
 	CreatedAt   time.Time            `json:"createdAt" bson:"createdAt"`
 	UpdatedAt   time.Time            `json:"updatedAt" bson:"updatedAt"`
