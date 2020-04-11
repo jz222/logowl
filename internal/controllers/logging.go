@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"log"
 	"net/http"
 	"time"
 
@@ -29,7 +28,6 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 
 	err := json.NewDecoder(c.Request.Body).Decode(&errorEvent)
 	if err != nil {
-		log.Println(err.Error())
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
@@ -41,6 +39,14 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 
 func GetLoggingController(store store.InterfaceStore) loggingControllers {
 	loggingService := services.GetLoggingService(store)
+
+	return loggingControllers{
+		LoggingService: &loggingService,
+	}
+}
+
+func GetLoggingControllerMock() loggingControllers {
+	loggingService := services.GetLoggingServiceMock()
 
 	return loggingControllers{
 		LoggingService: &loggingService,
