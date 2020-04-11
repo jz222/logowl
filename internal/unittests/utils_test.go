@@ -1,11 +1,13 @@
-package utils
+package unittests
 
 import (
 	"testing"
+
+	"github.com/jz222/loggy/internal/utils"
 )
 
 func TestFormatTimestamp(t *testing.T) {
-	convertedTimestamp, convertedTimestampString, err := FormatTimestamp(1585930192)
+	convertedTimestamp, convertedTimestampString, err := utils.FormatTimestamp(1585930192)
 	if err != nil {
 		t.Errorf(err.Error())
 	}
