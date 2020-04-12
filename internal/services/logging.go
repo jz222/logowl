@@ -7,6 +7,7 @@ import (
 	"log"
 	"time"
 
+	"github.com/jz222/loggy/internal/mocks"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
@@ -67,4 +68,8 @@ func (l *logging) SaveError(errorEvent models.Error) {
 
 func GetLoggingService(store store.InterfaceStore) logging {
 	return logging{store}
+}
+
+func GetLoggingServiceMock() mocks.LoggingService {
+	return mocks.LoggingService{}
 }

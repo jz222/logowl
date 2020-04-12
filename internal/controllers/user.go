@@ -131,3 +131,11 @@ func GetUserController(store store.InterfaceStore) userControllers {
 		UserService: &userService,
 	}
 }
+
+func GetUserControllerMock() userControllers {
+	userService := services.GetUserServiceMock()
+
+	return userControllers{
+		UserService: &userService,
+	}
+}

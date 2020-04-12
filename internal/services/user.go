@@ -4,6 +4,7 @@ import (
 	"errors"
 	"time"
 
+	"github.com/jz222/loggy/internal/mocks"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
@@ -173,4 +174,8 @@ func (u *user) Update(filter, update bson.M) error {
 
 func GetUserService(store store.InterfaceStore) user {
 	return user{store}
+}
+
+func GetUserServiceMock() mocks.UserService {
+	return mocks.UserService{}
 }
