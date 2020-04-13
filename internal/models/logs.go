@@ -32,6 +32,7 @@ type UserInteraction struct {
 	Element   string   `json:"element" bson:"element"`
 	OuterHTML string   `json:"outerHtml" bson:"outerHtml"`
 	ElementID string   `json:"elementId" bson:"elementId"`
+	Location  string   `json:"location" bson:"location"`
 	Path      []string `json:"path" bson:"path"`
 }
 
