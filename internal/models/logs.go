@@ -22,7 +22,9 @@ type Logs struct {
 
 // Metrics contains information about the system
 type Metrics struct {
-	Platform string `json:"platform" bson:"platform"`
+	Platform string `json:"platform,omitempty" bson:"platform,omitempty"`
+	Browser  string `json:"browser,omitempty" bson:"browser,omitempty"`
+	IsMobile string `json:"isMobile,omitempty" bson:"isMobile,omitempty"`
 }
 
 // Error contains all properties of an error event.

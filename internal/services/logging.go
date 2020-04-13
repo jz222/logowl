@@ -5,12 +5,14 @@ import (
 	"encoding/hex"
 	"fmt"
 	"log"
+	"strconv"
 	"time"
 
 	"github.com/jz222/loggy/internal/mocks"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
+	"github.com/mssola/user_agent"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -30,6 +32,18 @@ func (l *logging) SaveError(errorEvent models.Error) {
 	}
 	if !serviceExists || err != nil {
 		return
+	}
+
+	if errorEvent.Adapter.Type == "browser" {
+		ua := user_agent.New(errorEvent.UserAgent)
+
+		osInfo := ua.OS()
+		isMobile := ua.Mobile()
+		browser, version := ua.Browser()
+
+		errorEvent.Metrics.Platform = osInfo
+		errorEvent.Metrics.Browser = fmt.Sprintf("%s %s", browser, version)
+		errorEvent.Metrics.IsMobile = strconv.FormatBool(isMobile)
 	}
 
 	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
