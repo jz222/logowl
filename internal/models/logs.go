@@ -28,12 +28,11 @@ type Metrics struct {
 }
 
 type UserInteraction struct {
-	Timestamp int64    `json:"timestamp" bson:"timestamp"`
-	Element   string   `json:"element" bson:"element"`
-	OuterHTML string   `json:"outerHtml" bson:"outerHtml"`
-	ElementID string   `json:"elementId" bson:"elementId"`
-	Location  string   `json:"location" bson:"location"`
-	Path      []string `json:"path" bson:"path"`
+	Timestamp int64  `json:"timestamp" bson:"timestamp"`
+	Element   string `json:"element" bson:"element"`
+	OuterHTML string `json:"outerHtml" bson:"outerHtml"`
+	ElementID string `json:"elementId" bson:"elementId"`
+	Location  string `json:"location" bson:"location"`
 }
 
 // Error contains all properties of an error event.
