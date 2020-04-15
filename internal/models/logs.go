@@ -30,7 +30,7 @@ type Metrics struct {
 type UserInteraction struct {
 	Timestamp int64  `json:"timestamp" bson:"timestamp"`
 	Element   string `json:"element" bson:"element"`
-	OuterHTML string `json:"outerHtml" bson:"outerHtml"`
+	InnerText string `json:"innerText" bson:"innerText"`
 	ElementID string `json:"elementId" bson:"elementId"`
 	Location  string `json:"location" bson:"location"`
 }
