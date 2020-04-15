@@ -84,7 +84,7 @@ jz222/loggy:0.1.0
 
 ## Development Setup
 
-Clone the repository and install dependencies with `go get`. After adding an `.env` file that corresponds to the `.example.env` file, you can start the server with `go run main.go`.
+Clone the repository and install dependencies with `go get`. After adding an `.env` file that corresponds to the `.example.env` file, you can start the server with `go run cmd/loggy/main.go`.
 
 ## Build
 
@@ -99,7 +99,7 @@ Use the NodeJS adapter to register errors or build your own. To register an erro
 	"ticket": "2ATNP1AD70",
 	"message": "test is not a function",
 	"path": "/User/example/server/src/server/server.js",
-	"line": 15,
+	"line": "15",
 	"stacktrace": "the error stack trace",
 	"badges": {
 		"cluster": "test"
