@@ -50,7 +50,7 @@ type Error struct {
 	Snippet          map[string]string    `json:"snippet,omitempty" bson:"snippet,omitempty"`
 	Logs             []Logs               `json:"logs,omitempty" bson:"logs,omitempty"`
 	Ticket           string               `json:"ticket" bson:"ticket"`
-	Host             string               `json:"host" bson:"host"`
+	Host             string               `json:"host,omitempty" bson:"host,omitempty"`
 	UserAgent        string               `json:"userAgent" bson:"userAgent"`
 	Metrics          Metrics              `json:"metrics" bson:"metrics"`
 	UserInteractions []UserInteraction    `json:"userInteractions,omitempty" bson:"userInteractions,omitempty"`

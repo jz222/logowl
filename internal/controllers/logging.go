@@ -19,7 +19,6 @@ type loggingControllers struct {
 func (l *loggingControllers) RegisterError(c *gin.Context) {
 	errorEvent := models.Error{
 		Badges:    map[string]string{},
-		Host:      c.Request.Host,
 		ClientIP:  c.ClientIP(),
 		UserAgent: c.Request.UserAgent(),
 		Count:     1,
