@@ -63,3 +63,31 @@ type Error struct {
 	CreatedAt        time.Time            `json:"createdAt" bson:"createdAt"`
 	UpdatedAt        time.Time            `json:"updatedAt" bson:"updatedAt"`
 }
+
+func (e *Error) IsValid() bool {
+	if len(e.Logs) > 50 {
+		return false
+	}
+
+	if len(e.UserInteractions) > 50 {
+		return false
+	}
+
+	if len(e.SeenBy) > 0 {
+		return false
+	}
+
+	if len(e.Badges) > 200 {
+		return false
+	}
+
+	if len(e.Snippet) > 50 {
+		return false
+	}
+
+	if len(e.Evolution) > 0 {
+		return false
+	}
+
+	return true
+}

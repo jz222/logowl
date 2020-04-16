@@ -31,6 +31,11 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 		return
 	}
 
+	if !errorEvent.IsValid() {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided data is too large")
+		return
+	}
+
 	go l.LoggingService.SaveError(errorEvent)
 
 	utils.RespondWithSuccess(c)
