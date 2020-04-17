@@ -16,6 +16,7 @@ type InterfaceService interface {
 	Delete(bson.M) (int64, error)
 	Find(bson.M) ([]models.Service, error)
 	FindOne(bson.M) (models.Service, error)
+	FindOneAndUpdate(bson.M, bson.M) (models.Service, error)
 }
 
 type service struct {
@@ -70,6 +71,12 @@ func (s *service) Find(filter bson.M) ([]models.Service, error) {
 
 func (s *service) FindOne(filter bson.M) (models.Service, error) {
 	return s.store.Service().FindOne(filter)
+}
+
+func (s *service) FindOneAndUpdate(filter, update bson.M) (models.Service, error) {
+	update["updatedAt"] = time.Now()
+
+	return s.store.Service().FindOneAndUpdate(filter, bson.M{"$set": update})
 }
 
 func GetServiceService(store store.InterfaceStore) service {
