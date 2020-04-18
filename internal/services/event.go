@@ -16,23 +16,23 @@ type InterfaceEvent interface {
 	UpdateError(bson.M, bson.M) error
 }
 
-type event struct {
+type Event struct {
 	Store store.InterfaceStore
 }
 
-func (e *event) DeleteError(filter bson.M) (int64, error) {
+func (e *Event) DeleteError(filter bson.M) (int64, error) {
 	return e.Store.Error().DeleteOne(filter)
 }
 
-func (e *event) GetError(filter bson.M, viewer primitive.ObjectID) (models.Error, error) {
+func (e *Event) GetError(filter bson.M, viewer primitive.ObjectID) (models.Error, error) {
 	return e.Store.Error().FindOneAndUpdate(filter, bson.M{"$addToSet": bson.M{"seenBy": viewer}}, true)
 }
 
-func (e *event) GetErrors(ticket string, page int64) ([]models.Error, error) {
+func (e *Event) GetErrors(ticket string, page int64) ([]models.Error, error) {
 	return e.Store.Error().FindPaged(bson.M{"ticket": ticket}, page)
 }
 
-func (e *event) UpdateError(filter, update bson.M) error {
+func (e *Event) UpdateError(filter, update bson.M) error {
 	update["updatedAt"] = time.Now()
 
 	_, err := e.Store.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
@@ -43,6 +43,6 @@ func (e *event) UpdateError(filter, update bson.M) error {
 	return nil
 }
 
-func GetEventService(store store.InterfaceStore) event {
-	return event{store}
+func GetEventService(store store.InterfaceStore) Event {
+	return Event{store}
 }

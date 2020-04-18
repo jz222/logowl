@@ -19,11 +19,11 @@ type InterfaceLogging interface {
 	SaveError(models.Error)
 }
 
-type logging struct {
+type Logging struct {
 	Store store.InterfaceStore
 }
 
-func (l *logging) SaveError(errorEvent models.Error) {
+func (l *Logging) SaveError(errorEvent models.Error) {
 
 	serviceExists, err := l.Store.Service().CheckPresence(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
@@ -79,6 +79,6 @@ func (l *logging) SaveError(errorEvent models.Error) {
 	)
 }
 
-func GetLoggingService(store store.InterfaceStore) logging {
-	return logging{store}
+func GetLoggingService(store store.InterfaceStore) Logging {
+	return Logging{store}
 }

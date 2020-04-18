@@ -18,15 +18,15 @@ type InterfaceOrganization interface {
 	FindOne(bson.M) (models.Organization, error)
 }
 
-type organization struct {
+type Organization struct {
 	Store store.InterfaceStore
 }
 
-func (o *organization) CheckPresence(filter bson.M) (bool, error) {
+func (o *Organization) CheckPresence(filter bson.M) (bool, error) {
 	return o.Store.Organization().CheckPresence(filter)
 }
 
-func (o *organization) Create(organization models.Organization) (primitive.ObjectID, error) {
+func (o *Organization) Create(organization models.Organization) (primitive.ObjectID, error) {
 	timestamp := time.Now()
 	organization.CreatedAt = timestamp
 	organization.UpdatedAt = timestamp
@@ -41,7 +41,7 @@ func (o *organization) Create(organization models.Organization) (primitive.Objec
 	return o.Store.Organization().InsertOne(organization)
 }
 
-func (o *organization) Delete(organizationID primitive.ObjectID) error {
+func (o *Organization) Delete(organizationID primitive.ObjectID) error {
 	allServices, err := o.Store.Service().Find(bson.M{"organizationId": organizationID})
 	if err != nil {
 		return err
@@ -100,10 +100,10 @@ func (o *organization) Delete(organizationID primitive.ObjectID) error {
 	return failed
 }
 
-func (o *organization) FindOne(filter bson.M) (models.Organization, error) {
+func (o *Organization) FindOne(filter bson.M) (models.Organization, error) {
 	return o.Store.Organization().FindOne(filter)
 }
 
-func GetOrganizationService(store store.InterfaceStore) organization {
-	return organization{store}
+func GetOrganizationService(store store.InterfaceStore) Organization {
+	return Organization{store}
 }

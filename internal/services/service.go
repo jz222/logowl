@@ -19,15 +19,15 @@ type InterfaceService interface {
 	FindOneAndUpdate(bson.M, bson.M) (models.Service, error)
 }
 
-type service struct {
+type Service struct {
 	Store store.InterfaceStore
 }
 
-func (s *service) CheckPresence(filter bson.M) (bool, error) {
+func (s *Service) CheckPresence(filter bson.M) (bool, error) {
 	return s.Store.Service().CheckPresence(filter)
 }
 
-func (s *service) Create(service models.Service) (models.Service, error) {
+func (s *Service) Create(service models.Service) (models.Service, error) {
 	timestamp := time.Now()
 	service.CreatedAt = timestamp
 	service.UpdatedAt = timestamp
@@ -61,24 +61,24 @@ func (s *service) Create(service models.Service) (models.Service, error) {
 	return service, nil
 }
 
-func (s *service) Delete(filter bson.M) (int64, error) {
+func (s *Service) Delete(filter bson.M) (int64, error) {
 	return s.Store.Service().DeleteOne(filter)
 }
 
-func (s *service) Find(filter bson.M) ([]models.Service, error) {
+func (s *Service) Find(filter bson.M) ([]models.Service, error) {
 	return s.Store.Service().Find(filter)
 }
 
-func (s *service) FindOne(filter bson.M) (models.Service, error) {
+func (s *Service) FindOne(filter bson.M) (models.Service, error) {
 	return s.Store.Service().FindOne(filter)
 }
 
-func (s *service) FindOneAndUpdate(filter, update bson.M) (models.Service, error) {
+func (s *Service) FindOneAndUpdate(filter, update bson.M) (models.Service, error) {
 	update["updatedAt"] = time.Now()
 
 	return s.Store.Service().FindOneAndUpdate(filter, bson.M{"$set": update})
 }
 
-func GetServiceService(store store.InterfaceStore) service {
-	return service{store}
+func GetServiceService(store store.InterfaceStore) Service {
+	return Service{store}
 }
