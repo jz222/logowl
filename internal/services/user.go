@@ -4,7 +4,6 @@ import (
 	"errors"
 	"time"
 
-	"github.com/jz222/loggy/internal/mocks"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
@@ -24,7 +23,7 @@ type InterfaceUser interface {
 }
 
 type user struct {
-	store store.InterfaceStore
+	Store store.InterfaceStore
 }
 
 func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
@@ -64,7 +63,7 @@ func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 		},
 	}
 
-	user, err := u.store.User().Aggregate(pipeline)
+	user, err := u.Store.User().Aggregate(pipeline)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -73,7 +72,7 @@ func (u *user) FetchAllInformation(filter bson.M) (models.User, error) {
 }
 
 func (u *user) CheckPresence(filter bson.M) (bool, error) {
-	return u.store.User().CheckPresence(filter)
+	return u.Store.User().CheckPresence(filter)
 }
 
 func (u *user) Create(user models.User) (primitive.ObjectID, error) {
@@ -93,7 +92,7 @@ func (u *user) Create(user models.User) (primitive.ObjectID, error) {
 	user.Password = string(hash)
 	user.IsVerified = true
 
-	result, err := u.store.User().InsertOne(user)
+	result, err := u.Store.User().InsertOne(user)
 	if err != nil {
 		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
 	}
@@ -102,11 +101,11 @@ func (u *user) Create(user models.User) (primitive.ObjectID, error) {
 }
 
 func (u *user) Delete(filter bson.M) (int64, error) {
-	return u.store.User().DeleteOne(filter)
+	return u.Store.User().DeleteOne(filter)
 }
 
 func (u *user) FindOne(filter bson.M) (models.User, error) {
-	return u.store.User().FindOne(filter)
+	return u.Store.User().FindOne(filter)
 }
 
 func (u *user) Invite(userData models.User) (models.User, error) {
@@ -140,7 +139,7 @@ func (u *user) Invite(userData models.User) (models.User, error) {
 	userData.InviteCode = inviteCode
 	userData.IsVerified = false
 
-	result, err := u.store.User().InsertOne(userData)
+	result, err := u.Store.User().InsertOne(userData)
 	if err != nil {
 		return models.User{}, err
 	}
@@ -164,7 +163,7 @@ func (u *user) Update(filter, update bson.M) error {
 
 	update["updatedAt"] = time.Now()
 
-	err := u.store.User().FindOneAndUpdate(filter, bson.M{"$set": update})
+	err := u.Store.User().FindOneAndUpdate(filter, bson.M{"$set": update})
 	if err != nil {
 		return err
 	}
@@ -174,8 +173,4 @@ func (u *user) Update(filter, update bson.M) error {
 
 func GetUserService(store store.InterfaceStore) user {
 	return user{store}
-}
-
-func GetUserServiceMock() mocks.UserService {
-	return mocks.UserService{}
 }

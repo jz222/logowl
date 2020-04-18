@@ -17,25 +17,25 @@ type InterfaceEvent interface {
 }
 
 type event struct {
-	store store.InterfaceStore
+	Store store.InterfaceStore
 }
 
 func (e *event) DeleteError(filter bson.M) (int64, error) {
-	return e.store.Error().DeleteOne(filter)
+	return e.Store.Error().DeleteOne(filter)
 }
 
 func (e *event) GetError(filter bson.M, viewer primitive.ObjectID) (models.Error, error) {
-	return e.store.Error().FindOneAndUpdate(filter, bson.M{"$addToSet": bson.M{"seenBy": viewer}}, true)
+	return e.Store.Error().FindOneAndUpdate(filter, bson.M{"$addToSet": bson.M{"seenBy": viewer}}, true)
 }
 
 func (e *event) GetErrors(ticket string, page int64) ([]models.Error, error) {
-	return e.store.Error().FindPaged(bson.M{"ticket": ticket}, page)
+	return e.Store.Error().FindPaged(bson.M{"ticket": ticket}, page)
 }
 
 func (e *event) UpdateError(filter, update bson.M) error {
 	update["updatedAt"] = time.Now()
 
-	_, err := e.store.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
+	_, err := e.Store.Error().FindOneAndUpdate(filter, bson.M{"$set": update}, false)
 	if err != nil {
 		return err
 	}

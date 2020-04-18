@@ -13,11 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type serviceController struct {
+type ServiceController struct {
 	ServiceService services.InterfaceService
 }
 
-func (s *serviceController) Create(c *gin.Context) {
+func (s *ServiceController) Create(c *gin.Context) {
 	var newService models.Service
 
 	err := json.NewDecoder(c.Request.Body).Decode(&newService)
@@ -43,7 +43,7 @@ func (s *serviceController) Create(c *gin.Context) {
 	utils.RespondWithJSON(c, createdService)
 }
 
-func (s *serviceController) Delete(c *gin.Context) {
+func (s *ServiceController) Delete(c *gin.Context) {
 	id := c.Param("id")
 
 	serviceID, err := primitive.ObjectIDFromHex(id)
@@ -74,7 +74,7 @@ func (s *serviceController) Delete(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func (s *serviceController) Edit(c *gin.Context) {
+func (s *ServiceController) Edit(c *gin.Context) {
 	id := c.Param("id")
 
 	var serviceUpdate map[string]interface{}
@@ -114,10 +114,10 @@ func (s *serviceController) Edit(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetServiceController(store store.InterfaceStore) serviceController {
+func GetServiceController(store store.InterfaceStore) ServiceController {
 	serviceService := services.GetServiceService(store)
 
-	return serviceController{
+	return ServiceController{
 		ServiceService: &serviceService,
 	}
 }

@@ -10,11 +10,11 @@ import (
 	"github.com/jz222/loggy/internal/utils"
 )
 
-type organizationControllers struct {
+type OrganizationControllers struct {
 	OrganizationService services.InterfaceOrganization
 }
 
-func (o *organizationControllers) Delete(c *gin.Context) {
+func (o *OrganizationControllers) Delete(c *gin.Context) {
 	userData, ok := c.Get("user")
 	if !ok {
 		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
@@ -37,10 +37,10 @@ func (o *organizationControllers) Delete(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetOrganizationController(store store.InterfaceStore) organizationControllers {
+func GetOrganizationController(store store.InterfaceStore) OrganizationControllers {
 	organizationService := services.GetOrganizationService(store)
 
-	return organizationControllers{
+	return OrganizationControllers{
 		OrganizationService: &organizationService,
 	}
 }

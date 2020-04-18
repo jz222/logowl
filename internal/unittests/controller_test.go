@@ -14,7 +14,9 @@ import (
 func TestRegisterError(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	loggingControllers := controllers.GetLoggingControllerMock()
+	loggingControllers := controllers.LoggingControllers{
+		LoggingService: &mocks.LoggingService{},
+	}
 
 	w := httptest.NewRecorder()
 	c, r := gin.CreateTestContext(w)
@@ -33,7 +35,9 @@ func TestRegisterError(t *testing.T) {
 func TestGetUserInformation(t *testing.T) {
 	gin.SetMode(gin.TestMode)
 
-	userControllers := controllers.GetUserControllerMock()
+	userControllers := controllers.UserControllers{
+		UserService: &mocks.UserService{},
+	}
 
 	w := httptest.NewRecorder()
 	c, r := gin.CreateTestContext(w)

@@ -14,12 +14,12 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type eventControllers struct {
+type EventControllers struct {
 	EventService   services.InterfaceEvent
 	ServiceService services.InterfaceService
 }
 
-func (e *eventControllers) GetError(c *gin.Context) {
+func (e *EventControllers) GetError(c *gin.Context) {
 	errorID := c.Param("id")
 	serviceID := c.Param("service")
 
@@ -56,7 +56,7 @@ func (e *eventControllers) GetError(c *gin.Context) {
 	utils.RespondWithJSON(c, errorEvent)
 }
 
-func (e *eventControllers) GetErrors(c *gin.Context) {
+func (e *EventControllers) GetErrors(c *gin.Context) {
 	serviceID := c.Param("service")
 	pointer := c.Param("pointer")
 
@@ -94,7 +94,7 @@ func (e *eventControllers) GetErrors(c *gin.Context) {
 	utils.RespondWithJSON(c, persistedErrors)
 }
 
-func (e *eventControllers) DeleteError(c *gin.Context) {
+func (e *EventControllers) DeleteError(c *gin.Context) {
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
 
@@ -136,7 +136,7 @@ func (e *eventControllers) DeleteError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func (e *eventControllers) UpdateError(c *gin.Context) {
+func (e *EventControllers) UpdateError(c *gin.Context) {
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
 
@@ -181,11 +181,11 @@ func (e *eventControllers) UpdateError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetEventController(db store.InterfaceStore) eventControllers {
+func GetEventController(db store.InterfaceStore) EventControllers {
 	eventService := services.GetEventService(db)
 	serviceService := services.GetServiceService(db)
 
-	return eventControllers{
+	return EventControllers{
 		EventService:   &eventService,
 		ServiceService: &serviceService,
 	}

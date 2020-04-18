@@ -12,11 +12,11 @@ import (
 	"github.com/jz222/loggy/internal/utils"
 )
 
-type loggingControllers struct {
+type LoggingControllers struct {
 	LoggingService services.InterfaceLogging
 }
 
-func (l *loggingControllers) RegisterError(c *gin.Context) {
+func (l *LoggingControllers) RegisterError(c *gin.Context) {
 	errorEvent := models.Error{
 		Badges:    map[string]string{},
 		ClientIP:  c.ClientIP(),
@@ -41,18 +41,10 @@ func (l *loggingControllers) RegisterError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetLoggingController(store store.InterfaceStore) loggingControllers {
+func GetLoggingController(store store.InterfaceStore) LoggingControllers {
 	loggingService := services.GetLoggingService(store)
 
-	return loggingControllers{
-		LoggingService: &loggingService,
-	}
-}
-
-func GetLoggingControllerMock() loggingControllers {
-	loggingService := services.GetLoggingServiceMock()
-
-	return loggingControllers{
+	return LoggingControllers{
 		LoggingService: &loggingService,
 	}
 }
