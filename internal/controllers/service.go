@@ -13,11 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type serviceController struct {
+type ServiceController struct {
 	ServiceService services.InterfaceService
 }
 
-func (s *serviceController) Create(c *gin.Context) {
+func (s *ServiceController) Create(c *gin.Context) {
 	var newService models.Service
 
 	err := json.NewDecoder(c.Request.Body).Decode(&newService)
@@ -43,7 +43,7 @@ func (s *serviceController) Create(c *gin.Context) {
 	utils.RespondWithJSON(c, createdService)
 }
 
-func (s *serviceController) Delete(c *gin.Context) {
+func (s *ServiceController) Delete(c *gin.Context) {
 	id := c.Param("id")
 
 	serviceID, err := primitive.ObjectIDFromHex(id)
@@ -74,10 +74,50 @@ func (s *serviceController) Delete(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetServiceController(store store.InterfaceStore) serviceController {
+func (s *ServiceController) Edit(c *gin.Context) {
+	id := c.Param("id")
+
+	var serviceUpdate map[string]interface{}
+
+	err := json.NewDecoder(c.Request.Body).Decode(&serviceUpdate)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	serviceId, err := primitive.ObjectIDFromHex(id)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	userData, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
+		return
+	}
+
+	filter := bson.M{"_id": serviceId, "organizationId": userData.(models.User).OrganizationID}
+	update := bson.M{}
+
+	slackWebHookURL, ok := serviceUpdate["slackWebhookURL"].(string)
+	if ok {
+		update["slackWebhookURL"] = slackWebHookURL
+	}
+
+	_, err = s.ServiceService.FindOneAndUpdate(filter, update)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
+func GetServiceController(store store.InterfaceStore) ServiceController {
 	serviceService := services.GetServiceService(store)
 
-	return serviceController{
+	return ServiceController{
 		ServiceService: &serviceService,
 	}
 }

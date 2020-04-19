@@ -5,6 +5,7 @@ import (
 
 	"github.com/jz222/loggy/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
+	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
 )
@@ -15,7 +16,7 @@ type interfaceErrorEvent interface {
 	FindOne(bson.M) (models.Error, error)
 	FindOneAndUpdate(bson.M, bson.M, bool) (models.Error, error)
 	FindPaged(bson.M, int64) ([]models.Error, error)
-	InsertOne(models.Error) error
+	InsertOne(models.Error) (primitive.ObjectID, error)
 }
 
 type errorEvent struct {
@@ -102,6 +103,7 @@ func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) (model
 		filter,
 		update,
 		options.MergeFindOneAndUpdateOptions().SetUpsert(upsert),
+		options.MergeFindOneAndUpdateOptions().SetReturnDocument(options.After),
 	)
 	if res.Err() != nil {
 		return models.Error{}, res.Err()
@@ -117,12 +119,12 @@ func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) (model
 	return errorEvent, nil
 }
 
-func (e *errorEvent) InsertOne(errorEvent models.Error) error {
+func (e *errorEvent) InsertOne(errorEvent models.Error) (primitive.ObjectID, error) {
 	collection := e.db.Collection(CollectionErrors)
-	_, err := collection.InsertOne(context.TODO(), errorEvent)
+	res, err := collection.InsertOne(context.TODO(), errorEvent)
 	if err != nil {
-		return err
+		return primitive.NilObjectID, err
 	}
 
-	return nil
+	return res.InsertedID.(primitive.ObjectID), nil
 }

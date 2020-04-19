@@ -16,17 +16,18 @@ type InterfaceService interface {
 	Delete(bson.M) (int64, error)
 	Find(bson.M) ([]models.Service, error)
 	FindOne(bson.M) (models.Service, error)
+	FindOneAndUpdate(bson.M, bson.M) (models.Service, error)
 }
 
-type service struct {
-	store store.InterfaceStore
+type Service struct {
+	Store store.InterfaceStore
 }
 
-func (s *service) CheckPresence(filter bson.M) (bool, error) {
-	return s.store.Service().CheckPresence(filter)
+func (s *Service) CheckPresence(filter bson.M) (bool, error) {
+	return s.Store.Service().CheckPresence(filter)
 }
 
-func (s *service) Create(service models.Service) (models.Service, error) {
+func (s *Service) Create(service models.Service) (models.Service, error) {
 	timestamp := time.Now()
 	service.CreatedAt = timestamp
 	service.UpdatedAt = timestamp
@@ -35,7 +36,7 @@ func (s *service) Create(service models.Service) (models.Service, error) {
 		return models.Service{}, errors.New("the provided service data is invalid")
 	}
 
-	organizationExists, err := s.store.Organization().CheckPresence(bson.M{"_id": service.OrganizationID})
+	organizationExists, err := s.Store.Organization().CheckPresence(bson.M{"_id": service.OrganizationID})
 	if err != nil {
 		return models.Service{}, err
 	}
@@ -50,7 +51,7 @@ func (s *service) Create(service models.Service) (models.Service, error) {
 
 	service.Ticket = ticket
 
-	result, err := s.store.Service().InsertOne(service)
+	result, err := s.Store.Service().InsertOne(service)
 	if err != nil {
 		return models.Service{}, errors.New("an error occured while saving service to database")
 	}
@@ -60,18 +61,24 @@ func (s *service) Create(service models.Service) (models.Service, error) {
 	return service, nil
 }
 
-func (s *service) Delete(filter bson.M) (int64, error) {
-	return s.store.Service().DeleteOne(filter)
+func (s *Service) Delete(filter bson.M) (int64, error) {
+	return s.Store.Service().DeleteOne(filter)
 }
 
-func (s *service) Find(filter bson.M) ([]models.Service, error) {
-	return s.store.Service().Find(filter)
+func (s *Service) Find(filter bson.M) ([]models.Service, error) {
+	return s.Store.Service().Find(filter)
 }
 
-func (s *service) FindOne(filter bson.M) (models.Service, error) {
-	return s.store.Service().FindOne(filter)
+func (s *Service) FindOne(filter bson.M) (models.Service, error) {
+	return s.Store.Service().FindOne(filter)
 }
 
-func GetServiceService(store store.InterfaceStore) service {
-	return service{store}
+func (s *Service) FindOneAndUpdate(filter, update bson.M) (models.Service, error) {
+	update["updatedAt"] = time.Now()
+
+	return s.Store.Service().FindOneAndUpdate(filter, bson.M{"$set": update})
+}
+
+func GetServiceService(store store.InterfaceStore) Service {
+	return Service{store}
 }

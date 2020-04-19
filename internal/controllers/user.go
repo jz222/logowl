@@ -13,11 +13,11 @@ import (
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
 
-type userControllers struct {
+type UserControllers struct {
 	UserService services.InterfaceUser
 }
 
-func (u *userControllers) Get(c *gin.Context) {
+func (u *UserControllers) Get(c *gin.Context) {
 	userData, ok := c.Get("user")
 	if !ok {
 		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
@@ -33,7 +33,7 @@ func (u *userControllers) Get(c *gin.Context) {
 	utils.RespondWithJSON(c, userDetails)
 }
 
-func (u *userControllers) Invite(c *gin.Context) {
+func (u *UserControllers) Invite(c *gin.Context) {
 	userData, ok := c.Get("user")
 	if !ok {
 		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
@@ -64,7 +64,7 @@ func (u *userControllers) Invite(c *gin.Context) {
 	utils.RespondWithJSON(c, persistedUser)
 }
 
-func (u *userControllers) Delete(c *gin.Context) {
+func (u *UserControllers) Delete(c *gin.Context) {
 	userData, ok := c.Get("user")
 	if !ok {
 		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
@@ -98,7 +98,7 @@ func (u *userControllers) Delete(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func (u *userControllers) DeleteUserAccount(c *gin.Context) {
+func (u *UserControllers) DeleteUserAccount(c *gin.Context) {
 	userData, ok := c.Get("user")
 	if !ok {
 		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user data")
@@ -124,18 +124,10 @@ func (u *userControllers) DeleteUserAccount(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
-func GetUserController(store store.InterfaceStore) userControllers {
+func GetUserController(store store.InterfaceStore) UserControllers {
 	userService := services.GetUserService(store)
 
-	return userControllers{
-		UserService: &userService,
-	}
-}
-
-func GetUserControllerMock() userControllers {
-	userService := services.GetUserServiceMock()
-
-	return userControllers{
+	return UserControllers{
 		UserService: &userService,
 	}
 }

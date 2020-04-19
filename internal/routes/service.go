@@ -13,5 +13,6 @@ func serviceRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
 	controller := controllers.GetServiceController(store)
 
 	router.POST("/", controller.Create)
+	router.PUT("/:id", controller.Edit)
 	router.DELETE("/:id", controller.Delete)
 }

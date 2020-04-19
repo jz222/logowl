@@ -18,6 +18,7 @@ type interfaceService interface {
 	DeleteMany(bson.M) (int64, error)
 	Find(bson.M) ([]models.Service, error)
 	FindOne(bson.M) (models.Service, error)
+	FindOneAndUpdate(bson.M, bson.M) (models.Service, error)
 }
 
 type service struct {
@@ -99,6 +100,28 @@ func (s *service) FindOne(filter bson.M) (models.Service, error) {
 	}
 
 	err := queryResult.Decode(&service)
+	if err != nil {
+		return models.Service{}, err
+	}
+
+	return service, nil
+}
+
+func (s *service) FindOneAndUpdate(filter, update bson.M) (models.Service, error) {
+	collection := s.db.Collection(CollectionServices)
+
+	res := collection.FindOneAndUpdate(
+		context.TODO(),
+		filter,
+		update,
+	)
+	if res.Err() != nil {
+		return models.Service{}, nil
+	}
+
+	var service models.Service
+
+	err := res.Decode(&service)
 	if err != nil {
 		return models.Service{}, err
 	}

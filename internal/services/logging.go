@@ -8,7 +8,6 @@ import (
 	"strconv"
 	"time"
 
-	"github.com/jz222/loggy/internal/mocks"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
@@ -20,17 +19,14 @@ type InterfaceLogging interface {
 	SaveError(models.Error)
 }
 
-type logging struct {
-	store store.InterfaceStore
+type Logging struct {
+	Store   store.InterfaceStore
+	Request InterfaceRequest
 }
 
-func (l *logging) SaveError(errorEvent models.Error) {
-
-	serviceExists, err := l.store.Service().CheckPresence(bson.M{"ticket": errorEvent.Ticket})
+func (l *Logging) SaveError(errorEvent models.Error) {
+	service, err := l.Store.Service().FindOne(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
-		log.Println("Failed to verify service with error:", err.Error())
-	}
-	if !serviceExists || err != nil {
 		return
 	}
 
@@ -63,14 +59,18 @@ func (l *logging) SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = timestamp
 	errorEvent.UpdatedAt = timestamp
 
-	err = l.store.Error().InsertOne(errorEvent)
+	errorID, err := l.Store.Error().InsertOne(errorEvent)
+	if err == nil && service.SlackWebhookURL != "" {
+		errorEvent.ID = &errorID
+		l.Request.SendSlackAlert(service, errorEvent)
+	}
 	if err == nil {
 		return
 	}
 
 	key := fmt.Sprintf("%s.%s", "evolution", convertedTimestamp)
 
-	l.store.Error().FindOneAndUpdate(
+	updatedErrorEvent, err := l.Store.Error().FindOneAndUpdate(
 		bson.M{"fingerprint": errorEvent.Fingerprint},
 		bson.M{
 			"$inc": bson.M{"count": 1, key: 1},
@@ -78,12 +78,15 @@ func (l *logging) SaveError(errorEvent models.Error) {
 		},
 		true,
 	)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if service.SlackWebhookURL != "" {
+		l.Request.SendSlackAlert(service, updatedErrorEvent)
+	}
 }
 
-func GetLoggingService(store store.InterfaceStore) logging {
-	return logging{store}
-}
-
-func GetLoggingServiceMock() mocks.LoggingService {
-	return mocks.LoggingService{}
+func GetLoggingService(store store.InterfaceStore) Logging {
+	return Logging{store, &Request{}}
 }

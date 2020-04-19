@@ -30,7 +30,7 @@ type Metrics struct {
 type UserInteraction struct {
 	Timestamp int64  `json:"timestamp" bson:"timestamp"`
 	Element   string `json:"element" bson:"element"`
-	OuterHTML string `json:"outerHtml" bson:"outerHtml"`
+	InnerText string `json:"innerText" bson:"innerText"`
 	ElementID string `json:"elementId" bson:"elementId"`
 	Location  string `json:"location" bson:"location"`
 }
@@ -50,7 +50,7 @@ type Error struct {
 	Snippet          map[string]string    `json:"snippet,omitempty" bson:"snippet,omitempty"`
 	Logs             []Logs               `json:"logs,omitempty" bson:"logs,omitempty"`
 	Ticket           string               `json:"ticket" bson:"ticket"`
-	Host             string               `json:"host" bson:"host"`
+	Host             string               `json:"host,omitempty" bson:"host,omitempty"`
 	UserAgent        string               `json:"userAgent" bson:"userAgent"`
 	Metrics          Metrics              `json:"metrics" bson:"metrics"`
 	UserInteractions []UserInteraction    `json:"userInteractions,omitempty" bson:"userInteractions,omitempty"`
@@ -62,4 +62,32 @@ type Error struct {
 	LastSeen         int64                `json:"lastSeen" bson:"lastSeen"`
 	CreatedAt        time.Time            `json:"createdAt" bson:"createdAt"`
 	UpdatedAt        time.Time            `json:"updatedAt" bson:"updatedAt"`
+}
+
+func (e *Error) IsValid() bool {
+	if len(e.Logs) > 50 {
+		return false
+	}
+
+	if len(e.UserInteractions) > 50 {
+		return false
+	}
+
+	if len(e.SeenBy) > 0 {
+		return false
+	}
+
+	if len(e.Badges) > 200 {
+		return false
+	}
+
+	if len(e.Snippet) > 50 {
+		return false
+	}
+
+	if len(e.Evolution) > 0 {
+		return false
+	}
+
+	return true
 }
