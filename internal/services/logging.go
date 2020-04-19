@@ -20,16 +20,13 @@ type InterfaceLogging interface {
 }
 
 type Logging struct {
-	Store store.InterfaceStore
+	Store   store.InterfaceStore
+	Request InterfaceRequest
 }
 
 func (l *Logging) SaveError(errorEvent models.Error) {
-
-	serviceExists, err := l.Store.Service().CheckPresence(bson.M{"ticket": errorEvent.Ticket})
+	service, err := l.Store.Service().FindOne(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
-		log.Println("Failed to verify service with error:", err.Error())
-	}
-	if !serviceExists || err != nil {
 		return
 	}
 
@@ -63,13 +60,16 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	errorEvent.UpdatedAt = timestamp
 
 	err = l.Store.Error().InsertOne(errorEvent)
+	if err == nil && service.SlackWebhookURL != "" {
+		l.Request.SendSlackAlert(service.Name, service.SlackWebhookURL, errorEvent)
+	}
 	if err == nil {
 		return
 	}
 
 	key := fmt.Sprintf("%s.%s", "evolution", convertedTimestamp)
 
-	l.Store.Error().FindOneAndUpdate(
+	updatedErrorEvent, err := l.Store.Error().FindOneAndUpdate(
 		bson.M{"fingerprint": errorEvent.Fingerprint},
 		bson.M{
 			"$inc": bson.M{"count": 1, key: 1},
@@ -77,8 +77,15 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		},
 		true,
 	)
+	if err != nil {
+		log.Println(err.Error())
+	}
+
+	if service.SlackWebhookURL != "" {
+		l.Request.SendSlackAlert(service.Name, service.SlackWebhookURL, updatedErrorEvent)
+	}
 }
 
 func GetLoggingService(store store.InterfaceStore) Logging {
-	return Logging{store}
+	return Logging{store, &Request{}}
 }

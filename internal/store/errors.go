@@ -102,6 +102,7 @@ func (e *errorEvent) FindOneAndUpdate(filter, update bson.M, upsert bool) (model
 		filter,
 		update,
 		options.MergeFindOneAndUpdateOptions().SetUpsert(upsert),
+		options.MergeFindOneAndUpdateOptions().SetReturnDocument(options.After),
 	)
 	if res.Err() != nil {
 		return models.Error{}, res.Err()
