@@ -8,29 +8,31 @@ import (
 	"strconv"
 	"time"
 
+	"github.com/jz222/loggy/internal/keys"
 	"github.com/jz222/loggy/internal/models"
 )
 
 type InterfaceRequest interface {
-	SendSlackAlert(string, string, models.Error) error
+	SendSlackAlert(models.Service, models.Error) error
 }
 
 type Request struct{}
 
-func (r *Request) SendSlackAlert(serviceName, url string, errorEvent models.Error) error {
+func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error) error {
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"attachments": []map[string]interface{}{
 			{
 				"mrkdwn_in":   []string{"text"},
 				"color":       "#FF0055",
-				"pretext":     fmt.Sprintf("An error occurred in %s", serviceName),
+				"pretext":     fmt.Sprintf("An error occurred in %s", service.Name),
 				"author_name": errorEvent.Type,
 				"title":       errorEvent.Message,
+				"title_link":  fmt.Sprintf("%s/services/%s/error/%s", keys.GetKeys().FRONTEND_URL, service.ID.Hex(), errorEvent.ID.Hex()),
 				"text":        "Visit your LOGGY dashboard for more details",
 				"fields": []map[string]interface{}{
 					{
 						"title": "In Service",
-						"value": serviceName,
+						"value": service.Name,
 						"short": true,
 					},
 					{
@@ -63,7 +65,7 @@ func (r *Request) SendSlackAlert(serviceName, url string, errorEvent models.Erro
 		Timeout: timeout,
 	}
 
-	req, err := http.NewRequest("POST", url, bytes.NewBuffer(requestBody))
+	req, err := http.NewRequest("POST", service.SlackWebhookURL, bytes.NewBuffer(requestBody))
 	if err != nil {
 		return err
 	}

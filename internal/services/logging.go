@@ -59,9 +59,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = timestamp
 	errorEvent.UpdatedAt = timestamp
 
-	err = l.Store.Error().InsertOne(errorEvent)
+	errorID, err := l.Store.Error().InsertOne(errorEvent)
 	if err == nil && service.SlackWebhookURL != "" {
-		l.Request.SendSlackAlert(service.Name, service.SlackWebhookURL, errorEvent)
+		errorEvent.ID = &errorID
+		l.Request.SendSlackAlert(service, errorEvent)
 	}
 	if err == nil {
 		return
@@ -82,7 +83,7 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	}
 
 	if service.SlackWebhookURL != "" {
-		l.Request.SendSlackAlert(service.Name, service.SlackWebhookURL, updatedErrorEvent)
+		l.Request.SendSlackAlert(service, updatedErrorEvent)
 	}
 }
 

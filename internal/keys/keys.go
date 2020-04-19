@@ -23,6 +23,8 @@ func loadEnv(key string) string {
 		return value
 	}
 
+	log.Fatal("❌ Failed to load environment variable: ", key)
+
 	return ""
 }
 
@@ -31,6 +33,7 @@ var envVariables = models.Keys{
 	MONGO_DB_NAME: loadEnv("MONGO_DB_NAME"),
 	PORT:          loadEnv("PORT"),
 	SECRET:        loadEnv("SECRET"),
+	FRONTEND_URL:  loadEnv("FRONTEND_URL"),
 	IS_SELFHOSTED: loadEnv("IS_SELFHOSTED") == "true",
 }
 
