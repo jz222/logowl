@@ -27,7 +27,7 @@ func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error
 				"pretext":     fmt.Sprintf("An error occurred in %s", service.Name),
 				"author_name": errorEvent.Type,
 				"title":       errorEvent.Message,
-				"title_link":  fmt.Sprintf("%s/services/%s/error/%s", keys.GetKeys().FRONTEND_URL, service.ID.Hex(), errorEvent.ID.Hex()),
+				"title_link":  fmt.Sprintf("%s/services/%s/error/%s", keys.GetKeys().CLIENT_URL, service.ID.Hex(), errorEvent.ID.Hex()),
 				"text":        "Visit your LOGGY dashboard for more details",
 				"fields": []map[string]interface{}{
 					{

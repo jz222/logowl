@@ -33,7 +33,7 @@ var envVariables = models.Keys{
 	MONGO_DB_NAME: loadEnv("MONGO_DB_NAME"),
 	PORT:          loadEnv("PORT"),
 	SECRET:        loadEnv("SECRET"),
-	FRONTEND_URL:  loadEnv("FRONTEND_URL"),
+	CLIENT_URL:    loadEnv("CLIENT_URL"),
 	IS_SELFHOSTED: loadEnv("IS_SELFHOSTED") == "true",
 }
 

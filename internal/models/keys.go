@@ -6,6 +6,6 @@ type Keys struct {
 	MONGO_DB_NAME string
 	PORT          string
 	SECRET        string
-	FRONTEND_URL  string
+	CLIENT_URL    string
 	IS_SELFHOSTED bool
 }
