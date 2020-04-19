@@ -70,7 +70,7 @@ docker run \
 --env SECRET=secret \
 --env MONGO_URI=mongodb://admin:password0@ds263108.mlab.com:63108/loggy-test\?retryWrites=false \
 --env MONGO_DB_NAME=loggy-test \
---env CLIENT_URL=http://localhost:3000
+--env CLIENT_URL=http://localhost:3000 \
 --env IS_SELFHOSTED=true \
 -p 2800:2800 \
 -it \
