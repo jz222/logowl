@@ -15,9 +15,7 @@ var (
 )
 
 func loadEnv(key string) string {
-	if err := godotenv.Load(); err != nil {
-		log.Println("Could not load .env file. Proceeding to read environment variable")
-	}
+	godotenv.Load()
 
 	if value, ok := os.LookupEnv(key); ok {
 		return value
