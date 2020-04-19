@@ -2,7 +2,7 @@
 
 <div align="center">
   <p>
-    <h3>LOGGY</h2>
+    <h3>LOGGY</h3>
   </p>
   <p>
     <i>Monitor your services and track errors in production. 🚀📈</i>
@@ -16,6 +16,8 @@
 💻 [**LOGGY Client**](https://github.com/jz222/loggy-client)
 
 📡 [**LOGGY NodeJS Adapter**](https://github.com/jz222/loggy-adapter-nodejs)
+
+🌐 [**LOGGY Browser Adapter**](https://github.com/jz222/loggy-adapter-browser)
 
 <br />
 
