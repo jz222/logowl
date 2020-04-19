@@ -74,7 +74,7 @@ docker run \
 --env IS_SELFHOSTED=true \
 -p 2800:2800 \
 -it \
-jz222/loggy:0.1.0
+jz222/loggy:0.3.2
 ```
 
 | Environment Variable | Description                                                                                                                                                                              |
