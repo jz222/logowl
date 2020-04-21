@@ -29,6 +29,7 @@ func (s *Service) CheckPresence(filter bson.M) (bool, error) {
 
 func (s *Service) Create(service models.Service) (models.Service, error) {
 	timestamp := time.Now()
+
 	service.CreatedAt = timestamp
 	service.UpdatedAt = timestamp
 
