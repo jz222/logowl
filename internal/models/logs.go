@@ -15,9 +15,9 @@ type Adapter struct {
 
 // Logs contains all properties of a log.
 type Logs struct {
-	Timestamp int64  `json:"timestamp", bson:"timestamp"`
-	Type      string `json:"type", bson:"type"`
-	Log       string `json:"log", bson:"log"`
+	Timestamp int64  `json:"timestamp" bson:"timestamp"`
+	Type      string `json:"type" bson:"type"`
+	Log       string `json:"log" bson:"log"`
 }
 
 // Metrics contains information about the system
@@ -27,6 +27,7 @@ type Metrics struct {
 	IsMobile string `json:"isMobile,omitempty" bson:"isMobile,omitempty"`
 }
 
+// UserInteraction contains information about an element that was clicked by the user.
 type UserInteraction struct {
 	Timestamp int64  `json:"timestamp" bson:"timestamp"`
 	Element   string `json:"element" bson:"element"`
@@ -90,4 +91,42 @@ func (e *Error) IsValid() bool {
 	}
 
 	return true
+}
+
+type AnalyticData struct {
+	Windows         int            `json:"windows" bson:"wndws,omitempty"`
+	Mac             int            `json:"mc" bson:"mc,omitempty"`
+	Linux           int            `json:"linux" bson:"lnx,omitempty"`
+	OtherPlatforms  int            `json:"otherPlatforms" bson:"othrPltfrms,omitempty"`
+	Chrome          int            `json:"chrome" bson:"chrm,omitempty"`
+	Firefox         int            `json:"firefox" bson:"frfx,omitempty"`
+	Safari          int            `json:"safari" bson:"sfr,omitempty"`
+	Edge            int            `json:"edge" bson:"edg,omitempty"`
+	IE              int            `json:"ie" bson:"ie,omitempty"`
+	Opera           int            `json:"opera" bson:"opr,omitempty"`
+	OtherBrowsers   int            `json:"otherBrowsers" bson:"othrBrwsrs,omitempty"`
+	Mobile          int            `json:"mobile" bson:"mbl,omitempty"`
+	Tablet          int            `json:"tablet" bson:"tblt,omitempty"`
+	Browser         int            `json:"browser" bson:"brwsr,omitempty"`
+	Visitors        int            `json:"visitors" bson:"vstrs,omitempty"`
+	UniqueVisitors  int            `json:"uniqueVisitors" bson:"unqVstrs,omitempty"`
+	TotalTimeOnPage int            `json:"totalTimeOnPage" bson:"ttlTmOnPg,omitempty"`
+	Referrer        map[string]int `json:"referrer" bson:"rfrr,omitempty"`
+}
+
+type Analytics struct {
+	Ticket    string                  `json:"ticket" bson:"ticket"`
+	Data      map[string]AnalyticData `json:"data" bson:"data"`
+	CreatedAt time.Time               `json:"createdAt" bson:"createdAt"`
+	UpdatedAt time.Time               `json:"updatedAt" bson:"updatedAt"`
+}
+
+// AnalyticEvent contains information about a page visitor.
+type AnalyticEvent struct {
+	Ticket       string `json:"ticket" bson:"ticket"`
+	IsNewVisitor bool   `json:"isNewVisistor" bson:"isNewVisitor"`
+	TimeOnPage   int    `json:"timeOnPage" bson:"timeOnPage"`
+	Referrer     string `json:"referrer" bson:"referrer"`
+	EntryPage    string `json:"entryPage" bson:"entryPage"`
+	UserAgent    string `json:"userAgent" bson:"userAgent"`
 }

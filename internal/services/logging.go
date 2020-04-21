@@ -17,6 +17,7 @@ import (
 
 type InterfaceLogging interface {
 	SaveError(models.Error)
+	SaveAnalyticEvent(models.AnalyticEvent)
 }
 
 type Logging struct {
@@ -84,6 +85,69 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 
 	if service.SlackWebhookURL != "" {
 		l.Request.SendSlackAlert(service, updatedErrorEvent)
+	}
+}
+
+func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
+	_, err := l.Store.Service().CheckPresence(bson.M{"ticket": analyticEvent.Ticket})
+	if err != nil {
+		return
+	}
+
+	ua := user_agent.New(analyticEvent.UserAgent)
+
+	//osInfo := ua.OS()
+	isMobile := ua.Mobile()
+	browser, _ := ua.Browser()
+
+	timestamp := time.Now()
+
+	_, formattedTs, err := utils.FormatTimestampToHour(timestamp.Unix())
+	if err != nil {
+		return
+	}
+
+	analyticData := models.AnalyticData{
+		Visitors:        1,
+		UniqueVisitors:  1,
+		TotalTimeOnPage: analyticEvent.TimeOnPage,
+	}
+
+	switch browser {
+	case "Chrome":
+		analyticData.Chrome = 1
+	case "Safari":
+		analyticData.Safari = 1
+	case "Opera":
+		analyticData.Opera = 1
+	case "Edge":
+		analyticData.Edge = 1
+	case "IE":
+		analyticData.IE = 1
+	default:
+		analyticData.OtherBrowsers = 1
+	}
+
+	if isMobile {
+		analyticData.Mobile = 1
+	} else {
+		analyticData.Browser = 1
+	}
+
+	if analyticEvent.Referrer != "" {
+		analyticData.Referrer = map[string]int{analyticEvent.Referrer: 1}
+	}
+
+	analyticDocument := models.Analytics{
+		Ticket:    analyticEvent.Ticket,
+		Data:      map[string]models.AnalyticData{formattedTs: analyticData},
+		CreatedAt: timestamp,
+		UpdatedAt: timestamp,
+	}
+
+	_, err = l.Store.Analytics().InsertOne(analyticDocument)
+	if err != nil {
+		fmt.Println(err.Error())
 	}
 }
 
