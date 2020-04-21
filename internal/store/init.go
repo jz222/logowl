@@ -71,6 +71,15 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
+	collection = s.db.Collection(CollectionAnalytics)
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.M{"ticket": 1},
+			Options: options.Index().SetUnique(true),
+		},
+	}
+	collection.Indexes().CreateMany(ctx, indexModels)
+
 	log.Println("✅ Connection to MongoDB established")
 }
 
