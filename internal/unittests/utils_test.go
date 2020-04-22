@@ -7,7 +7,7 @@ import (
 )
 
 func TestFormatTimestamp(t *testing.T) {
-	convertedTimestamp, convertedTimestampString, err := utils.FormatTimestamp(1585930192)
+	convertedTimestamp, convertedTimestampString, err := utils.FormatTimestampToBeginnOfDay(1585930192)
 	if err != nil {
 		t.Errorf(err.Error())
 	}

@@ -46,7 +46,7 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 
 	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
 
-	_, convertedTimestamp, err := utils.FormatTimestamp(errorEvent.Timestamp)
+	_, convertedTimestamp, err := utils.FormatTimestampToBeginnOfDay(errorEvent.Timestamp)
 	if err != nil {
 		log.Println("failed to convert timestamp:", errorEvent.Timestamp)
 		return
@@ -111,7 +111,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	isMobile := ua.Mobile()
 	browser, _ := ua.Browser()
 
-	incrementUpdate[prefix+"vstrs"] = 1
+	incrementUpdate[prefix+"vsts"] = 1
 	incrementUpdate[prefix+"ttlTmOnPg"] = analyticEvent.TimeOnPage
 
 	switch browser {
@@ -138,11 +138,16 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	}
 
 	if analyticEvent.Referrer != "" {
-		incrementUpdate[prefix+"rfrr."+analyticEvent.Referrer] = 1
+		escaped := strings.Replace(analyticEvent.Referrer, ".", "%2E", -1)
+		incrementUpdate[prefix+"rfrr."+escaped] = 1
 	}
 
 	if analyticEvent.IsNewVisitor {
 		incrementUpdate[prefix+"unqVstrs"] = 1
+	}
+
+	if analyticEvent.IsNewSession {
+		incrementUpdate[prefix+"ttlSssns"] = 1
 	}
 
 	if analyticEvent.EntryPage != "" {

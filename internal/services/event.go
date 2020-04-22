@@ -14,6 +14,7 @@ type InterfaceEvent interface {
 	GetErrors(string, int64) ([]models.Error, error)
 	DeleteError(bson.M) (int64, error)
 	UpdateError(bson.M, bson.M) error
+	GetAnalytics(bson.M) (models.Analytics, error)
 }
 
 type Event struct {
@@ -41,6 +42,10 @@ func (e *Event) UpdateError(filter, update bson.M) error {
 	}
 
 	return nil
+}
+
+func (e *Event) GetAnalytics(filter bson.M) (models.Analytics, error) {
+	return e.Store.Analytics().FindOne(filter)
 }
 
 func GetEventService(store store.InterfaceStore) Event {

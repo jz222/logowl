@@ -6,7 +6,7 @@ import (
 )
 
 // FormatTimestamp returns a new timestamp for the respective day.
-func FormatTimestamp(timestamp int64) (int64, string, error) {
+func FormatTimestampToBeginnOfDay(timestamp int64) (int64, string, error) {
 	parsed := time.Unix(timestamp, 0)
 
 	day := parsed.Format("2006-01-02")

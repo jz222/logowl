@@ -108,8 +108,9 @@ type AnalyticData struct {
 	Mobile          int            `json:"mobile" bson:"mbl,omitempty"`
 	Tablet          int            `json:"tablet" bson:"tblt,omitempty"`
 	Browser         int            `json:"browser" bson:"brwsr,omitempty"`
-	Visitors        int            `json:"visitors" bson:"vstrs,omitempty"`
+	Visits          int            `json:"visits" bson:"vsts,omitempty"`
 	UniqueVisitors  int            `json:"uniqueVisitors" bson:"unqVstrs,omitempty"`
+	TotalSessions   int            `json:"totalSessions" bson:"ttlSssns,omitempty"`
 	TotalTimeOnPage int            `json:"totalTimeOnPage" bson:"ttlTmOnPg,omitempty"`
 	EntryPage       map[string]int `json:"entryPage" bson:"entryPg,omitempty"`
 	Referrer        map[string]int `json:"referrer" bson:"rfrr,omitempty"`
@@ -126,6 +127,7 @@ type Analytics struct {
 type AnalyticEvent struct {
 	Ticket       string `json:"ticket" bson:"ticket"`
 	IsNewVisitor bool   `json:"isNewVisitor" bson:"isNewVisitor"`
+	IsNewSession bool   `json:"isNewSession" bson:"isNewSession"`
 	TimeOnPage   int    `json:"timeOnPage" bson:"timeOnPage"`
 	Referrer     string `json:"referrer" bson:"referrer"`
 	EntryPage    string `json:"entryPage" bson:"entryPage"`
