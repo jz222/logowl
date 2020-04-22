@@ -6,6 +6,7 @@ import (
 	"fmt"
 	"log"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jz222/loggy/internal/models"
@@ -111,7 +112,6 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	browser, _ := ua.Browser()
 
 	incrementUpdate[prefix+"vstrs"] = 1
-	incrementUpdate[prefix+"unqVstrs"] = 1
 	incrementUpdate[prefix+"ttlTmOnPg"] = analyticEvent.TimeOnPage
 
 	switch browser {
@@ -121,6 +121,8 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[prefix+"sfr"] = 1
 	case "Opera":
 		incrementUpdate[prefix+"opr"] = 1
+	case "Firefox":
+		incrementUpdate[prefix+"frfx"] = 1
 	case "Edge":
 		incrementUpdate[prefix+"edg"] = 1
 	case "IE":
@@ -136,13 +138,20 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	}
 
 	if analyticEvent.Referrer != "" {
-		incrementUpdate[prefix+analyticEvent.Referrer] = 1
+		incrementUpdate[prefix+"rfrr."+analyticEvent.Referrer] = 1
 	}
 
-	filter := bson.M{"ticket": analyticEvent.Ticket}
+	if analyticEvent.IsNewVisitor {
+		incrementUpdate[prefix+"unqVstrs"] = 1
+	}
+
+	if analyticEvent.EntryPage != "" {
+		escaped := strings.Replace(analyticEvent.EntryPage, ".", "%2E", -1)
+		incrementUpdate[prefix+"entryPg."+escaped] = 1
+	}
 
 	_, err = l.Store.Analytics().FindOneAndUpdate(
-		filter,
+		bson.M{"ticket": analyticEvent.Ticket},
 		bson.M{
 			"$inc": incrementUpdate,
 			"$set": bson.M{"updatedAt": timestamp},

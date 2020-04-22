@@ -111,6 +111,7 @@ type AnalyticData struct {
 	Visitors        int            `json:"visitors" bson:"vstrs,omitempty"`
 	UniqueVisitors  int            `json:"uniqueVisitors" bson:"unqVstrs,omitempty"`
 	TotalTimeOnPage int            `json:"totalTimeOnPage" bson:"ttlTmOnPg,omitempty"`
+	EntryPage       map[string]int `json:"entryPage" bson:"entryPg,omitempty"`
 	Referrer        map[string]int `json:"referrer" bson:"rfrr,omitempty"`
 }
 
@@ -124,7 +125,7 @@ type Analytics struct {
 // AnalyticEvent contains information about a page visitor.
 type AnalyticEvent struct {
 	Ticket       string `json:"ticket" bson:"ticket"`
-	IsNewVisitor bool   `json:"isNewVisistor" bson:"isNewVisitor"`
+	IsNewVisitor bool   `json:"isNewVisitor" bson:"isNewVisitor"`
 	TimeOnPage   int    `json:"timeOnPage" bson:"timeOnPage"`
 	Referrer     string `json:"referrer" bson:"referrer"`
 	EntryPage    string `json:"entryPage" bson:"entryPage"`
