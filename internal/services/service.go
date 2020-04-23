@@ -85,7 +85,7 @@ func (s *Service) Delete(filter bson.M) (int64, error) {
 		return 0, err
 	}
 
-	_, err = s.Store.Analytics().DeleteOne(bson.M{"ticket": service.Ticket})
+	_, err = s.Store.Analytics().DeleteMany(bson.M{"ticket": service.Ticket})
 	if err != nil {
 		return 0, err
 	}

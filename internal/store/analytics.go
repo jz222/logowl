@@ -12,7 +12,6 @@ import (
 
 type interfaceAnalytics interface {
 	InsertOne(models.Analytics) (primitive.ObjectID, error)
-	DeleteOne(bson.M) (int64, error)
 	DeleteMany(bson.M) (int64, error)
 	FindOne(bson.M) (models.Analytics, error)
 	FindOneAndUpdate(bson.M, bson.M) (models.Analytics, error)
@@ -30,17 +29,6 @@ func (a *analytics) InsertOne(analyticsDocument models.Analytics) (primitive.Obj
 	}
 
 	return res.InsertedID.(primitive.ObjectID), nil
-}
-
-func (a *analytics) DeleteOne(filter bson.M) (int64, error) {
-	collection := a.db.Collection(CollectionAnalytics)
-
-	res, err := collection.DeleteOne(context.TODO(), filter)
-	if err != nil {
-		return 0, err
-	}
-
-	return res.DeletedCount, nil
 }
 
 func (a *analytics) DeleteMany(filter bson.M) (int64, error) {
