@@ -109,7 +109,7 @@ type AnalyticData struct {
 	Tablet          int            `json:"tablet" bson:"tblt,omitempty"`
 	Browser         int            `json:"browser" bson:"brwsr,omitempty"`
 	Visits          int            `json:"visits" bson:"vsts,omitempty"`
-	UniqueVisitors  int            `json:"uniqueVisitors" bson:"unqVstrs,omitempty"`
+	NewVisitors     int            `json:"newVisitors" bson:"nwVstrs,omitempty"`
 	TotalSessions   int            `json:"totalSessions" bson:"ttlSssns,omitempty"`
 	TotalTimeOnPage int            `json:"totalTimeOnPage" bson:"ttlTmOnPg,omitempty"`
 	EntryPage       map[string]int `json:"entryPage" bson:"entryPg,omitempty"`
@@ -117,10 +117,12 @@ type AnalyticData struct {
 }
 
 type Analytics struct {
-	Ticket    string                  `json:"ticket" bson:"ticket"`
-	Data      map[string]AnalyticData `json:"data" bson:"data"`
-	CreatedAt time.Time               `json:"createdAt" bson:"createdAt"`
-	UpdatedAt time.Time               `json:"updatedAt" bson:"updatedAt"`
+	Ticket             string                  `json:"ticket" bson:"ticket"`
+	Month              int64                   `json:"month" bson:"month"`
+	HumanReadableMonth string                  `json:"humanReadableMonth" bson:"humanReadableMonth"`
+	Data               map[string]AnalyticData `json:"data" bson:"data"`
+	CreatedAt          time.Time               `json:"createdAt" bson:"createdAt"`
+	UpdatedAt          time.Time               `json:"updatedAt" bson:"updatedAt"`
 }
 
 // AnalyticEvent contains information about a page visitor.

@@ -74,7 +74,7 @@ func (s *store) Connect() {
 	collection = s.db.Collection(CollectionAnalytics)
 	indexModels = []mongo.IndexModel{
 		{
-			Keys:    bson.M{"ticket": 1},
+			Keys:    bson.M{"ticket": 1, "month": 1},
 			Options: options.Index().SetUnique(true),
 		},
 	}

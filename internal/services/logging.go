@@ -102,14 +102,19 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		return
 	}
 
-	prefix := fmt.Sprintf("%s.%s.", "data", formattedTs)
+	formattedMonth, _, humanReadableMonth, err := utils.FormatTimestampToMonth(timestamp.Unix())
+	if err != nil {
+		return
+	}
 
-	incrementUpdate := bson.M{}
+	prefix := fmt.Sprintf("%s.%s.", "data", formattedTs)
 
 	ua := user_agent.New(analyticEvent.UserAgent)
 
 	isMobile := ua.Mobile()
 	browser, _ := ua.Browser()
+
+	incrementUpdate := bson.M{}
 
 	incrementUpdate[prefix+"vsts"] = 1
 	incrementUpdate[prefix+"ttlTmOnPg"] = analyticEvent.TimeOnPage
@@ -137,17 +142,17 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[prefix+"brwsr"] = 1
 	}
 
-	if analyticEvent.Referrer != "" {
-		escaped := strings.Replace(analyticEvent.Referrer, ".", "%2E", -1)
-		incrementUpdate[prefix+"rfrr."+escaped] = 1
-	}
-
 	if analyticEvent.IsNewVisitor {
-		incrementUpdate[prefix+"unqVstrs"] = 1
+		incrementUpdate[prefix+"nwVstrs"] = 1
 	}
 
 	if analyticEvent.IsNewSession {
 		incrementUpdate[prefix+"ttlSssns"] = 1
+	}
+
+	if analyticEvent.Referrer != "" {
+		escaped := strings.Replace(analyticEvent.Referrer, ".", "%2E", -1)
+		incrementUpdate[prefix+"rfrr."+escaped] = 1
 	}
 
 	if analyticEvent.EntryPage != "" {
@@ -156,7 +161,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	}
 
 	_, err = l.Store.Analytics().FindOneAndUpdate(
-		bson.M{"ticket": analyticEvent.Ticket},
+		bson.M{"ticket": analyticEvent.Ticket, "month": formattedMonth, "humanReadableMonth": humanReadableMonth},
 		bson.M{
 			"$inc": incrementUpdate,
 			"$set": bson.M{"updatedAt": timestamp},
