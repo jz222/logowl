@@ -135,3 +135,12 @@ type AnalyticEvent struct {
 	EntryPage    string `json:"entryPage" bson:"entryPage"`
 	UserAgent    string `json:"userAgent" bson:"userAgent"`
 }
+
+type AnalyticInsights struct {
+	PageViews struct {
+		Labels      []string `json:"labels"`
+		Sessions    []int    `json:"sessions"`
+		Visits      []int    `json:"visits"`
+		NewVisitors []int    `json:"newVisitors"`
+	} `json:"pageViews"`
+}

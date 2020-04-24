@@ -181,6 +181,42 @@ func (e *EventControllers) UpdateError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
+func (e *EventControllers) GetAnalytics(c *gin.Context) {
+	serviceID := c.Param("service")
+	mode := c.Query("mode")
+
+	if mode == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "the query parameter mode was not provided")
+		return
+	}
+
+	user, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user")
+		return
+	}
+
+	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided service ID is invalid")
+		return
+	}
+
+	service, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	analyticInsights, err := e.EventService.GetAnalytics(service.Ticket, mode)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithJSON(c, analyticInsights)
+}
+
 func GetEventController(db store.InterfaceStore) EventControllers {
 	eventService := services.GetEventService(db)
 	serviceService := services.GetServiceService(db)
