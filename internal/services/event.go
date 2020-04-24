@@ -68,7 +68,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 
 		currentDay, _, _ := utils.FormatTimestampToBeginnOfDay(timestamp.Unix())
 		timeframeStart = currentDay
-		timeframeEnd = currentDay + int64(60*60*24)
+		timeframeEnd = currentDay + int64(60*60*24-1)
 	}
 
 	if mode == "lastSevenDays" {
@@ -77,7 +77,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 
 		currentDay, _, _ := utils.FormatTimestampToBeginnOfDay(timestamp.Unix())
 		timeframeStart = currentDay - int64(60*60*24*6)
-		timeframeEnd = currentDay + int64(60*60*24)
+		timeframeEnd = currentDay + int64(60*60*24-1)
 	}
 
 	analyticDocuments, err := e.Store.Analytics().Find(filter)
