@@ -102,7 +102,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		return
 	}
 
-	formattedMonth, _, humanReadableMonth, err := utils.FormatTimestampToMonth(timestamp.Unix())
+	formattedMonth, humanReadableMonth, _, err := utils.FormatTimestampToMonth(timestamp.Unix())
 	if err != nil {
 		return
 	}
