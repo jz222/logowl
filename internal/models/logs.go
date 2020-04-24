@@ -94,6 +94,7 @@ func (e *Error) IsValid() bool {
 }
 
 type AnalyticData struct {
+	Day             int64          `json:"day" bson:"day"`
 	Windows         int            `json:"windows" bson:"wndws,omitempty"`
 	Mac             int            `json:"mc" bson:"mc,omitempty"`
 	Linux           int            `json:"linux" bson:"lnx,omitempty"`
@@ -136,11 +137,14 @@ type AnalyticEvent struct {
 	UserAgent    string `json:"userAgent" bson:"userAgent"`
 }
 
+type AnalyticsInsightsPageViews struct {
+	Day         int64  `json:"-"`
+	Unit        string `json:"unit"`
+	Sessions    int    `json:"sessions"`
+	Visits      int    `json:"visits"`
+	NewVisitors int    `json:"newVisitors"`
+}
+
 type AnalyticInsights struct {
-	PageViews struct {
-		Labels      []string `json:"labels"`
-		Sessions    []int    `json:"sessions"`
-		Visits      []int    `json:"visits"`
-		NewVisitors []int    `json:"newVisitors"`
-	} `json:"pageViews"`
+	Data []AnalyticsInsightsPageViews `json:"pageViews"`
 }

@@ -2,6 +2,7 @@ package services
 
 import (
 	"errors"
+	"sort"
 	"strconv"
 	"time"
 
@@ -92,12 +93,42 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 			}
 
 			if parsedKey >= timeframeStart && parsedKey <= timeframeEnd {
-				response.PageViews.Sessions = append(response.PageViews.Sessions, v.TotalSessions)
-				response.PageViews.Visits = append(response.PageViews.Visits, v.Visits)
-				response.PageViews.NewVisitors = append(response.PageViews.NewVisitors, v.NewVisitors)
-				response.PageViews.Labels = append(response.PageViews.Labels, k)
+				metrics := models.AnalyticsInsightsPageViews{
+					Day:         v.Day,
+					Unit:        k,
+					Sessions:    v.TotalSessions,
+					Visits:      v.Visits,
+					NewVisitors: v.NewVisitors,
+				}
+
+				response.Data = append(response.Data, metrics)
 			}
 		}
+	}
+
+	sort.Slice(response.Data, func(i, j int) bool {
+		return response.Data[i].Unit < response.Data[j].Unit
+	})
+
+	if mode != "today" {
+		var currentDay int64
+		var aggregatedData []models.AnalyticsInsightsPageViews
+
+		for _, metrics := range response.Data {
+			if currentDay != metrics.Day {
+				currentDay = metrics.Day
+				aggregatedData = append(aggregatedData, metrics)
+				continue
+			}
+
+			prevIndex := len(aggregatedData) - 1
+
+			aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
+			aggregatedData[prevIndex].Sessions += metrics.Sessions
+			aggregatedData[prevIndex].Visits += metrics.Visits
+		}
+
+		response.Data = aggregatedData
 	}
 
 	return response, nil

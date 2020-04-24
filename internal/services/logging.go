@@ -97,7 +97,12 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 
 	timestamp := time.Now()
 
-	_, formattedTs, err := utils.FormatTimestampToHour(timestamp.Unix())
+	_, formattedHour, err := utils.FormatTimestampToHour(timestamp.Unix())
+	if err != nil {
+		return
+	}
+
+	formattedDay, _, err := utils.FormatTimestampToBeginnOfDay(timestamp.Unix())
 	if err != nil {
 		return
 	}
@@ -107,7 +112,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		return
 	}
 
-	prefix := fmt.Sprintf("%s.%s.", "data", formattedTs)
+	prefix := fmt.Sprintf("%s.%s.", "data", formattedHour)
 
 	ua := user_agent.New(analyticEvent.UserAgent)
 
@@ -164,7 +169,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		bson.M{"ticket": analyticEvent.Ticket, "month": formattedMonth, "humanReadableMonth": humanReadableMonth},
 		bson.M{
 			"$inc": incrementUpdate,
-			"$set": bson.M{"updatedAt": timestamp},
+			"$set": bson.M{fmt.Sprintf("%sday", prefix): formattedDay, "updatedAt": timestamp},
 		},
 	)
 	if err != nil {
