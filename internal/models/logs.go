@@ -94,27 +94,28 @@ func (e *Error) IsValid() bool {
 }
 
 type AnalyticData struct {
-	Day             int64          `json:"day" bson:"day"`
-	Windows         int            `json:"windows" bson:"wndws,omitempty"`
-	Mac             int            `json:"mc" bson:"mc,omitempty"`
-	Linux           int            `json:"linux" bson:"lnx,omitempty"`
-	OtherPlatforms  int            `json:"otherPlatforms" bson:"othrPltfrms,omitempty"`
-	Chrome          int            `json:"chrome" bson:"chrm,omitempty"`
-	Firefox         int            `json:"firefox" bson:"frfx,omitempty"`
-	Safari          int            `json:"safari" bson:"sfr,omitempty"`
-	Edge            int            `json:"edge" bson:"edg,omitempty"`
-	IE              int            `json:"ie" bson:"ie,omitempty"`
-	Opera           int            `json:"opera" bson:"opr,omitempty"`
-	OtherBrowsers   int            `json:"otherBrowsers" bson:"othrBrwsrs,omitempty"`
-	Mobile          int            `json:"mobile" bson:"mbl,omitempty"`
-	Tablet          int            `json:"tablet" bson:"tblt,omitempty"`
-	Browser         int            `json:"browser" bson:"brwsr,omitempty"`
-	Visits          int            `json:"visits" bson:"vsts,omitempty"`
-	NewVisitors     int            `json:"newVisitors" bson:"nwVstrs,omitempty"`
-	TotalSessions   int            `json:"totalSessions" bson:"ttlSssns,omitempty"`
-	TotalTimeOnPage int            `json:"totalTimeOnPage" bson:"ttlTmOnPg,omitempty"`
-	EntryPage       map[string]int `json:"entryPage" bson:"entryPg,omitempty"`
-	Referrer        map[string]int `json:"referrer" bson:"rfrr,omitempty"`
+	Unit            string         `json:"unit" bson:"-"`
+	Day             int64          `json:"day,omitempty" bson:"day"`
+	Windows         int            `json:"windows,omitempty" bson:"wndws,omitempty"`
+	Mac             int            `json:"mc,omitempty" bson:"mc,omitempty"`
+	Linux           int            `json:"linux,omitempty" bson:"lnx,omitempty"`
+	OtherPlatforms  int            `json:"otherPlatforms,omitempty" bson:"othrPltfrms,omitempty"`
+	Chrome          int            `json:"chrome,omitempty" bson:"chrm,omitempty"`
+	Firefox         int            `json:"firefox,omitempty" bson:"frfx,omitempty"`
+	Safari          int            `json:"safari,omitempty" bson:"sfr,omitempty"`
+	Edge            int            `json:"edge,omitempty" bson:"edg,omitempty"`
+	IE              int            `json:"ie,omitempty" bson:"ie,omitempty"`
+	Opera           int            `json:"opera,omitempty" bson:"opr,omitempty"`
+	OtherBrowsers   int            `json:"otherBrowsers,omitempty" bson:"othrBrwsrs,omitempty"`
+	Mobile          int            `json:"mobile,omitempty" bson:"mbl,omitempty"`
+	Tablet          int            `json:"tablet,omitempty" bson:"tblt,omitempty"`
+	Browser         int            `json:"browser,omitempty" bson:"brwsr,omitempty"`
+	Visits          int            `json:"visits,omitempty" bson:"vsts,omitempty"`
+	NewVisitors     int            `json:"newVisitors,omitempty" bson:"nwVstrs,omitempty"`
+	TotalSessions   int            `json:"sessions,omitempty" bson:"ttlSssns,omitempty"`
+	TotalTimeOnPage int            `json:"totalTimeOnPage,omitempty" bson:"ttlTmOnPg,omitempty"`
+	EntryPage       map[string]int `json:"entryPage,omitempty" bson:"entryPg,omitempty"`
+	Referrer        map[string]int `json:"referrer,omitempty" bson:"rfrr,omitempty"`
 }
 
 type Analytics struct {
@@ -137,17 +138,11 @@ type AnalyticEvent struct {
 	UserAgent    string `json:"userAgent" bson:"userAgent"`
 }
 
-type AnalyticsInsightsPageViews struct {
-	Day         int64  `json:"-"`
-	Unit        string `json:"unit"`
-	Sessions    int    `json:"sessions"`
-	Visits      int    `json:"visits"`
-	NewVisitors int    `json:"newVisitors"`
-}
-
 type AnalyticInsights struct {
-	TotalVisits      int                          `json:"totalVisits"`
-	TotalNewVisitors int                          `json:"totalNewVisitors"`
-	TotalSessions    int                          `json:"totalSessions"`
-	Data             []AnalyticsInsightsPageViews `json:"pageViews"`
+	TimeframeStart   int64          `json:"timeframeStart"`
+	TimeframeEnd     int64          `json:"timeframeEnd"`
+	TotalVisits      int            `json:"totalVisits"`
+	TotalNewVisitors int            `json:"totalNewVisitors"`
+	TotalSessions    int            `json:"totalSessions"`
+	Data             []AnalyticData `json:"pageViews"`
 }

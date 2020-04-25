@@ -93,15 +93,8 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 			}
 
 			if parsedKey >= timeframeStart && parsedKey <= timeframeEnd {
-				metrics := models.AnalyticsInsightsPageViews{
-					Day:         v.Day,
-					Unit:        k,
-					Sessions:    v.TotalSessions,
-					Visits:      v.Visits,
-					NewVisitors: v.NewVisitors,
-				}
-
-				response.Data = append(response.Data, metrics)
+				v.Unit = k
+				response.Data = append(response.Data, v)
 			}
 		}
 	}
@@ -111,7 +104,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 	})
 
 	var currentDay int64
-	var aggregatedData []models.AnalyticsInsightsPageViews
+	var aggregatedData []models.AnalyticData
 
 	totalVisits := 0
 	totalNewVisitors := 0
@@ -120,7 +113,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 	for _, metrics := range response.Data {
 		totalVisits += metrics.Visits
 		totalNewVisitors += metrics.NewVisitors
-		totalSessions += metrics.Sessions
+		totalSessions += metrics.TotalSessions
 
 		if mode == "today" {
 			continue
@@ -135,7 +128,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		prevIndex := len(aggregatedData) - 1
 
 		aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
-		aggregatedData[prevIndex].Sessions += metrics.Sessions
+		aggregatedData[prevIndex].TotalSessions += metrics.TotalSessions
 		aggregatedData[prevIndex].Visits += metrics.Visits
 	}
 
@@ -143,6 +136,8 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		response.Data = aggregatedData
 	}
 
+	response.TimeframeStart = timeframeStart
+	response.TimeframeEnd = timeframeEnd
 	response.TotalVisits = totalVisits
 	response.TotalNewVisitors = totalNewVisitors
 	response.TotalSessions = totalSessions
