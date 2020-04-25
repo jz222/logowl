@@ -3,7 +3,6 @@ package services
 import (
 	"errors"
 	"sort"
-	"strconv"
 	"time"
 
 	"github.com/jz222/loggy/internal/models"
@@ -86,21 +85,15 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 	}
 
 	for _, analyticDocument := range analyticDocuments {
-		for k, v := range analyticDocument.Data {
-			parsedKey, err := strconv.ParseInt(k, 10, 64)
-			if err != nil {
-				continue
-			}
-
-			if parsedKey >= timeframeStart && parsedKey <= timeframeEnd {
-				v.Unit = k
+		for _, v := range analyticDocument.Data {
+			if v.Day >= timeframeStart && v.Day <= timeframeEnd {
 				response.Data = append(response.Data, v)
 			}
 		}
 	}
 
 	sort.Slice(response.Data, func(i, j int) bool {
-		return response.Data[i].Unit < response.Data[j].Unit
+		return response.Data[i].Day < response.Data[j].Day
 	})
 
 	var currentDay int64

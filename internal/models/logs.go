@@ -94,8 +94,7 @@ func (e *Error) IsValid() bool {
 }
 
 type AnalyticData struct {
-	Unit            string         `json:"unit" bson:"-"`
-	Day             int64          `json:"day,omitempty" bson:"day"`
+	Day             int64          `json:"day" bson:"day"`
 	Windows         int            `json:"windows,omitempty" bson:"wndws,omitempty"`
 	Mac             int            `json:"mc,omitempty" bson:"mc,omitempty"`
 	Linux           int            `json:"linux,omitempty" bson:"lnx,omitempty"`
