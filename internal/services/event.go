@@ -57,24 +57,26 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 
 	var response models.AnalyticInsights
 
-	timestamp := time.Now()
+	dateTool := utils.DateTool{
+		Timestamp: time.Now().Unix(),
+	}
 
 	filter := bson.M{"ticket": ticket}
 
 	if mode == "today" {
-		currentMonth, _, _, _ := utils.FormatTimestampToMonth(timestamp.Unix())
+		currentMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 		filter["month"] = currentMonth
 
-		currentDay, _, _ := utils.FormatTimestampToBeginnOfDay(timestamp.Unix())
+		currentDay, _ := dateTool.GetTimestampBeginnOfDay()
 		timeframeStart = currentDay
 		timeframeEnd = currentDay + int64(60*60*24-1)
 	}
 
 	if mode == "lastSevenDays" {
-		_, _, previousMonth, _ := utils.FormatTimestampToMonth(timestamp.Unix())
+		previousMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 		filter["month"] = bson.M{"$gte": previousMonth}
 
-		currentDay, _, _ := utils.FormatTimestampToBeginnOfDay(timestamp.Unix())
+		currentDay, _ := dateTool.GetTimestampBeginnOfDay()
 		timeframeStart = currentDay - int64(60*60*24*6)
 		timeframeEnd = currentDay + int64(60*60*24-1)
 	}

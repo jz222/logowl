@@ -46,10 +46,13 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 
 	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
 
-	_, convertedTimestamp, err := utils.FormatTimestampToBeginnOfDay(errorEvent.Timestamp)
+	dateTool := utils.DateTool{
+		Timestamp: errorEvent.Timestamp,
+	}
+
+	convertedTimestamp, err := dateTool.GetTimestampBeginnOfDayString()
 	if err != nil {
 		log.Println("failed to convert timestamp:", errorEvent.Timestamp)
-		return
 	}
 
 	timestamp := time.Now()
@@ -97,20 +100,14 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 
 	timestamp := time.Now()
 
-	_, formattedHour, err := utils.FormatTimestampToHour(timestamp.Unix())
-	if err != nil {
-		return
+	dateTool := utils.DateTool{
+		Timestamp: timestamp.Unix(),
 	}
 
-	formattedDay, _, err := utils.FormatTimestampToBeginnOfDay(timestamp.Unix())
-	if err != nil {
-		return
-	}
-
-	formattedMonth, humanReadableMonth, _, err := utils.FormatTimestampToMonth(timestamp.Unix())
-	if err != nil {
-		return
-	}
+	formattedHour, _ := dateTool.GetTimestampBeginnOfHourString()
+	formattedDay, _ := dateTool.GetTimestampBeginnOfDay()
+	formattedMonth, _ := dateTool.GetTimestampBeginnOfMonth()
+	humanReadableMonth, _ := dateTool.GetTimestampBeginnOfMonthHumanReadable()
 
 	prefix := fmt.Sprintf("%s.%s.", "data", formattedHour)
 

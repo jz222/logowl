@@ -7,7 +7,16 @@ import (
 )
 
 func TestFormatTimestamp(t *testing.T) {
-	convertedTimestamp, convertedTimestampString, err := utils.FormatTimestampToBeginnOfDay(1585930192)
+	dateTool := utils.DateTool{
+		Timestamp: 1585930192,
+	}
+
+	convertedTimestamp, err := dateTool.GetTimestampBeginnOfDay()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	convertedTimestampString, err := dateTool.GetTimestampBeginnOfDayString()
 	if err != nil {
 		t.Errorf(err.Error())
 	}

@@ -5,46 +5,92 @@ import (
 	"time"
 )
 
-// FormatTimestamp returns a new timestamp for the respective day.
-func FormatTimestampToBeginnOfDay(timestamp int64) (int64, string, error) {
-	parsed := time.Unix(timestamp, 0)
+type DateTool struct {
+	Timestamp int64
+}
+
+// GetTimestampBeginnOfDay returns a new timestamp for the respective day.
+func (d DateTool) GetTimestampBeginnOfDay() (int64, error) {
+	parsed := time.Unix(d.Timestamp, 0)
 
 	day := parsed.Format("2006-01-02")
 
 	formatted, err := time.Parse("2006-01-02", day)
 	if err != nil {
-		return 0, "", err
+		return 0, err
 	}
 
-	return formatted.Unix(), strconv.FormatInt(formatted.Unix(), 10), nil
+	return formatted.Unix(), nil
 }
 
-func FormatTimestampToMonth(timestamp int64) (int64, string, int64, error) {
-	parsed := time.Unix(timestamp, 0)
+// GetTimestampBeginnOfDayString returns a new timestamp for the respective day as string.
+func (d DateTool) GetTimestampBeginnOfDayString() (string, error) {
+	parsed := time.Unix(d.Timestamp, 0)
+
+	day := parsed.Format("2006-01-02")
+
+	formatted, err := time.Parse("2006-01-02", day)
+	if err != nil {
+		return "", err
+	}
+
+	return strconv.FormatInt(formatted.Unix(), 10), nil
+}
+
+func (d DateTool) GetTimestampBeginnOfMonth() (int64, error) {
+	parsed := time.Unix(d.Timestamp, 0)
 
 	month := parsed.Format("2006-01")
 
 	formatted, err := time.Parse("2006-01", month)
 	if err != nil {
-		return 0, "", 0, err
+		return 0, err
 	}
 
 	currentMonth := formatted.Unix()
-	currentMonthHumanReadable := formatted.Format("January 2006")
-	previousMonth := formatted.AddDate(0, -1, 0).Unix()
 
-	return currentMonth, currentMonthHumanReadable, previousMonth, nil
+	return currentMonth, nil
 }
 
-func FormatTimestampToHour(timestamp int64) (int64, string, error) {
-	parsed := time.Unix(timestamp, 0)
+func (d DateTool) GetTimestampBeginnOfMonthHumanReadable() (string, error) {
+	parsed := time.Unix(d.Timestamp, 0)
+
+	month := parsed.Format("2006-01")
+
+	formatted, err := time.Parse("2006-01", month)
+	if err != nil {
+		return "", err
+	}
+
+	currentMonthHumanReadable := formatted.Format("January 2006")
+
+	return currentMonthHumanReadable, nil
+}
+
+func (d DateTool) GetTimestampBeginnOfPreviousMonth() (int64, error) {
+	parsed := time.Unix(d.Timestamp, 0)
+
+	month := parsed.Format("2006-01")
+
+	formatted, err := time.Parse("2006-01", month)
+	if err != nil {
+		return 0, err
+	}
+
+	previousMonth := formatted.AddDate(0, -1, 0).Unix()
+
+	return previousMonth, nil
+}
+
+func (d DateTool) GetTimestampBeginnOfHourString() (string, error) {
+	parsed := time.Unix(d.Timestamp, 0)
 
 	hour := parsed.Format("2006-01-02 15")
 
 	formatted, err := time.Parse("2006-01-02 15", hour)
 	if err != nil {
-		return 0, "", err
+		return "", err
 	}
 
-	return formatted.Unix(), strconv.FormatInt(formatted.Unix(), 10), nil
+	return strconv.FormatInt(formatted.Unix(), 10), nil
 }
