@@ -110,26 +110,42 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		return response.Data[i].Unit < response.Data[j].Unit
 	})
 
-	if mode != "today" {
-		var currentDay int64
-		var aggregatedData []models.AnalyticsInsightsPageViews
+	var currentDay int64
+	var aggregatedData []models.AnalyticsInsightsPageViews
 
-		for _, metrics := range response.Data {
-			if currentDay != metrics.Day {
-				currentDay = metrics.Day
-				aggregatedData = append(aggregatedData, metrics)
-				continue
-			}
+	totalVisits := 0
+	totalNewVisitors := 0
+	totalSessions := 0
 
-			prevIndex := len(aggregatedData) - 1
+	for _, metrics := range response.Data {
+		totalVisits += metrics.Visits
+		totalNewVisitors += metrics.NewVisitors
+		totalSessions += metrics.Sessions
 
-			aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
-			aggregatedData[prevIndex].Sessions += metrics.Sessions
-			aggregatedData[prevIndex].Visits += metrics.Visits
+		if mode == "today" {
+			continue
 		}
 
+		if currentDay != metrics.Day {
+			currentDay = metrics.Day
+			aggregatedData = append(aggregatedData, metrics)
+			continue
+		}
+
+		prevIndex := len(aggregatedData) - 1
+
+		aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
+		aggregatedData[prevIndex].Sessions += metrics.Sessions
+		aggregatedData[prevIndex].Visits += metrics.Visits
+	}
+
+	if mode != "today" {
 		response.Data = aggregatedData
 	}
+
+	response.TotalVisits = totalVisits
+	response.TotalNewVisitors = totalNewVisitors
+	response.TotalSessions = totalSessions
 
 	return response, nil
 }

@@ -146,5 +146,8 @@ type AnalyticsInsightsPageViews struct {
 }
 
 type AnalyticInsights struct {
-	Data []AnalyticsInsightsPageViews `json:"pageViews"`
+	TotalVisits      int                          `json:"totalVisits"`
+	TotalNewVisitors int                          `json:"totalNewVisitors"`
+	TotalSessions    int                          `json:"totalSessions"`
+	Data             []AnalyticsInsightsPageViews `json:"pageViews"`
 }
