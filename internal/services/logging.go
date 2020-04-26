@@ -137,7 +137,6 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 
 	incrementUpdate[prefix+"vsts"] = 1
 	incrementUpdate[prefix+"ttlTmOnPg"] = analyticEvent.TimeOnPage
-	incrementUpdate[prefix+"hour"] = formattedHour
 
 	switch browser {
 	case "Chrome":
@@ -185,7 +184,11 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		bson.M{"ticket": analyticEvent.Ticket, "month": formattedMonth, "humanReadableMonth": humanReadableMonth},
 		bson.M{
 			"$inc": incrementUpdate,
-			"$set": bson.M{fmt.Sprintf("%sday", prefix): formattedDay, "updatedAt": timestamp},
+			"$set": bson.M{
+				fmt.Sprintf("%sday", prefix):  formattedDay,
+				fmt.Sprintf("%shour", prefix): formattedHour,
+				"updatedAt":                   timestamp,
+			},
 		},
 	)
 	if err != nil {

@@ -114,3 +114,26 @@ func (d DateTool) GetTimestampBeginnOfHourString() (string, error) {
 
 	return strconv.FormatInt(formatted.Unix(), 10), nil
 }
+
+func (d DateTool) GetTimeframeToday() (int64, int64, error) {
+	currentDay, err := d.GetTimestampBeginnOfDay()
+	if err != nil {
+		return 0, 0, err
+	}
+
+	endTime := currentDay + int64(60*60*24-1)
+
+	return currentDay, endTime, nil
+}
+
+func (d DateTool) GetTimeframeLastSevenDays() (int64, int64, error) {
+	currentDay, err := d.GetTimestampBeginnOfDay()
+	if err != nil {
+		return 0, 0, err
+	}
+
+	startTime := currentDay - int64(60*60*24*6)
+	endTime := currentDay + int64(60*60*24-1)
+
+	return startTime, endTime, nil
+}

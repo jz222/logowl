@@ -67,18 +67,18 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		currentMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 		filter["month"] = currentMonth
 
-		currentDay, _ := dateTool.GetTimestampBeginnOfDay()
-		timeframeStart = currentDay
-		timeframeEnd = currentDay + int64(60*60*24-1)
+		startTime, endTime, _ := dateTool.GetTimeframeToday()
+		timeframeStart = startTime
+		timeframeEnd = endTime
 	}
 
 	if mode == "lastSevenDays" {
 		previousMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 		filter["month"] = bson.M{"$gte": previousMonth}
 
-		currentDay, _ := dateTool.GetTimestampBeginnOfDay()
-		timeframeStart = currentDay - int64(60*60*24*6)
-		timeframeEnd = currentDay + int64(60*60*24-1)
+		startTime, endTime, _ := dateTool.GetTimeframeLastSevenDays()
+		timeframeStart = startTime
+		timeframeEnd = endTime
 	}
 
 	analyticDocuments, err := e.Store.Analytics().Find(filter)
