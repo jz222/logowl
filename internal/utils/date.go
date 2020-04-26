@@ -115,6 +115,7 @@ func (d DateTool) GetTimestampBeginnOfHourString() (string, error) {
 	return strconv.FormatInt(formatted.Unix(), 10), nil
 }
 
+// GetTimeframeToday returns the start end end timestamp for the current day.
 func (d DateTool) GetTimeframeToday() (int64, int64, error) {
 	currentDay, err := d.GetTimestampBeginnOfDay()
 	if err != nil {
@@ -126,6 +127,7 @@ func (d DateTool) GetTimeframeToday() (int64, int64, error) {
 	return currentDay, endTime, nil
 }
 
+// GetTimeframeLastSevenDays returns the start and end time for the last seven days.
 func (d DateTool) GetTimeframeLastSevenDays() (int64, int64, error) {
 	currentDay, err := d.GetTimestampBeginnOfDay()
 	if err != nil {
@@ -133,6 +135,32 @@ func (d DateTool) GetTimeframeLastSevenDays() (int64, int64, error) {
 	}
 
 	startTime := currentDay - int64(60*60*24*6)
+	endTime := currentDay + int64(60*60*24-1)
+
+	return startTime, endTime, nil
+}
+
+// GetTimeframeLastFourteenDays returns the start and end time for the last fourteen days.
+func (d DateTool) GetTimeframeLastFourteenDays() (int64, int64, error) {
+	currentDay, err := d.GetTimestampBeginnOfDay()
+	if err != nil {
+		return 0, 0, err
+	}
+
+	startTime := currentDay - int64(60*60*24*13)
+	endTime := currentDay + int64(60*60*24-1)
+
+	return startTime, endTime, nil
+}
+
+// GetTimeframeLastMonth return the start and end time for the last month.
+func (d DateTool) GetTimeframeLastMonth() (int64, int64, error) {
+	currentDay, err := d.GetTimestampBeginnOfDay()
+	if err != nil {
+		return 0, 0, err
+	}
+
+	startTime := currentDay - int64(60*60*24*31)
 	endTime := currentDay + int64(60*60*24-1)
 
 	return startTime, endTime, nil

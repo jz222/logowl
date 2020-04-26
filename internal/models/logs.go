@@ -114,7 +114,7 @@ type AnalyticData struct {
 	NewVisitors     int            `json:"newVisitors,omitempty" bson:"nwVstrs,omitempty"`
 	TotalSessions   int            `json:"sessions,omitempty" bson:"ttlSssns,omitempty"`
 	TotalTimeOnPage int            `json:"totalTimeOnPage,omitempty" bson:"ttlTmOnPg,omitempty"`
-	EntryPage       map[string]int `json:"entryPage,omitempty" bson:"entryPg,omitempty"`
+	Pages           map[string]int `json:"pages,omitempty" bson:"pgs,omitempty"`
 	Referrer        map[string]int `json:"referrer,omitempty" bson:"rfrr,omitempty"`
 }
 
@@ -134,7 +134,7 @@ type AnalyticEvent struct {
 	IsNewSession bool   `json:"isNewSession" bson:"isNewSession"`
 	TimeOnPage   int    `json:"timeOnPage" bson:"timeOnPage"`
 	Referrer     string `json:"referrer" bson:"referrer"`
-	EntryPage    string `json:"entryPage" bson:"entryPage"`
+	Page         string `json:"page" bson:"page"`
 	UserAgent    string `json:"userAgent" bson:"userAgent"`
 }
 

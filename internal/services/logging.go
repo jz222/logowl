@@ -174,9 +174,9 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[prefix+"rfrr."+escaped] = 1
 	}
 
-	if analyticEvent.EntryPage != "" {
-		escaped := strings.Replace(analyticEvent.EntryPage, ".", "%2E", -1)
-		incrementUpdate[prefix+"entryPg."+escaped] = 1
+	if analyticEvent.Page != "" {
+		escaped := strings.Replace(analyticEvent.Page, ".", "%2E", -1)
+		incrementUpdate[prefix+"pgs."+escaped] = 1
 	}
 
 	// Increment existing data or create data in the respective document

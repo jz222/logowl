@@ -48,7 +48,7 @@ func (e *Event) UpdateError(filter, update bson.M) error {
 }
 
 func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, error) {
-	if mode != "today" && mode != "lastSevenDays" {
+	if mode != "today" && mode != "lastSevenDays" && mode != "lastFourteenDays" && mode != "lastMonth" {
 		return models.AnalyticInsights{}, errors.New("the provided mode is invalid")
 	}
 
@@ -73,10 +73,28 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 	}
 
 	if mode == "lastSevenDays" {
-		previousMonth, _ := dateTool.GetTimestampBeginnOfMonth()
+		previousMonth, _ := dateTool.GetTimestampBeginnOfPreviousMonth()
 		filter["month"] = bson.M{"$gte": previousMonth}
 
 		startTime, endTime, _ := dateTool.GetTimeframeLastSevenDays()
+		timeframeStart = startTime
+		timeframeEnd = endTime
+	}
+
+	if mode == "lastFourteenDays" {
+		previousMonth, _ := dateTool.GetTimestampBeginnOfPreviousMonth()
+		filter["month"] = bson.M{"$gte": previousMonth}
+
+		startTime, endTime, _ := dateTool.GetTimeframeLastFourteenDays()
+		timeframeStart = startTime
+		timeframeEnd = endTime
+	}
+
+	if mode == "lastMonth" {
+		previousMonth, _ := dateTool.GetTimestampBeginnOfPreviousMonth()
+		filter["month"] = bson.M{"$gte": previousMonth}
+
+		startTime, endTime, _ := dateTool.GetTimeframeLastMonth()
 		timeframeStart = startTime
 		timeframeEnd = endTime
 	}
