@@ -26,6 +26,10 @@ type Logging struct {
 	Request InterfaceRequest
 }
 
+// SaveError prepares the error data and saves
+// it to the database. If a similar error exits
+// already, it updates the existing data to
+// achieve aggregation.
 func (l *Logging) SaveError(errorEvent models.Error) {
 	service, err := l.Store.Service().FindOne(bson.M{"ticket": errorEvent.Ticket})
 	if err != nil {
@@ -92,6 +96,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	}
 }
 
+// SaveAnalyticEvent prepares analytic data and saves
+// it to the database. Every event is stored in a
+// document that represents the statistics of a
+// service for the current month.
 func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	_, err := l.Store.Service().CheckPresence(bson.M{"ticket": analyticEvent.Ticket})
 	if err != nil {
@@ -104,14 +112,19 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		Timestamp: timestamp.Unix(),
 	}
 
+	// Get timestamps for the beginn of the hour,
+	// beginn of the day and beginn of the month.
 	formattedHour, _ := dateTool.GetTimestampBeginnOfHour()
 	formattedHourString, _ := dateTool.GetTimestampBeginnOfHourString()
 	formattedDay, _ := dateTool.GetTimestampBeginnOfDay()
 	formattedMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 	humanReadableMonth, _ := dateTool.GetTimestampBeginnOfMonthHumanReadable()
 
+	// Create a prefix for the data that will be written in the document
+	// that represents the statistics of the current month.
 	prefix := fmt.Sprintf("%s.%s.", "data", formattedHourString)
 
+	// Prepare user agent information
 	ua := user_agent.New(analyticEvent.UserAgent)
 
 	isMobile := ua.Mobile()
@@ -164,6 +177,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[prefix+"entryPg."+escaped] = 1
 	}
 
+	// Increment existing data or create data in the respective document
 	_, err = l.Store.Analytics().FindOneAndUpdate(
 		bson.M{"ticket": analyticEvent.Ticket, "month": formattedMonth, "humanReadableMonth": humanReadableMonth},
 		bson.M{
@@ -176,6 +190,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	}
 }
 
+// GetLoggingService returns a logging service instance.
 func GetLoggingService(store store.InterfaceStore) Logging {
 	return Logging{store, &Request{}}
 }
