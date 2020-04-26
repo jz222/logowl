@@ -16,11 +16,14 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 )
 
+// InterfaceLogging represents the interface
+// of the logging service.
 type InterfaceLogging interface {
 	SaveError(models.Error)
 	SaveAnalyticEvent(models.AnalyticEvent)
 }
 
+// Logging represents a logging service instance.
 type Logging struct {
 	Store   store.InterfaceStore
 	Request InterfaceRequest
