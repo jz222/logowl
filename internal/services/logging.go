@@ -104,12 +104,13 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		Timestamp: timestamp.Unix(),
 	}
 
-	formattedHour, _ := dateTool.GetTimestampBeginnOfHourString()
+	formattedHour, _ := dateTool.GetTimestampBeginnOfHour()
+	formattedHourString, _ := dateTool.GetTimestampBeginnOfHourString()
 	formattedDay, _ := dateTool.GetTimestampBeginnOfDay()
 	formattedMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 	humanReadableMonth, _ := dateTool.GetTimestampBeginnOfMonthHumanReadable()
 
-	prefix := fmt.Sprintf("%s.%s.", "data", formattedHour)
+	prefix := fmt.Sprintf("%s.%s.", "data", formattedHourString)
 
 	ua := user_agent.New(analyticEvent.UserAgent)
 
@@ -120,6 +121,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 
 	incrementUpdate[prefix+"vsts"] = 1
 	incrementUpdate[prefix+"ttlTmOnPg"] = analyticEvent.TimeOnPage
+	incrementUpdate[prefix+"hour"] = formattedHour
 
 	switch browser {
 	case "Chrome":

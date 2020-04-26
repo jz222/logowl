@@ -98,6 +98,11 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		return response.Data[i].Day < response.Data[j].Day
 	})
 
+	// b, err := json.MarshalIndent(analyticDocuments, "", "  ")
+	// if err == nil {
+	// 	fmt.Println(string(b))
+	// }
+
 	var currentDay int64
 	var aggregatedData []models.AnalyticData
 

@@ -82,6 +82,19 @@ func (d DateTool) GetTimestampBeginnOfPreviousMonth() (int64, error) {
 	return previousMonth, nil
 }
 
+func (d DateTool) GetTimestampBeginnOfHour() (int64, error) {
+	parsed := time.Unix(d.Timestamp, 0)
+
+	hour := parsed.Format("2006-01-02 15")
+
+	formatted, err := time.Parse("2006-01-02 15", hour)
+	if err != nil {
+		return 0, err
+	}
+
+	return formatted.Unix(), nil
+}
+
 func (d DateTool) GetTimestampBeginnOfHourString() (string, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 

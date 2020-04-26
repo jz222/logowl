@@ -95,6 +95,7 @@ func (e *Error) IsValid() bool {
 
 type AnalyticData struct {
 	Day             int64          `json:"day" bson:"day"`
+	Hour            int64          `json:"hour" bson:"hour"`
 	Windows         int            `json:"windows,omitempty" bson:"wndws,omitempty"`
 	Mac             int            `json:"mc,omitempty" bson:"mc,omitempty"`
 	Linux           int            `json:"linux,omitempty" bson:"lnx,omitempty"`
