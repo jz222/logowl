@@ -5,11 +5,12 @@ import (
 	"time"
 )
 
+// DateTool represents a date tool utility.
 type DateTool struct {
 	Timestamp int64
 }
 
-// GetTimestampBeginnOfDay returns a new timestamp for the respective day.
+// GetTimestampBeginnOfDay returns a new timestamp for the beginn of the respective day.
 func (d DateTool) GetTimestampBeginnOfDay() (int64, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
@@ -23,7 +24,7 @@ func (d DateTool) GetTimestampBeginnOfDay() (int64, error) {
 	return formatted.Unix(), nil
 }
 
-// GetTimestampBeginnOfDayString returns a new timestamp for the respective day as string.
+// GetTimestampBeginnOfDayString returns a new timestamp for the beginn of the respective day as string.
 func (d DateTool) GetTimestampBeginnOfDayString() (string, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
@@ -37,6 +38,7 @@ func (d DateTool) GetTimestampBeginnOfDayString() (string, error) {
 	return strconv.FormatInt(formatted.Unix(), 10), nil
 }
 
+// GetTimestampBeginnOfMonth returns a new timestamp for the beginn of the respective month.
 func (d DateTool) GetTimestampBeginnOfMonth() (int64, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
@@ -52,6 +54,8 @@ func (d DateTool) GetTimestampBeginnOfMonth() (int64, error) {
 	return currentMonth, nil
 }
 
+// GetTimestampBeginnOfMonthHumanReadable returns a new timestamp for the beginn
+// of the respective month in human readable format.
 func (d DateTool) GetTimestampBeginnOfMonthHumanReadable() (string, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
@@ -67,6 +71,7 @@ func (d DateTool) GetTimestampBeginnOfMonthHumanReadable() (string, error) {
 	return currentMonthHumanReadable, nil
 }
 
+// GetTimestampBeginnOfPreviousMonth returns a new timestamp for the beginn of the previous month.
 func (d DateTool) GetTimestampBeginnOfPreviousMonth() (int64, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
@@ -82,6 +87,7 @@ func (d DateTool) GetTimestampBeginnOfPreviousMonth() (int64, error) {
 	return previousMonth, nil
 }
 
+// GetTimestampBeginnOfHour returns a new timestamp for the beginn of the respective hour.
 func (d DateTool) GetTimestampBeginnOfHour() (int64, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
@@ -95,6 +101,7 @@ func (d DateTool) GetTimestampBeginnOfHour() (int64, error) {
 	return formatted.Unix(), nil
 }
 
+// GetTimestampBeginnOfHourString returns a new timestamp for the beginn of the respective hour as string.
 func (d DateTool) GetTimestampBeginnOfHourString() (string, error) {
 	parsed := time.Unix(d.Timestamp, 0)
 
