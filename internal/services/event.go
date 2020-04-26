@@ -112,14 +112,15 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		}
 	}
 
-	sort.Slice(response.Data, func(i, j int) bool {
-		return response.Data[i].Day < response.Data[j].Day
-	})
-
-	// b, err := json.MarshalIndent(analyticDocuments, "", "  ")
-	// if err == nil {
-	// 	fmt.Println(string(b))
-	// }
+	if mode == "today" {
+		sort.Slice(response.Data, func(i, j int) bool {
+			return response.Data[i].Hour < response.Data[j].Hour
+		})
+	} else {
+		sort.Slice(response.Data, func(i, j int) bool {
+			return response.Data[i].Day < response.Data[j].Day
+		})
+	}
 
 	var currentDay int64
 	var aggregatedData []models.AnalyticData
@@ -148,6 +149,13 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
 		aggregatedData[prevIndex].TotalSessions += metrics.TotalSessions
 		aggregatedData[prevIndex].Visits += metrics.Visits
+		aggregatedData[prevIndex].Chrome += metrics.Chrome
+		aggregatedData[prevIndex].Firefox += metrics.Firefox
+		aggregatedData[prevIndex].Safari += metrics.Safari
+		aggregatedData[prevIndex].Opera += metrics.Opera
+		aggregatedData[prevIndex].Edge += metrics.Edge
+		aggregatedData[prevIndex].IE += metrics.IE
+		aggregatedData[prevIndex].OtherBrowsers += metrics.OtherBrowsers
 	}
 
 	if mode != "today" {
