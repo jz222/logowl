@@ -168,7 +168,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	case "Edge":
 		incrementUpdate[prefix+"e"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"e"] = 1
-	case "IE":
+	case "Internet Explorer":
 		incrementUpdate[prefix+"i"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"i"] = 1
 	default:

@@ -14,8 +14,8 @@ type TeamMember struct {
 	LastName   string             `json:"lastName" bson:"lastName"`
 	Email      string             `json:"email" bson:"email"`
 	Role       string             `json:"role" bson:"role"`
-	IsVerified bool               `json:"isVerified", bson:"isVerified"`
-	InviteCode string             `json:"inviteCode,omitempty", bson:"inviteCode,omitempty"`
+	IsVerified bool               `json:"isVerified" bson:"isVerified"`
+	InviteCode string             `json:"inviteCode,omitempty" bson:"inviteCode,omitempty"`
 }
 
 // User contains information about the user and their
