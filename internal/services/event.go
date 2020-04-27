@@ -63,6 +63,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 
 	filter := bson.M{"ticket": ticket}
 
+	// Calculate the timeframe for the current day
 	if mode == "today" {
 		currentMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 		filter["month"] = currentMonth
@@ -72,6 +73,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		timeframeEnd = endTime
 	}
 
+	// Calculate the timeframe for the last seven days
 	if mode == "lastSevenDays" {
 		previousMonth, _ := dateTool.GetTimestampBeginnOfPreviousMonth()
 		filter["month"] = bson.M{"$gte": previousMonth}
@@ -81,6 +83,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		timeframeEnd = endTime
 	}
 
+	// Calculate the timeframe for the last fourteen days
 	if mode == "lastFourteenDays" {
 		previousMonth, _ := dateTool.GetTimestampBeginnOfPreviousMonth()
 		filter["month"] = bson.M{"$gte": previousMonth}
@@ -90,6 +93,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		timeframeEnd = endTime
 	}
 
+	// Calculate the timeframe for the last month
 	if mode == "lastMonth" {
 		previousMonth, _ := dateTool.GetTimestampBeginnOfPreviousMonth()
 		filter["month"] = bson.M{"$gte": previousMonth}
@@ -99,11 +103,13 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		timeframeEnd = endTime
 	}
 
+	// Find all documents in the database that match the filter
 	analyticDocuments, err := e.Store.Analytics().Find(filter)
 	if err != nil {
 		return models.AnalyticInsights{}, err
 	}
 
+	// Filter all the days that are within the timeframe
 	for _, analyticDocument := range analyticDocuments {
 		for _, v := range analyticDocument.Data {
 			if v.Day >= timeframeStart && v.Day <= timeframeEnd {
@@ -112,6 +118,8 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		}
 	}
 
+	// Sort the results either by hour if the mode
+	// is set to today or by day for any other mode.
 	if mode == "today" {
 		sort.Slice(response.Data, func(i, j int) bool {
 			return response.Data[i].Hour < response.Data[j].Hour
@@ -129,6 +137,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 	totalNewVisitors := 0
 	totalSessions := 0
 
+	// Aggregate the data either by hour or by day
 	for _, metrics := range response.Data {
 		totalVisits += metrics.Visits
 		totalNewVisitors += metrics.NewVisitors
@@ -156,6 +165,17 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		aggregatedData[prevIndex].Edge += metrics.Edge
 		aggregatedData[prevIndex].IE += metrics.IE
 		aggregatedData[prevIndex].OtherBrowsers += metrics.OtherBrowsers
+
+		for k, v := range metrics.Referrer {
+			if _, ok := aggregatedData[prevIndex].Referrer[k]; ok {
+				aggregatedData[prevIndex].Referrer[k] += v
+			} else {
+				if aggregatedData[prevIndex].Referrer == nil {
+					aggregatedData[prevIndex].Referrer = map[string]int{}
+				}
+				aggregatedData[prevIndex].Referrer[k] = v
+			}
+		}
 	}
 
 	if mode != "today" {

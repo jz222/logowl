@@ -39,6 +39,8 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		return
 	}
 
+	// Add user agent information if the error event was sent
+	// by the browser adapter.
 	if errorEvent.Adapter.Type == "browser" {
 		ua := user_agent.New(errorEvent.UserAgent)
 
@@ -51,8 +53,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		errorEvent.Metrics.IsMobile = strconv.FormatBool(isMobile)
 	}
 
+	// Create a fingerprint based on error message, stacktrace and ticket
 	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
 
+	// Prepare timestamps
 	dateTool := utils.DateTool{
 		Timestamp: errorEvent.Timestamp,
 	}
@@ -64,6 +68,7 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 
 	timestamp := time.Now()
 
+	// Add information to the error event
 	errorEvent.Fingerprint = hex.EncodeToString(hash[:])
 	errorEvent.Evolution = map[string]int{convertedTimestamp: 1}
 	errorEvent.Count = 1
@@ -71,6 +76,8 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	errorEvent.CreatedAt = timestamp
 	errorEvent.UpdatedAt = timestamp
 
+	// Try to store the error event in the database.
+	// It will fail if a similar error already exists.
 	errorID, err := l.Store.Error().InsertOne(errorEvent)
 	if err == nil && service.SlackWebhookURL != "" {
 		errorEvent.ID = &errorID
@@ -80,6 +87,8 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		return
 	}
 
+	// If a similar error already exists,
+	// update the existing one.
 	key := fmt.Sprintf("%s.%s", "evolution", convertedTimestamp)
 
 	updatedErrorEvent, err := l.Store.Error().FindOneAndUpdate(
@@ -175,22 +184,27 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[aggregatedMonthlyDataPath+"b"] = 1
 	}
 
+	// Increase new visitor counter if the visitor
+	// hasn't been on the website before
 	if analyticEvent.IsNewVisitor {
 		incrementUpdate[prefix+"n"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"n"] = 1
 	}
 
+	// Increase session counter if it's a new session
 	if analyticEvent.IsNewSession {
 		incrementUpdate[prefix+"tS"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"tS"] = 1
 	}
 
+	// Increase referrer counter if available
 	if analyticEvent.Referrer != "" {
 		escaped := strings.Replace(analyticEvent.Referrer, ".", "%2E", -1)
 		incrementUpdate[prefix+"r."+escaped] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"r."+escaped] = 1
 	}
 
+	// Increase page counter if available
 	if analyticEvent.Page != "" {
 		escaped := strings.Replace(analyticEvent.Page, ".", "%2E", -1)
 		incrementUpdate[prefix+"p."+escaped] = 1
