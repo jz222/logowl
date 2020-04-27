@@ -137,64 +137,64 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 
 	incrementUpdate := bson.M{}
 
-	incrementUpdate[prefix+"vsts"] = 1
-	incrementUpdate[aggregatedMonthlyDataPath+"vsts"] = 1
+	incrementUpdate[prefix+"v"] = 1
+	incrementUpdate[aggregatedMonthlyDataPath+"v"] = 1
 
-	incrementUpdate[prefix+"ttlTmOnPg"] = analyticEvent.TimeOnPage
-	incrementUpdate[aggregatedMonthlyDataPath+"ttlTmOnPg"] = analyticEvent.TimeOnPage
+	incrementUpdate[prefix+"tT"] = analyticEvent.TimeOnPage
+	incrementUpdate[aggregatedMonthlyDataPath+"tT"] = analyticEvent.TimeOnPage
 
 	switch browser {
 	case "Chrome":
-		incrementUpdate[prefix+"chrm"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"chrm"] = 1
+		incrementUpdate[prefix+"c"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"c"] = 1
 	case "Safari":
-		incrementUpdate[prefix+"sfr"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"sfr"] = 1
+		incrementUpdate[prefix+"s"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"s"] = 1
 	case "Opera":
-		incrementUpdate[prefix+"opr"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"opr"] = 1
+		incrementUpdate[prefix+"o"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"o"] = 1
 	case "Firefox":
-		incrementUpdate[prefix+"frfx"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"frfx"] = 1
+		incrementUpdate[prefix+"f"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"f"] = 1
 	case "Edge":
-		incrementUpdate[prefix+"edg"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"edg"] = 1
+		incrementUpdate[prefix+"e"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"e"] = 1
 	case "IE":
-		incrementUpdate[prefix+"ie"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"ie"] = 1
+		incrementUpdate[prefix+"i"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"i"] = 1
 	default:
-		incrementUpdate[prefix+"othrBrwsrs"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"othrBrwsrs"] = 1
+		incrementUpdate[prefix+"oB"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"oB"] = 1
 	}
 
 	if isMobile {
 		incrementUpdate[prefix+"mbl"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"mbl"] = 1
 	} else {
-		incrementUpdate[prefix+"brwsr"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"brwsr"] = 1
+		incrementUpdate[prefix+"b"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"b"] = 1
 	}
 
 	if analyticEvent.IsNewVisitor {
-		incrementUpdate[prefix+"nwVstrs"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"nwVstrs"] = 1
+		incrementUpdate[prefix+"n"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"n"] = 1
 	}
 
 	if analyticEvent.IsNewSession {
-		incrementUpdate[prefix+"ttlSssns"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"ttlSssns"] = 1
+		incrementUpdate[prefix+"tS"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"tS"] = 1
 	}
 
 	if analyticEvent.Referrer != "" {
 		escaped := strings.Replace(analyticEvent.Referrer, ".", "%2E", -1)
-		incrementUpdate[prefix+"rfrr."+escaped] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"rfrr."+escaped] = 1
+		incrementUpdate[prefix+"r."+escaped] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"r."+escaped] = 1
 	}
 
 	if analyticEvent.Page != "" {
 		escaped := strings.Replace(analyticEvent.Page, ".", "%2E", -1)
-		incrementUpdate[prefix+"pgs."+escaped] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"pgs."+escaped] = 1
+		incrementUpdate[prefix+"p."+escaped] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"p."+escaped] = 1
 	}
 
 	// Increment existing data or create data in the respective document

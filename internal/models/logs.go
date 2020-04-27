@@ -96,26 +96,26 @@ func (e *Error) IsValid() bool {
 type AnalyticData struct {
 	Day             int64          `json:"day" bson:"day"`
 	Hour            int64          `json:"hour" bson:"hour"`
-	Windows         int            `json:"windows,omitempty" bson:"wndws,omitempty"`
-	Mac             int            `json:"mc,omitempty" bson:"mc,omitempty"`
-	Linux           int            `json:"linux,omitempty" bson:"lnx,omitempty"`
-	OtherPlatforms  int            `json:"otherPlatforms,omitempty" bson:"othrPltfrms,omitempty"`
-	Chrome          int            `json:"chrome,omitempty" bson:"chrm,omitempty"`
-	Firefox         int            `json:"firefox,omitempty" bson:"frfx,omitempty"`
-	Safari          int            `json:"safari,omitempty" bson:"sfr,omitempty"`
-	Edge            int            `json:"edge,omitempty" bson:"edg,omitempty"`
-	IE              int            `json:"ie,omitempty" bson:"ie,omitempty"`
-	Opera           int            `json:"opera,omitempty" bson:"opr,omitempty"`
-	OtherBrowsers   int            `json:"otherBrowsers,omitempty" bson:"othrBrwsrs,omitempty"`
+	Windows         int            `json:"windows,omitempty" bson:"w,omitempty"`
+	Mac             int            `json:"mc,omitempty" bson:"m,omitempty"`
+	Linux           int            `json:"linux,omitempty" bson:"l,omitempty"`
+	OtherPlatforms  int            `json:"otherPlatforms,omitempty" bson:"oP,omitempty"`
+	Chrome          int            `json:"chrome,omitempty" bson:"c,omitempty"`
+	Firefox         int            `json:"firefox,omitempty" bson:"f,omitempty"`
+	Safari          int            `json:"safari,omitempty" bson:"s,omitempty"`
+	Edge            int            `json:"edge,omitempty" bson:"e,omitempty"`
+	IE              int            `json:"ie,omitempty" bson:"i,omitempty"`
+	Opera           int            `json:"opera,omitempty" bson:"o,omitempty"`
+	OtherBrowsers   int            `json:"otherBrowsers,omitempty" bson:"oB,omitempty"`
 	Mobile          int            `json:"mobile,omitempty" bson:"mbl,omitempty"`
-	Tablet          int            `json:"tablet,omitempty" bson:"tblt,omitempty"`
-	Browser         int            `json:"browser,omitempty" bson:"brwsr,omitempty"`
-	Visits          int            `json:"visits,omitempty" bson:"vsts,omitempty"`
-	NewVisitors     int            `json:"newVisitors,omitempty" bson:"nwVstrs,omitempty"`
-	TotalSessions   int            `json:"sessions,omitempty" bson:"ttlSssns,omitempty"`
-	TotalTimeOnPage int            `json:"totalTimeOnPage,omitempty" bson:"ttlTmOnPg,omitempty"`
-	Pages           map[string]int `json:"pages,omitempty" bson:"pgs,omitempty"`
-	Referrer        map[string]int `json:"referrer,omitempty" bson:"rfrr,omitempty"`
+	Tablet          int            `json:"tablet,omitempty" bson:"t,omitempty"`
+	Browser         int            `json:"browser,omitempty" bson:"b,omitempty"`
+	Visits          int            `json:"visits,omitempty" bson:"v,omitempty"`
+	NewVisitors     int            `json:"newVisitors,omitempty" bson:"n,omitempty"`
+	TotalSessions   int            `json:"sessions,omitempty" bson:"tS,omitempty"`
+	TotalTimeOnPage int            `json:"totalTimeOnPage,omitempty" bson:"tT,omitempty"`
+	Pages           map[string]int `json:"pages,omitempty" bson:"p,omitempty"`
+	Referrer        map[string]int `json:"referrer,omitempty" bson:"r,omitempty"`
 }
 
 // Analytics represents a ressource in the database.
