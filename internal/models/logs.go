@@ -65,6 +65,7 @@ type Error struct {
 	UpdatedAt        time.Time            `json:"updatedAt" bson:"updatedAt"`
 }
 
+// IsValid validates an error event to make sure the data is not too large.
 func (e *Error) IsValid() bool {
 	if len(e.Logs) > 50 {
 		return false
@@ -93,6 +94,7 @@ func (e *Error) IsValid() bool {
 	return true
 }
 
+// AnalyticData contains aggregated analytic data.
 type AnalyticData struct {
 	Day             int64          `json:"day" bson:"day"`
 	Hour            int64          `json:"hour" bson:"hour"`
@@ -140,6 +142,7 @@ type AnalyticEvent struct {
 	UserAgent    string `json:"userAgent" bson:"userAgent"`
 }
 
+// AnalyticInsights containes aggeregated analytic data for a specific time frame.
 type AnalyticInsights struct {
 	TimeframeStart   int64          `json:"timeframeStart"`
 	TimeframeEnd     int64          `json:"timeframeEnd"`
