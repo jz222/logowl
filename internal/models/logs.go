@@ -118,16 +118,18 @@ type AnalyticData struct {
 	Referrer        map[string]int `json:"referrer,omitempty" bson:"rfrr,omitempty"`
 }
 
+// Analytics represents a ressource in the database.
 type Analytics struct {
-	Ticket             string                  `json:"ticket" bson:"ticket"`
-	Month              int64                   `json:"month" bson:"month"`
-	HumanReadableMonth string                  `json:"humanReadableMonth" bson:"humanReadableMonth"`
-	Data               map[string]AnalyticData `json:"data" bson:"data"`
-	CreatedAt          time.Time               `json:"createdAt" bson:"createdAt"`
-	UpdatedAt          time.Time               `json:"updatedAt" bson:"updatedAt"`
+	Ticket                string                  `json:"ticket" bson:"ticket"`
+	Month                 int64                   `json:"month" bson:"month"`
+	HumanReadableMonth    string                  `json:"humanReadableMonth" bson:"humanReadableMonth"`
+	AggregatedMonthlyData AnalyticData            `json:"aggregatedMonthlyData" bson:"aggregatedMonthlyData"`
+	Data                  map[string]AnalyticData `json:"data" bson:"data"`
+	CreatedAt             time.Time               `json:"createdAt" bson:"createdAt"`
+	UpdatedAt             time.Time               `json:"updatedAt" bson:"updatedAt"`
 }
 
-// AnalyticEvent contains information about a page visitor.
+// AnalyticEvent contains information about a page visitor sent by the adapter.
 type AnalyticEvent struct {
 	Ticket       string `json:"ticket" bson:"ticket"`
 	IsNewVisitor bool   `json:"isNewVisitor" bson:"isNewVisitor"`
