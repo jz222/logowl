@@ -55,7 +55,7 @@ func (o *Organization) Delete(organizationID primitive.ObjectID) error {
 		allTickets = append(allTickets, service.Ticket)
 	}
 
-	c := make(chan error, 4)
+	c := make(chan error, 5)
 
 	go func() {
 		if len(allServiceIDs) == 0 {
@@ -74,6 +74,16 @@ func (o *Organization) Delete(organizationID primitive.ObjectID) error {
 		}
 
 		_, err := o.Store.Error().DeleteMany(bson.M{"ticket": bson.M{"$in": allTickets}})
+		c <- err
+	}()
+
+	go func() {
+		if len(allTickets) == 0 {
+			c <- nil
+			return
+		}
+
+		_, err := o.Store.Analytics().DeleteMany(bson.M{"ticket": bson.M{"$in": allTickets}})
 		c <- err
 	}()
 

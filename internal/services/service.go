@@ -29,6 +29,7 @@ func (s *Service) CheckPresence(filter bson.M) (bool, error) {
 
 func (s *Service) Create(service models.Service) (models.Service, error) {
 	timestamp := time.Now()
+
 	service.CreatedAt = timestamp
 	service.UpdatedAt = timestamp
 
@@ -58,10 +59,37 @@ func (s *Service) Create(service models.Service) (models.Service, error) {
 
 	service.ID = result
 
+	analytics := models.Analytics{
+		Ticket:    ticket,
+		Data:      map[string]models.AnalyticData{},
+		CreatedAt: timestamp,
+		UpdatedAt: timestamp,
+	}
+
+	_, err = s.Store.Analytics().InsertOne(analytics)
+	if err != nil {
+		return models.Service{}, err
+	}
+
 	return service, nil
 }
 
 func (s *Service) Delete(filter bson.M) (int64, error) {
+	service, err := s.Store.Service().FindOne(filter)
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = s.Store.Error().DeleteMany(bson.M{"ticket": service.Ticket})
+	if err != nil {
+		return 0, err
+	}
+
+	_, err = s.Store.Analytics().DeleteMany(bson.M{"ticket": service.Ticket})
+	if err != nil {
+		return 0, err
+	}
+
 	return s.Store.Service().DeleteOne(filter)
 }
 
