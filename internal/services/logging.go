@@ -53,6 +53,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		errorEvent.Metrics.IsMobile = strconv.FormatBool(isMobile)
 	}
 
+	fmt.Println(errorEvent.Message)
+	fmt.Println(errorEvent.Stacktrace)
+	fmt.Println(errorEvent.Ticket)
+
 	// Create a fingerprint based on error message, stacktrace and ticket
 	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
 
