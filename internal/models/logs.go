@@ -55,6 +55,7 @@ type Error struct {
 	UserAgent        string               `json:"userAgent" bson:"userAgent"`
 	Metrics          Metrics              `json:"metrics" bson:"metrics"`
 	UserInteractions []UserInteraction    `json:"userInteractions,omitempty" bson:"userInteractions,omitempty"`
+	AnonymizeData    bool                 `json:"anonymizeData" bson:"-"`
 	ClientIP         string               `json:"clientIp" bson:"clientIp"`
 	Count            int                  `json:"count,omitempty" bson:"count,omitempty"`
 	Timestamp        int64                `json:"timestamp" bson:"timestamp"`

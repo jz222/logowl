@@ -20,7 +20,6 @@ type LoggingControllers struct {
 func (l *LoggingControllers) RegisterError(c *gin.Context) {
 	errorEvent := models.Error{
 		Badges:    map[string]string{},
-		ClientIP:  c.ClientIP(),
 		UserAgent: c.Request.UserAgent(),
 		Count:     1,
 		Timestamp: time.Now().Unix(),
@@ -30,6 +29,10 @@ func (l *LoggingControllers) RegisterError(c *gin.Context) {
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 		return
+	}
+
+	if !errorEvent.AnonymizeData {
+		errorEvent.ClientIP = c.ClientIP()
 	}
 
 	if !errorEvent.IsValid() {
