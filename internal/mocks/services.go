@@ -10,6 +10,8 @@ type LoggingService struct{}
 
 func (l *LoggingService) SaveError(e models.Error) {}
 
+func (l *LoggingService) SaveAnalyticEvent(a models.AnalyticEvent) {}
+
 type UserService struct{}
 
 func (u *UserService) FetchAllInformation(f bson.M) (models.User, error) {

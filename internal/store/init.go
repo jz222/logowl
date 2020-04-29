@@ -13,6 +13,7 @@ import (
 )
 
 const (
+	CollectionAnalytics     = "analytics"
 	CollectionErrors        = "errors"
 	CollectionOrganizations = "organizations"
 	CollectionServices      = "services"
@@ -26,6 +27,7 @@ type InterfaceStore interface {
 	Service() interfaceService
 	Organization() interfaceOrganization
 	Error() interfaceErrorEvent
+	Analytics() interfaceAnalytics
 }
 
 type store struct {
@@ -69,6 +71,15 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
+	collection = s.db.Collection(CollectionAnalytics)
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.M{"ticket": 1, "month": 1},
+			Options: options.Index().SetUnique(true),
+		},
+	}
+	collection.Indexes().CreateMany(ctx, indexModels)
+
 	log.Println("✅ Connection to MongoDB established")
 }
 
@@ -92,6 +103,10 @@ func (s *store) Organization() interfaceOrganization {
 
 func (s *store) Error() interfaceErrorEvent {
 	return &errorEvent{s.db}
+}
+
+func (s *store) Analytics() interfaceAnalytics {
+	return &analytics{s.db}
 }
 
 func GetStore() InterfaceStore {
