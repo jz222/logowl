@@ -20,7 +20,7 @@ type Organization struct {
 	ReceivedRequests map[string]struct {
 		Errors    int `json:"errors" bson:"errors"`
 		Analytics int `json:"analytics" bson:"analytics"`
-	} `json:"receivedRequests" bson:"receivedRequests"`
+	} `json:"receivedRequests,omitempty" bson:"receivedRequests"`
 	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 	UpdatedAt time.Time `json:"upadtedAt" bson:"updatedAt"`
 }
