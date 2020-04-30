@@ -44,13 +44,13 @@ func loadEnvAsInt(key string) int {
 }
 
 var envVariables = models.Keys{
-	MONGO_URI:              loadEnvAsString("MONGO_URI"),
-	MONGO_DB_NAME:          loadEnvAsString("MONGO_DB_NAME"),
-	PORT:                   loadEnvAsString("PORT"),
-	SECRET:                 loadEnvAsString("SECRET"),
-	CLIENT_URL:             loadEnvAsString("CLIENT_URL"),
-	TOTAL_MONTHLY_REQUESTS: loadEnvAsInt("TOTAL_MONTHLY_REQUESTS"),
-	IS_SELFHOSTED:          loadEnvAsString("IS_SELFHOSTED") == "true",
+	MONGO_URI:             loadEnvAsString("MONGO_URI"),
+	MONGO_DB_NAME:         loadEnvAsString("MONGO_DB_NAME"),
+	PORT:                  loadEnvAsString("PORT"),
+	SECRET:                loadEnvAsString("SECRET"),
+	CLIENT_URL:            loadEnvAsString("CLIENT_URL"),
+	MONTHLY_REQUEST_LIMIT: loadEnvAsInt("MONTHLY_REQUEST_LIMIT"),
+	IS_SELFHOSTED:         loadEnvAsString("IS_SELFHOSTED") == "true",
 }
 
 // GetKeys returns all environment variables. It can also be

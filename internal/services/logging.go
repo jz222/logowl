@@ -9,7 +9,6 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jz222/loggy/internal/keys"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
@@ -56,7 +55,7 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	}
 
 	requestsInCurrentPeriod, ok := organization.ReceivedRequests[strconv.FormatInt(timestampMonth, 10)]
-	if ok && (requestsInCurrentPeriod.Errors+requestsInCurrentPeriod.Analytics) > keys.GetKeys().TOTAL_MONTHLY_REQUESTS {
+	if ok && (requestsInCurrentPeriod.Errors+requestsInCurrentPeriod.Analytics) > organization.MonthlyRequestLimit {
 		return
 	}
 
@@ -165,7 +164,7 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	}
 
 	requestsInCurrentPeriod, ok := organization.ReceivedRequests[strconv.FormatInt(formattedMonth, 10)]
-	if ok && (requestsInCurrentPeriod.Errors+requestsInCurrentPeriod.Analytics) > keys.GetKeys().TOTAL_MONTHLY_REQUESTS {
+	if ok && (requestsInCurrentPeriod.Errors+requestsInCurrentPeriod.Analytics) > organization.MonthlyRequestLimit {
 		return
 	}
 

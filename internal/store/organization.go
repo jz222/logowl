@@ -81,7 +81,7 @@ func (o *organization) FindOneAndUpdate(filter, update bson.M) (models.Organizat
 		options.MergeFindOneAndUpdateOptions().SetReturnDocument(options.After),
 	)
 	if res.Err() != nil {
-		return models.Organization{}, nil
+		return models.Organization{}, res.Err()
 	}
 
 	var organization models.Organization

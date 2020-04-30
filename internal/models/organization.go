@@ -20,9 +20,10 @@ type Organization struct {
 	ReceivedRequests map[string]struct {
 		Errors    int `json:"errors" bson:"errors"`
 		Analytics int `json:"analytics" bson:"analytics"`
-	} `json:"receivedRequests,omitempty" bson:"receivedRequests"`
-	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
-	UpdatedAt time.Time `json:"upadtedAt" bson:"updatedAt"`
+	} `json:"receivedRequests,omitempty" bson:"receivedRequests,omitempty"`
+	MonthlyRequestLimit int       `json:"monthlyRequestLimit,omitempty" bson:"monthlyRequestLimit,omitempty"`
+	CreatedAt           time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt           time.Time `json:"upadtedAt" bson:"updatedAt"`
 }
 
 // Validate validates the data of an organization.
