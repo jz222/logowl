@@ -8,11 +8,9 @@ import (
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
-	"go.mongodb.org/mongo-driver/mongo/options"
 )
 
 type interfaceService interface {
-	CheckPresence(bson.M) (bool, error)
 	InsertOne(models.Service) (primitive.ObjectID, error)
 	DeleteOne(bson.M) (int64, error)
 	DeleteMany(bson.M) (int64, error)
@@ -23,13 +21,6 @@ type interfaceService interface {
 
 type service struct {
 	db *mongo.Database
-}
-
-func (s *service) CheckPresence(filter bson.M) (bool, error) {
-	collection := s.db.Collection(CollectionServices)
-	count, err := collection.CountDocuments(context.TODO(), filter, options.Count().SetLimit(1))
-
-	return count > 0, err
 }
 
 func (s *service) InsertOne(service models.Service) (primitive.ObjectID, error) {
