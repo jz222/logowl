@@ -16,6 +16,7 @@ type interfaceOrganization interface {
 	InsertOne(models.Organization) (primitive.ObjectID, error)
 	DeleteOne(bson.M) (int64, error)
 	FindOne(bson.M) (models.Organization, error)
+	FindOneAndUpdate(filter, update bson.M) (models.Organization, error)
 }
 
 type organization struct {
@@ -62,6 +63,30 @@ func (o *organization) FindOne(filter bson.M) (models.Organization, error) {
 	}
 
 	err := queryResult.Decode(&organization)
+	if err != nil {
+		return models.Organization{}, err
+	}
+
+	return organization, nil
+}
+
+func (o *organization) FindOneAndUpdate(filter, update bson.M) (models.Organization, error) {
+	collection := o.db.Collection(CollectionOrganizations)
+
+	res := collection.FindOneAndUpdate(
+		context.TODO(),
+		filter,
+		update,
+		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
+		options.MergeFindOneAndUpdateOptions().SetReturnDocument(options.After),
+	)
+	if res.Err() != nil {
+		return models.Organization{}, nil
+	}
+
+	var organization models.Organization
+
+	err := res.Decode(&organization)
 	if err != nil {
 		return models.Organization{}, err
 	}
