@@ -214,8 +214,8 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[prefix+"mbl"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"mbl"] = 1
 	} else {
-		incrementUpdate[prefix+"b"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"b"] = 1
+		incrementUpdate[prefix+"d"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"d"] = 1
 	}
 
 	// Increase new visitor counter if the visitor
