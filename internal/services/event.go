@@ -165,6 +165,9 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		aggregatedData[prevIndex].Edge += metrics.Edge
 		aggregatedData[prevIndex].IE += metrics.IE
 		aggregatedData[prevIndex].OtherBrowsers += metrics.OtherBrowsers
+		aggregatedData[prevIndex].Mobile += metrics.Mobile
+		aggregatedData[prevIndex].Tablet += metrics.Tablet
+		aggregatedData[prevIndex].Desktop += metrics.Desktop
 
 		for k, v := range metrics.Referrer {
 			if _, ok := aggregatedData[prevIndex].Referrer[k]; ok {

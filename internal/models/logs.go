@@ -112,7 +112,7 @@ type AnalyticData struct {
 	OtherBrowsers   int            `json:"otherBrowsers,omitempty" bson:"oB,omitempty"`
 	Mobile          int            `json:"mobile,omitempty" bson:"mbl,omitempty"`
 	Tablet          int            `json:"tablet,omitempty" bson:"t,omitempty"`
-	Browser         int            `json:"browser,omitempty" bson:"b,omitempty"`
+	Desktop         int            `json:"desktop,omitempty" bson:"d,omitempty"`
 	Visits          int            `json:"visits,omitempty" bson:"v,omitempty"`
 	NewVisitors     int            `json:"newVisitors,omitempty" bson:"n,omitempty"`
 	TotalSessions   int            `json:"sessions,omitempty" bson:"tS,omitempty"`

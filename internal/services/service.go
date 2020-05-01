@@ -11,7 +11,6 @@ import (
 )
 
 type InterfaceService interface {
-	CheckPresence(bson.M) (bool, error)
 	Create(models.Service) (models.Service, error)
 	Delete(bson.M) (int64, error)
 	Find(bson.M) ([]models.Service, error)
@@ -21,10 +20,6 @@ type InterfaceService interface {
 
 type Service struct {
 	Store store.InterfaceStore
-}
-
-func (s *Service) CheckPresence(filter bson.M) (bool, error) {
-	return s.Store.Service().CheckPresence(filter)
 }
 
 func (s *Service) Create(service models.Service) (models.Service, error) {

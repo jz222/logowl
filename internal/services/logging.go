@@ -39,6 +39,26 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		return
 	}
 
+	// Validate request limit
+	dateTool := utils.DateTool{
+		Timestamp: time.Now().Unix(),
+	}
+
+	timestampMonth, _ := dateTool.GetTimestampBeginnOfMonth()
+
+	organization, err := l.Store.Organization().FindOneAndUpdate(
+		bson.M{"_id": service.OrganizationID},
+		bson.M{"$inc": bson.M{fmt.Sprintf("receivedRequests.%d.errors", timestampMonth): 1}},
+	)
+	if err != nil {
+		return
+	}
+
+	requestsInCurrentPeriod, ok := organization.ReceivedRequests[strconv.FormatInt(timestampMonth, 10)]
+	if ok && (requestsInCurrentPeriod.Errors+requestsInCurrentPeriod.Analytics) > organization.MonthlyRequestLimit {
+		return
+	}
+
 	// Add user agent information if the error event was sent
 	// by the browser adapter.
 	if errorEvent.Adapter.Type == "browser" {
@@ -57,7 +77,7 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	hash := md5.Sum([]byte(errorEvent.Message + errorEvent.Stacktrace + errorEvent.Ticket))
 
 	// Prepare timestamps
-	dateTool := utils.DateTool{
+	dateTool = utils.DateTool{
 		Timestamp: errorEvent.Timestamp,
 	}
 
@@ -113,7 +133,7 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 // document that represents the statistics of a
 // service for the current month.
 func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
-	_, err := l.Store.Service().CheckPresence(bson.M{"ticket": analyticEvent.Ticket})
+	service, err := l.Store.Service().FindOne(bson.M{"ticket": analyticEvent.Ticket})
 	if err != nil {
 		return
 	}
@@ -133,6 +153,20 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 	formattedDay, _ := dateTool.GetTimestampBeginnOfDay()
 	formattedMonth, _ := dateTool.GetTimestampBeginnOfMonth()
 	humanReadableMonth, _ := dateTool.GetTimestampBeginnOfMonthHumanReadable()
+
+	// Validate requests
+	organization, err := l.Store.Organization().FindOneAndUpdate(
+		bson.M{"_id": service.OrganizationID},
+		bson.M{"$inc": bson.M{fmt.Sprintf("receivedRequests.%d.analytics", formattedMonth): 1}},
+	)
+	if err != nil {
+		return
+	}
+
+	requestsInCurrentPeriod, ok := organization.ReceivedRequests[strconv.FormatInt(formattedMonth, 10)]
+	if ok && (requestsInCurrentPeriod.Errors+requestsInCurrentPeriod.Analytics) > organization.MonthlyRequestLimit {
+		return
+	}
 
 	// Create a prefix for the data that will be written in the document
 	// that represents the statistics of the current month.
@@ -180,8 +214,8 @@ func (l *Logging) SaveAnalyticEvent(analyticEvent models.AnalyticEvent) {
 		incrementUpdate[prefix+"mbl"] = 1
 		incrementUpdate[aggregatedMonthlyDataPath+"mbl"] = 1
 	} else {
-		incrementUpdate[prefix+"b"] = 1
-		incrementUpdate[aggregatedMonthlyDataPath+"b"] = 1
+		incrementUpdate[prefix+"d"] = 1
+		incrementUpdate[aggregatedMonthlyDataPath+"d"] = 1
 	}
 
 	// Increase new visitor counter if the visitor

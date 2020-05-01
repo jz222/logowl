@@ -71,20 +71,22 @@ docker run \
 --env MONGO_URI=mongodb://admin:password0@ds263108.mlab.com:63108/loggy-test\?retryWrites=false \
 --env MONGO_DB_NAME=loggy-test \
 --env CLIENT_URL=http://localhost:3000 \
+--env MONTHLY_REQUEST_LIMIT=50000
 --env IS_SELFHOSTED=true \
 -p 2800:2800 \
 -it \
-jz222/loggy:0.4.0
+jz222/loggy:0.5.0
 ```
 
 | Environment Variable | Description                                                                                                                                                                              |
 |----------------------|------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
-| PORT                 | Determines the port that the server should listen on.                                                                                                                                    |
-| SECRET               | Secret key that is used to sign JWT's. Make sure to provide a strong key.                                                                                                                |
-| MONGO_URI            | The connection string of the MongoDB. Please refer to the [MongoDB documentation](https://docs.mongodb.com/manual/reference/connection-string/) for the format of the connection string. |
-| MONGO_DB_NAME        | The name of the actual database.                                                                                                                                                         |
-| CLIENT_URL           | The URL of the LOGGY client.                                                                                                                                                         |
-| IS_SELFHOSTED        | Can either be `true` or `false`. If this environment variable is set to `true`, only one organization can be set up.                                                                 |
+| PORT                   | Determines the port that the server should listen on.                                                                                                                                    |
+| SECRET                 | Secret key that is used to sign JWT's. Make sure to provide a strong key.                                                                                                                |
+| MONGO_URI              | The connection string of the MongoDB. Please refer to the [MongoDB documentation](https://docs.mongodb.com/manual/reference/connection-string/) for the format of the connection string. |
+| MONGO_DB_NAME          | The name of the actual database.                                                                                                                                                         |
+| CLIENT_URL             | The URL of the LOGGY client.                                                                                                                                                         |
+| MONTHLY_REQUEST_LIMIT  | Defines the maximum amount of requests tracked per month. If the limit was reached, incoming requests will no longer be tracked.     |
+| IS_SELFHOSTED          | Can either be `true` or `false`. If this environment variable is set to `true`, only one organization can be set up.                                                                 |
 
 ## Development Setup
 

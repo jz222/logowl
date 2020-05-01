@@ -5,6 +5,7 @@ import (
 	"regexp"
 	"time"
 
+	"github.com/jz222/loggy/internal/keys"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"go.mongodb.org/mongo-driver/bson"
@@ -28,6 +29,7 @@ func (o *Organization) CheckPresence(filter bson.M) (bool, error) {
 
 func (o *Organization) Create(organization models.Organization) (primitive.ObjectID, error) {
 	timestamp := time.Now()
+	organization.MonthlyRequestLimit = keys.GetKeys().MONTHLY_REQUEST_LIMIT
 	organization.CreatedAt = timestamp
 	organization.UpdatedAt = timestamp
 
