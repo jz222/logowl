@@ -179,6 +179,17 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 				aggregatedData[prevIndex].Referrer[k] = v
 			}
 		}
+
+		for k, v := range metrics.Pages {
+			if _, ok := aggregatedData[prevIndex].Pages[k]; ok {
+				aggregatedData[prevIndex].Pages[k] += v
+			} else {
+				if aggregatedData[prevIndex].Pages == nil {
+					aggregatedData[prevIndex].Pages = map[string]int{}
+				}
+				aggregatedData[prevIndex].Pages[k] = v
+			}
+		}
 	}
 
 	if mode != "today" {
