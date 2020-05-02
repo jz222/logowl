@@ -169,6 +169,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		aggregatedData[prevIndex].Mobile += metrics.Mobile
 		aggregatedData[prevIndex].Tablet += metrics.Tablet
 		aggregatedData[prevIndex].Desktop += metrics.Desktop
+		aggregatedData[prevIndex].TotalTimeOnPage += metrics.TotalTimeOnPage
 
 		// Aggregate referrers map
 		for k, v := range metrics.Referrer {
