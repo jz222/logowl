@@ -155,6 +155,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 
 		prevIndex := len(aggregatedData) - 1
 
+		// Aggregate flat data
 		aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
 		aggregatedData[prevIndex].TotalSessions += metrics.TotalSessions
 		aggregatedData[prevIndex].Visits += metrics.Visits
@@ -169,6 +170,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		aggregatedData[prevIndex].Tablet += metrics.Tablet
 		aggregatedData[prevIndex].Desktop += metrics.Desktop
 
+		// Aggregate referrers map
 		for k, v := range metrics.Referrer {
 			if _, ok := aggregatedData[prevIndex].Referrer[k]; ok {
 				aggregatedData[prevIndex].Referrer[k] += v
@@ -180,6 +182,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 			}
 		}
 
+		// Aggregate visited pages map
 		for k, v := range metrics.Pages {
 			if _, ok := aggregatedData[prevIndex].Pages[k]; ok {
 				aggregatedData[prevIndex].Pages[k] += v
