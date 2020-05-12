@@ -126,6 +126,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 	if service.SlackWebhookURL != "" {
 		l.Request.SendSlackAlert(service, updatedErrorEvent)
 	}
+
+	if service.WebhookURL != "" {
+		l.Request.Post(updatedErrorEvent, service.WebhookURL)
+	}
 }
 
 // SaveAnalyticEvent prepares analytic data and saves

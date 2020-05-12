@@ -14,6 +14,7 @@ import (
 
 type InterfaceRequest interface {
 	SendSlackAlert(models.Service, models.Error) error
+	Post(payload interface{}, url string) error
 }
 
 type Request struct{}
@@ -66,6 +67,34 @@ func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error
 	}
 
 	req, err := http.NewRequest("POST", service.SlackWebhookURL, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
+
+	defer res.Body.Close()
+
+	return nil
+}
+
+func (r *Request) Post(payload interface{}, url string) error {
+	timeout := time.Duration(10 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+
+	body, err := json.Marshal(payload)
+	if err != nil {
+		return err
+	}
+
+	req, err := http.NewRequest("POST", url, bytes.NewBuffer(body))
 	if err != nil {
 		return err
 	}
