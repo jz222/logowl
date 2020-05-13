@@ -105,6 +105,11 @@ func (s *ServiceController) Edit(c *gin.Context) {
 		update["slackWebhookURL"] = slackWebHookURL
 	}
 
+	webhookURL, ok := serviceUpdate["webhookURL"].(string)
+	if ok {
+		update["webhookURL"] = webhookURL
+	}
+
 	_, err = s.ServiceService.FindOneAndUpdate(filter, update)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
