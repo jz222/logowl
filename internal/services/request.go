@@ -12,13 +12,16 @@ import (
 	"github.com/jz222/loggy/internal/models"
 )
 
+// InterfaceRequest represents the interface for the request service.
 type InterfaceRequest interface {
 	SendSlackAlert(models.Service, models.Error) error
 	Post(payload interface{}, url string) error
 }
 
+// Request contains methods to send HTTP requests.
 type Request struct{}
 
+// SendSlackAlert sends a formatted error notification as Slack webhook.
 func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error) error {
 	requestBody, err := json.Marshal(map[string]interface{}{
 		"attachments": []map[string]interface{}{
@@ -83,6 +86,7 @@ func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error
 	return nil
 }
 
+// Post sends a given payload as a post request to a given URL.
 func (r *Request) Post(payload interface{}, url string) error {
 	timeout := time.Duration(10 * time.Second)
 	client := http.Client{
