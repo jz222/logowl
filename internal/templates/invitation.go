@@ -111,7 +111,7 @@ const Invitation = `
                         <p>Hi {{.FirstName}},</p>
 
                         <p>
-                            you were invited to join a team on LOGGY. Please click the link the below to
+                            you were invited to join a team on LOGGY. Please click the link below to
                             register your account. Please notice, that the link below is only valid for 48 hours.
                         </p>
 
@@ -135,4 +135,15 @@ const Invitation = `
 </table>
 </body>
 </html>
+`
+
+const InvitationRaw = `
+Hi {{.FirstName}},
+
+you were invited to join a team on LOGGY. Please click the link below to register your account. Please notice, that the link below is only valid for 48 hours.
+
+{{.URL}}
+
+Best Regards,
+LOGGY
 `

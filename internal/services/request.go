@@ -125,6 +125,7 @@ func (r *Request) Post(payload interface{}, url string) error {
 // SendEmail sends an email to the given recipient.
 func (r *Request) SendEmail(recipient, event string, data map[string]interface{}) error {
 	var emailTemplate = ""
+	var emailRawBody = ""
 	var subject = ""
 
 	// Load Mailgun settings
@@ -139,16 +140,29 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	case "invitation":
 		subject = "You were invited to LOGGY"
 		emailTemplate = templates.Invitation
+		emailRawBody = templates.InvitationRaw
 	default:
 		return errors.New("the provided event " + event + " is not available")
 	}
 
-	// Parse email template
-	t := template.Must(template.New("email").Parse(emailTemplate))
+	// Parse raw email template
+	t := template.Must(template.New("email").Parse(emailRawBody))
 
 	builder := &strings.Builder{}
 
 	err := t.Execute(builder, data)
+	if err != nil {
+		return err
+	}
+
+	parsedBody := builder.String()
+
+	// Parse email template
+	t = template.Must(template.New("email").Parse(emailTemplate))
+
+	builder = &strings.Builder{}
+
+	err = t.Execute(builder, data)
 	if err != nil {
 		return err
 	}
@@ -158,7 +172,7 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	// Setup Mailgun and send message
 	mg := mailgun.NewMailgun(mailgunDomain, mailgunPrivateKey)
 
-	message := mg.NewMessage("no-reply@loggy.io", subject, parsedHTML, recipient)
+	message := mg.NewMessage("LOGGY", subject, parsedBody, recipient)
 
 	message.SetHtml(parsedHTML)
 
