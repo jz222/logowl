@@ -2,20 +2,27 @@ package services
 
 import (
 	"bytes"
+	"context"
 	"encoding/json"
+	"errors"
 	"fmt"
+	"html/template"
 	"net/http"
 	"strconv"
+	"strings"
 	"time"
 
 	"github.com/jz222/loggy/internal/keys"
 	"github.com/jz222/loggy/internal/models"
+	"github.com/jz222/loggy/internal/templates"
+	"github.com/mailgun/mailgun-go/v4"
 )
 
 // InterfaceRequest represents the interface for the request service.
 type InterfaceRequest interface {
 	SendSlackAlert(models.Service, models.Error) error
 	Post(payload interface{}, url string) error
+	SendEmail(recipient, event string, data map[string]interface{}) error
 }
 
 // Request contains methods to send HTTP requests.
@@ -111,6 +118,57 @@ func (r *Request) Post(payload interface{}, url string) error {
 	}
 
 	defer res.Body.Close()
+
+	return nil
+}
+
+// SendEmail sends an email to the given recipient.
+func (r *Request) SendEmail(recipient, event string, data map[string]interface{}) error {
+	var emailTemplate = ""
+	var subject = ""
+
+	// Load Mailgun settings
+	mailgunPrivateKey := keys.GetKeys().MAILGUN_PRIVATE_KEY
+	mailgunDomain := keys.GetKeys().MAILGUN_DOMAIN
+	if mailgunPrivateKey == "" || mailgunDomain == "" {
+		return nil
+	}
+
+	// Determine email template
+	switch event {
+	case "invitation":
+		subject = "You were invited to LOGGY"
+		emailTemplate = templates.Invitation
+	default:
+		return errors.New("the provided event " + event + " is not available")
+	}
+
+	// Parse email template
+	t := template.Must(template.New("email").Parse(emailTemplate))
+
+	builder := &strings.Builder{}
+
+	err := t.Execute(builder, data)
+	if err != nil {
+		return err
+	}
+
+	parsedHTML := builder.String()
+
+	// Setup Mailgun and send message
+	mg := mailgun.NewMailgun(mailgunDomain, mailgunPrivateKey)
+
+	message := mg.NewMessage("no-reply@loggy.io", subject, parsedHTML, recipient)
+
+	message.SetHtml(parsedHTML)
+
+	ctx, cancel := context.WithTimeout(context.Background(), time.Second*10)
+	defer cancel()
+
+	_, _, err = mg.Send(ctx, message)
+	if err != nil {
+		return err
+	}
 
 	return nil
 }

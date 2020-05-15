@@ -23,7 +23,8 @@ type InterfaceUser interface {
 }
 
 type User struct {
-	Store store.InterfaceStore
+	Store   store.InterfaceStore
+	Request InterfaceRequest
 }
 
 func (u *User) FetchAllInformation(filter bson.M) (models.User, error) {
@@ -147,6 +148,13 @@ func (u *User) Invite(userData models.User) (models.User, error) {
 	userData.ID = result
 	userData.Password = ""
 
+	emailData := map[string]interface{}{
+		"FirstName": userData.FirstName,
+		"URL":       "example.com",
+	}
+
+	go u.Request.SendEmail(userData.Email, "invitation", emailData)
+
 	return userData, nil
 }
 
@@ -172,5 +180,5 @@ func (u *User) Update(filter, update bson.M) error {
 }
 
 func GetUserService(store store.InterfaceStore) User {
-	return User{store}
+	return User{store, &Request{}}
 }
