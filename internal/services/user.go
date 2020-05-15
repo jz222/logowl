@@ -2,8 +2,10 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
+	"github.com/jz222/loggy/internal/keys"
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
@@ -150,7 +152,7 @@ func (u *User) Invite(userData models.User) (models.User, error) {
 
 	emailData := map[string]interface{}{
 		"FirstName": userData.FirstName,
-		"URL":       "example.com",
+		"URL":       fmt.Sprintf("%s/auth/signup?code=%s", keys.GetKeys().CLIENT_URL, userData.InviteCode),
 	}
 
 	go u.Request.SendEmail(userData.Email, "invitation", emailData)

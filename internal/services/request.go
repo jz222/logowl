@@ -152,6 +152,7 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 
 	err := t.Execute(builder, data)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -164,6 +165,7 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 
 	err = t.Execute(builder, data)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
@@ -172,7 +174,7 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	// Setup Mailgun and send message
 	mg := mailgun.NewMailgun(mailgunDomain, mailgunPrivateKey)
 
-	message := mg.NewMessage("LOGGY", subject, parsedBody, recipient)
+	message := mg.NewMessage("LOGGY <no-reply@loggy.io>", subject, parsedBody, recipient)
 
 	message.SetHtml(parsedHTML)
 
@@ -181,6 +183,7 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 
 	_, _, err = mg.Send(ctx, message)
 	if err != nil {
+		fmt.Println(err)
 		return err
 	}
 
