@@ -112,7 +112,7 @@ const Invitation = `
 
                         <p>
                             you were invited to join a team on LOGGY. Please click the link below to
-                            register your account. Please notice, that the link below is only valid for 48 hours.
+                            register your account. Please make sure to use this email address when you set up your account.
                         </p>
 
                         <p class="button">
@@ -140,7 +140,8 @@ const Invitation = `
 const InvitationRaw = `
 Hi {{.FirstName}},
 
-you were invited to join a team on LOGGY. Please click the link below to register your account. Please notice, that the link below is only valid for 48 hours.
+you were invited to join a team on LOGGY. Please click the link below to register your account.
+Please make sure to use this email address when you set up your account.
 
 {{.URL}}
 
