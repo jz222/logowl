@@ -84,14 +84,16 @@ func (u *UserControllers) Delete(c *gin.Context) {
 		return
 	}
 
-	deleteCount, err := u.UserService.Delete(bson.M{"_id": parsedUserID, "organizationId": userData.(models.User).OrganizationID})
+	filter := bson.M{"_id": parsedUserID, "organizationId": userData.(models.User).OrganizationID, "isOrganizationOwner": false}
+
+	deleteCount, err := u.UserService.Delete(filter)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
 	}
 
 	if deleteCount == 0 {
-		utils.RespondWithError(c, http.StatusBadRequest, "the user with the ID "+userID+" does not exist")
+		utils.RespondWithError(c, http.StatusBadRequest, "the user with the ID "+userID+" does not exist or can not be deleted")
 		return
 	}
 

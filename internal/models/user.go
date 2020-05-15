@@ -9,13 +9,14 @@ import (
 
 // TeamMember is a leaner version of an user.
 type TeamMember struct {
-	ID         primitive.ObjectID `json:"id" bson:"_id"`
-	FirstName  string             `json:"firstName" bson:"firstName"`
-	LastName   string             `json:"lastName" bson:"lastName"`
-	Email      string             `json:"email" bson:"email"`
-	Role       string             `json:"role" bson:"role"`
-	IsVerified bool               `json:"isVerified" bson:"isVerified"`
-	InviteCode string             `json:"inviteCode,omitempty" bson:"inviteCode,omitempty"`
+	ID                  primitive.ObjectID `json:"id" bson:"_id"`
+	FirstName           string             `json:"firstName" bson:"firstName"`
+	LastName            string             `json:"lastName" bson:"lastName"`
+	Email               string             `json:"email" bson:"email"`
+	Role                string             `json:"role" bson:"role"`
+	IsVerified          bool               `json:"isVerified" bson:"isVerified"`
+	InviteCode          string             `json:"inviteCode,omitempty" bson:"inviteCode,omitempty"`
+	IsOrganizationOwner bool               `json:"isOrganizationOwner,omitempty" bson:"isOrganizationOwner,omitempty"`
 }
 
 // User contains information about the user and their

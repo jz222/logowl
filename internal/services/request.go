@@ -152,7 +152,6 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 
 	err := t.Execute(builder, data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -165,7 +164,6 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 
 	err = t.Execute(builder, data)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
@@ -183,7 +181,6 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 
 	_, _, err = mg.Send(ctx, message)
 	if err != nil {
-		fmt.Println(err)
 		return err
 	}
 
