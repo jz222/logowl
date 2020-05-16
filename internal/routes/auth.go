@@ -13,4 +13,5 @@ func authRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
 	router.POST("/signup", controller.SignUp)
 	router.POST("/signin", controller.SignIn)
 	router.POST("/resetpassword", controller.ResetPassword)
+	router.POST("/setnewpassword", controller.SetNewPassword)
 }

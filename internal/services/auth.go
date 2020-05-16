@@ -10,11 +10,13 @@ import (
 	"github.com/jz222/loggy/internal/models"
 	"github.com/jz222/loggy/internal/store"
 	"github.com/jz222/loggy/internal/utils"
+	"go.mongodb.org/mongo-driver/bson"
 )
 
 type InterfaceAuth interface {
 	CreateJWT(string) (string, int64, error)
 	ResetPassword(user models.User) (string, error)
+	InvalidatePasswordResetToken(email, token string) (bool, error)
 }
 
 type Auth struct {
@@ -70,6 +72,22 @@ func (a *Auth) ResetPassword(user models.User) (string, error) {
 	}
 
 	return passwordResetToken.Token, nil
+}
+
+func (a *Auth) InvalidatePasswordResetToken(email, token string) (bool, error) {
+	if email == "" || token == "" {
+		return false, errors.New("email or token were not provided")
+	}
+
+	_, err := a.Store.PasswordResetTokens().FindOneAndUpdate(
+		bson.M{"email": email, "token": token, "used": false},
+		bson.M{"$set": bson.M{"used": true}},
+	)
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
 }
 
 func GetAuthService(store store.InterfaceStore) Auth {

@@ -38,7 +38,6 @@ func (p *passwordResetTokens) FindOneAndUpdate(filter, update bson.M) (models.Pa
 		context.TODO(),
 		filter,
 		update,
-		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
 		options.MergeFindOneAndUpdateOptions().SetReturnDocument(options.After),
 	)
 	if res.Err() != nil {

@@ -190,6 +190,38 @@ func (a *authControllers) ResetPassword(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
+func (a *authControllers) SetNewPassword(c *gin.Context) {
+	var requestBody models.PasswordResetBody
+
+	err := json.NewDecoder(c.Request.Body).Decode(&requestBody)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if requestBody.Email == "" || requestBody.Token == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "email or token were not provided")
+		return
+	}
+
+	ok, err := a.AuthService.InvalidatePasswordResetToken(requestBody.Email, requestBody.Token)
+	if err != nil || !ok {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided token is invalid or does not match the provided email")
+		return
+	}
+
+	err = a.UserService.Update(
+		bson.M{"email": requestBody.Email},
+		bson.M{"password": requestBody.Password},
+	)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
 func GetAuthControllers(store store.InterfaceStore) authControllers {
 	organizationService := services.GetOrganizationService(store)
 	userService := services.GetUserService(store)

@@ -32,6 +32,7 @@ type PasswordResetToken struct {
 }
 
 type PasswordResetBody struct {
-	Email string `json:"email"`
-	Token string `json:"token"`
+	Email    string `json:"email"`
+	Token    string `json:"token"`
+	Password string `json:"password"`
 }
