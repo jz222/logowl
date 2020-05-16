@@ -61,7 +61,7 @@ func (a *Auth) ResetPassword(user models.User) (string, error) {
 
 	data := map[string]interface{}{
 		"FirstName": user.FirstName,
-		"URL":       fmt.Sprintf("%s/auth/newpassword#%s", keys.GetKeys().CLIENT_URL, resetToken),
+		"URL":       fmt.Sprintf("%s/auth/newpassword?token=%s", keys.GetKeys().CLIENT_URL, resetToken),
 	}
 
 	err = a.Request.SendEmail(user.Email, "resetPassword", data)
