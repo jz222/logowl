@@ -86,7 +86,7 @@ func (s *store) Connect() {
 	indexModels = []mongo.IndexModel{
 		{
 			Keys:    bson.M{"createdAt": 1},
-			Options: options.Index().SetExpireAfterSeconds(60),
+			Options: options.Index().SetExpireAfterSeconds(60 * 60 * 2),
 		},
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
