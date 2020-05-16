@@ -112,7 +112,7 @@ const Invitation = `
 
                         <p>
                             you were invited to join a team on LOGGY. Please click the link below to
-                            register your account. Please make sure to use this email address when you set up your account.
+                            register your account. Make sure to use this email address when you set up your account.
                         </p>
 
                         <p class="button">
@@ -141,7 +141,7 @@ const InvitationRaw = `
 Hi {{.FirstName}},
 
 you were invited to join a team on LOGGY. Please click the link below to register your account.
-Please make sure to use this email address when you set up your account.
+Make sure to use this email address when you set up your account.
 
 {{.URL}}
 
