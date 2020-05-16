@@ -141,6 +141,10 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 		subject = "You were invited to LOGGY"
 		emailTemplate = templates.Invitation
 		emailRawBody = templates.InvitationRaw
+	case "resetPassword":
+		subject = "Reset your LOGGY password"
+		emailTemplate = templates.ResetPassword
+		emailRawBody = templates.ResetPasswordRaw
 	default:
 		return errors.New("the provided event " + event + " is not available")
 	}

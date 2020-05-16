@@ -85,10 +85,11 @@ func (s *store) Connect() {
 	collection = s.db.Collection(CollectionPasswordResetTokens)
 	indexModels = []mongo.IndexModel{
 		{
-			Keys:    bson.M{"CreatedAt": 1},
-			Options: options.Index().SetExpireAfterSeconds(60 * 60 * 2),
+			Keys:    bson.M{"createdAt": 1},
+			Options: options.Index().SetExpireAfterSeconds(60),
 		},
 	}
+	collection.Indexes().CreateMany(ctx, indexModels)
 
 	log.Println("✅ Connection to MongoDB established")
 }

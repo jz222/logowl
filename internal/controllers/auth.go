@@ -161,10 +161,39 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	utils.RespondWithJSON(c, response)
 }
 
+func (a *authControllers) ResetPassword(c *gin.Context) {
+	var requestBody models.PasswordResetBody
+
+	err := json.NewDecoder(c.Request.Body).Decode(&requestBody)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if requestBody.Email == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "no email address was provided")
+		return
+	}
+
+	user, err := a.UserService.FindOne(bson.M{"email": requestBody.Email})
+	if err != nil {
+		utils.RespondWithSuccess(c)
+		return
+	}
+
+	_, err = a.AuthService.ResetPassword(user)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "an error occured while creating a reset token")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
 func GetAuthControllers(store store.InterfaceStore) authControllers {
 	organizationService := services.GetOrganizationService(store)
 	userService := services.GetUserService(store)
-	authService := services.GetAuthService()
+	authService := services.GetAuthService(store)
 
 	return authControllers{
 		UserService:         &userService,

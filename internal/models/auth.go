@@ -27,5 +27,11 @@ type PasswordResetToken struct {
 	Email     string    `json:"email" bson:"email"`
 	Token     string    `json:"token" bson:"token"`
 	Used      bool      `json:"used" bson:"used"`
+	ExpiresAt int64     `json:"expiresAt" bson:"expiresAt"`
 	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+}
+
+type PasswordResetBody struct {
+	Email string `json:"email"`
+	Token string `json:"token"`
 }
