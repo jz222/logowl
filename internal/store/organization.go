@@ -35,7 +35,7 @@ func (o *organization) InsertOne(organization models.Organization) (primitive.Ob
 
 	result, err := collection.InsertOne(context.TODO(), organization)
 	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving organization to database")
+		return primitive.NilObjectID, errors.New("an error occured while saving organization to database")
 	}
 
 	return result.InsertedID.(primitive.ObjectID), nil

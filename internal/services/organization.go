@@ -34,7 +34,7 @@ func (o *Organization) Create(organization models.Organization) (primitive.Objec
 	organization.UpdatedAt = timestamp
 
 	if !organization.Validate() {
-		return primitive.ObjectID{}, errors.New("the provided organization data is invalid")
+		return primitive.NilObjectID, errors.New("the provided organization data is invalid")
 	}
 
 	regex := regexp.MustCompile(`\s+`)

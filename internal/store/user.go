@@ -30,7 +30,7 @@ func (u *user) InsertOne(user models.User) (primitive.ObjectID, error) {
 
 	result, err := collection.InsertOne(context.TODO(), user)
 	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
+		return primitive.NilObjectID, errors.New("an error occured while saving user to database")
 	}
 
 	return result.InsertedID.(primitive.ObjectID), nil

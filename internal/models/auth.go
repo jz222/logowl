@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // Setup contains all properties related to the organization setup.
 type Setup struct {
 	Organization Organization `json:"organization"`
@@ -18,4 +20,12 @@ type SignInResponse struct {
 	User
 	JWT            string `json:"jwt"`
 	ExpirationTime int64  `json:"expirationTime"`
+}
+
+// PasswordResetToken contains the password reset token and the associated email address.
+type PasswordResetToken struct {
+	Email     string    `json:"email" bson:"email"`
+	Token     string    `json:"token" bson:"token"`
+	Used      bool      `json:"used" bson:"used"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
 }

@@ -13,11 +13,12 @@ import (
 )
 
 const (
-	CollectionAnalytics     = "analytics"
-	CollectionErrors        = "errors"
-	CollectionOrganizations = "organizations"
-	CollectionServices      = "services"
-	CollectionUsers         = "users"
+	CollectionAnalytics           = "analytics"
+	CollectionErrors              = "errors"
+	CollectionOrganizations       = "organizations"
+	CollectionServices            = "services"
+	CollectionUsers               = "users"
+	CollectionPasswordResetTokens = "passwordResetTokens"
 )
 
 type InterfaceStore interface {
@@ -28,6 +29,7 @@ type InterfaceStore interface {
 	Organization() interfaceOrganization
 	Error() interfaceErrorEvent
 	Analytics() interfaceAnalytics
+	PasswordResetTokens() interfacePasswordResetTokens
 }
 
 type store struct {
@@ -80,6 +82,14 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
+	collection = s.db.Collection(CollectionPasswordResetTokens)
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.M{"CreatedAt": 1},
+			Options: options.Index().SetExpireAfterSeconds(60 * 60 * 2),
+		},
+	}
+
 	log.Println("✅ Connection to MongoDB established")
 }
 
@@ -107,6 +117,10 @@ func (s *store) Error() interfaceErrorEvent {
 
 func (s *store) Analytics() interfaceAnalytics {
 	return &analytics{s.db}
+}
+
+func (s *store) PasswordResetTokens() interfacePasswordResetTokens {
+	return &passwordResetTokens{s.db}
 }
 
 func GetStore() InterfaceStore {

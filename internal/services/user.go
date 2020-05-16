@@ -84,12 +84,12 @@ func (u *User) Create(user models.User) (primitive.ObjectID, error) {
 	user.UpdatedAt = timestamp
 
 	if !user.Validate() {
-		return primitive.ObjectID{}, errors.New("the provided user data is invalid")
+		return primitive.NilObjectID, errors.New("the provided user data is invalid")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return primitive.NilObjectID, err
 	}
 
 	user.Password = string(hash)
@@ -97,7 +97,7 @@ func (u *User) Create(user models.User) (primitive.ObjectID, error) {
 
 	result, err := u.Store.User().InsertOne(user)
 	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
+		return primitive.NilObjectID, errors.New("an error occured while saving user to database")
 	}
 
 	return result, nil
