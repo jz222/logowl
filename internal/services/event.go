@@ -16,6 +16,7 @@ type InterfaceEvent interface {
 	GetError(bson.M, primitive.ObjectID) (models.Error, error)
 	GetErrors(string, int64) ([]models.Error, error)
 	DeleteError(bson.M) (int64, error)
+	DeleteErrors(bson.M) (int64, error)
 	UpdateError(bson.M, bson.M) error
 	GetAnalytics(string, string) (models.AnalyticInsights, error)
 }
@@ -26,6 +27,10 @@ type Event struct {
 
 func (e *Event) DeleteError(filter bson.M) (int64, error) {
 	return e.Store.Error().DeleteOne(filter)
+}
+
+func (e *Event) DeleteErrors(filter bson.M) (int64, error) {
+	return e.Store.Error().DeleteMany(filter)
 }
 
 func (e *Event) GetError(filter bson.M, viewer primitive.ObjectID) (models.Error, error) {
