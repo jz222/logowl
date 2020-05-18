@@ -167,10 +167,13 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	}
 
 	if authMode == "cookie" {
-		signature := strings.Split(jwt, ".")[2]
+		splitJWT := strings.Split(jwt, ".")
+
+		accessPass := splitJWT[0] + splitJWT[1]
+		signature := splitJWT[2]
 
 		response.JWT = ""
-		response.Signature = signature
+		response.AccessPass = accessPass
 
 		c.SetSameSite(http.SameSiteNoneMode)
 		c.SetCookie("auth-signature", signature, 60*60*7, "/", "", false, true)
