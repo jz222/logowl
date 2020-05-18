@@ -19,6 +19,7 @@ type Credentials struct {
 type SignInResponse struct {
 	User
 	JWT            string `json:"jwt"`
+	Signature      string `json:"signature"`
 	ExpirationTime int64  `json:"expirationTime"`
 }
 
