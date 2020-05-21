@@ -18,8 +18,8 @@ type Credentials struct {
 // SignInResponse contains the response for a successfull sign in.
 type SignInResponse struct {
 	User
-	JWT            string `json:"jwt"`
-	AccessPass     string `json:"accessPass"`
+	JWT            string `json:"jwt,omitempty"`
+	AccessPass     string `json:"accessPass,omitempty"`
 	ExpirationTime int64  `json:"expirationTime"`
 }
 

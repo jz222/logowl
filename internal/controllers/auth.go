@@ -169,14 +169,14 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	if authMode == "cookie" {
 		splitJWT := strings.Split(jwt, ".")
 
-		accessPass := splitJWT[0] + splitJWT[1]
+		accessPass := splitJWT[0] + "." + splitJWT[1]
 		signature := splitJWT[2]
 
 		response.JWT = ""
 		response.AccessPass = accessPass
 
-		c.SetSameSite(http.SameSiteNoneMode)
-		c.SetCookie("auth-signature", signature, 60*60*7, "/", "", false, true)
+		c.SetSameSite(http.SameSiteStrictMode)
+		c.SetCookie("auth-signature", signature, 60*60*keys.SESSION_TIMEOUT_IN_HOURS, "/", "", false, true)
 	}
 
 	utils.RespondWithJSON(c, response)

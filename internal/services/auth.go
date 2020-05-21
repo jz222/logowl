@@ -26,7 +26,7 @@ type Auth struct {
 
 func (a *Auth) CreateJWT(id string) (string, int64, error) {
 	timestamp := time.Now().Unix()
-	expiresAt := timestamp + int64((time.Hour.Seconds() * 7))
+	expiresAt := timestamp + int64(time.Hour.Seconds()*keys.SESSION_TIMEOUT_IN_HOURS)
 
 	token := jwt.NewWithClaims(jwt.SigningMethodHS256, jwt.MapClaims{
 		"id":  id,

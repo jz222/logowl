@@ -10,6 +10,10 @@ import (
 	"github.com/jz222/loggy/internal/models"
 )
 
+const (
+	SESSION_TIMEOUT_IN_HOURS = 7
+)
+
 var (
 	instance models.Keys
 	once     sync.Once
