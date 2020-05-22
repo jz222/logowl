@@ -18,16 +18,36 @@ import (
 // VerifyUserJwt checks if a JWT is present in the "Authorization" header and validates it.
 func VerifyUserJwt(store store.InterfaceStore) func(*gin.Context) {
 	return func(c *gin.Context) {
-		authenticationHeader := c.GetHeader("Authorization")
-		splitHeader := strings.Split(authenticationHeader, " ")
+		// Parse JWT signature from cookie
+		signature, err := c.Cookie("auth-signature")
+		if err != nil {
+			signature = ""
+		}
 
+		// Parse JWT from authorization header
+		authorizationHeader := c.GetHeader("Authorization")
+		splitHeader := strings.Split(authorizationHeader, " ")
+
+		// Abort if no JWT is present or if the authorization is malformed
 		if len(splitHeader) != 2 {
 			utils.RespondWithError(c, http.StatusBadRequest, "authorization header malformed")
 			c.Abort()
 			return
 		}
 
-		token, err := jwt.Parse(splitHeader[1], func(token *jwt.Token) (interface{}, error) {
+		// If a cookie is present, add the signature from the cookie
+		// to the first part of the JWT from the authorization header.
+		// Else use the complete JWT from the authorization header.
+		JWT := ""
+
+		if signature != "" {
+			JWT = splitHeader[1] + "." + signature
+		} else {
+			JWT = splitHeader[1]
+		}
+
+		// Validate the JWT
+		token, err := jwt.Parse(JWT, func(token *jwt.Token) (interface{}, error) {
 			_, ok := token.Method.(*jwt.SigningMethodHMAC)
 			if !ok {
 				return nil, errors.New("")

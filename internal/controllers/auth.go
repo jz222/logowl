@@ -4,6 +4,7 @@ import (
 	"encoding/json"
 	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
 	"github.com/jz222/loggy/internal/keys"
@@ -126,6 +127,13 @@ func (a *authControllers) SignUp(c *gin.Context) {
 func (a *authControllers) SignIn(c *gin.Context) {
 	var credentials models.Credentials
 
+	authMode := c.Query("mode")
+
+	if authMode != "jwt" && authMode != "cookie" {
+		utils.RespondWithError(c, http.StatusBadRequest, "the query parameter mode is required but was not provided or is invalid")
+		return
+	}
+
 	err := json.NewDecoder(c.Request.Body).Decode(&credentials)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
@@ -156,6 +164,19 @@ func (a *authControllers) SignIn(c *gin.Context) {
 		User:           persistedUser,
 		JWT:            jwt,
 		ExpirationTime: expirationTime,
+	}
+
+	if authMode == "cookie" {
+		splitJWT := strings.Split(jwt, ".")
+
+		accessPass := splitJWT[0] + "." + splitJWT[1]
+		signature := splitJWT[2]
+
+		response.JWT = ""
+		response.AccessPass = accessPass
+
+		c.SetSameSite(http.SameSiteStrictMode)
+		c.SetCookie("auth-signature", signature, 60*60*keys.SESSION_TIMEOUT_IN_HOURS, "/", "", false, true)
 	}
 
 	utils.RespondWithJSON(c, response)

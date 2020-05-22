@@ -58,6 +58,14 @@ func (s *store) Connect() {
 			Options: options.Index().SetUnique(true),
 		},
 		{
+			Keys:    bson.M{"message": 1},
+			Options: nil,
+		},
+		{
+			Keys:    bson.M{"createdAt": 1},
+			Options: nil,
+		},
+		{
 			Keys:    bson.M{"updatedAt": -1},
 			Options: nil,
 		},
