@@ -22,6 +22,9 @@ type Organization struct {
 		Analytics int `json:"analytics" bson:"analytics"`
 	} `json:"receivedRequests,omitempty" bson:"receivedRequests,omitempty"`
 	MonthlyRequestLimit int       `json:"monthlyRequestLimit,omitempty" bson:"monthlyRequestLimit,omitempty"`
+	Plan                string    `json:"plan" bson:"plan"`
+	SubscriptionID      string    `json:"subscriptionId,omitempty" bson:"subscriptionId,omitempty"`
+	IsSetUp             bool      `json:"isSetUp" bson:"isSetUp"`
 	CreatedAt           time.Time `json:"createdAt" bson:"createdAt"`
 	UpdatedAt           time.Time `json:"upadtedAt" bson:"updatedAt"`
 }

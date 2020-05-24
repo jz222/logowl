@@ -17,6 +17,7 @@ type InterfaceOrganization interface {
 	Create(models.Organization) (primitive.ObjectID, error)
 	Delete(primitive.ObjectID) error
 	FindOne(bson.M) (models.Organization, error)
+	FindOneAndUpdate(bson.M, bson.M) (models.Organization, error)
 }
 
 type Organization struct {
@@ -29,7 +30,11 @@ func (o *Organization) CheckPresence(filter bson.M) (bool, error) {
 
 func (o *Organization) Create(organization models.Organization) (primitive.ObjectID, error) {
 	timestamp := time.Now()
+
 	organization.MonthlyRequestLimit = keys.GetKeys().MONTHLY_REQUEST_LIMIT
+	organization.Plan = "free"
+	organization.SubscriptionID = ""
+	organization.IsSetUp = false
 	organization.CreatedAt = timestamp
 	organization.UpdatedAt = timestamp
 
@@ -114,6 +119,12 @@ func (o *Organization) Delete(organizationID primitive.ObjectID) error {
 
 func (o *Organization) FindOne(filter bson.M) (models.Organization, error) {
 	return o.Store.Organization().FindOne(filter)
+}
+
+func (o *Organization) FindOneAndUpdate(filter, update bson.M) (models.Organization, error) {
+	update["updatedAt"] = time.Now()
+
+	return o.Store.Organization().FindOneAndUpdate(filter, bson.M{"$set": update})
 }
 
 func GetOrganizationService(store store.InterfaceStore) Organization {

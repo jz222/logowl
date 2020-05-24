@@ -62,3 +62,8 @@ func (u *User) VerifyPassword(password string) bool {
 func (u *User) IsAdmin() bool {
 	return u.Role == "admin"
 }
+
+// IsOwnerOfOrganization determines if the user is the owner of their organization.
+func (u *User) IsOwnerOfOrganization() bool {
+	return u.IsOrganizationOwner
+}

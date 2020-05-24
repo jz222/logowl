@@ -13,4 +13,5 @@ func organizationRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
 	controller := controllers.GetOrganizationController(store)
 
 	router.DELETE("/", controller.Delete)
+	router.PUT("/", controller.Update)
 }
