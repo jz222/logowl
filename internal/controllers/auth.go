@@ -2,7 +2,6 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
 	"strings"
 
@@ -66,7 +65,6 @@ func (a *authControllers) Setup(c *gin.Context) {
 
 	_, err = a.UserService.Create(setup.User)
 	if err != nil {
-		fmt.Println(err.Error())
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 	}
 

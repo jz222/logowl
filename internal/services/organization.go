@@ -38,6 +38,10 @@ func (o *Organization) Create(organization models.Organization) (primitive.Objec
 	organization.CreatedAt = timestamp
 	organization.UpdatedAt = timestamp
 
+	if keys.GetKeys().IS_SELFHOSTED {
+		organization.IsSetUp = true
+	}
+
 	if !organization.Validate() {
 		return primitive.NilObjectID, errors.New("the provided organization data is invalid")
 	}
