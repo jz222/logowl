@@ -1,4 +1,4 @@
-![log owl hero](./assets/hero.png?raw=true)
+![log owl hero](./assets/header.png?raw=true)
 
 <div align="center">
   <p>
