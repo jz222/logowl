@@ -1,4 +1,4 @@
-![log owl hero](https://github.com/jz222/logowl/blob/master/assets/hero.png?raw=true)
+![log owl hero](./assets/hero.png?raw=true)
 
 <div align="center">
   <p>
@@ -18,8 +18,6 @@
 📡 [**Log Owl NodeJS Adapter**](https://github.com/jz222/logowl-adapter-nodejs)
 
 🌐 [**Log Owl Browser Adapter**](https://github.com/jz222/logowl-adapter-browser)
-
-<br />
 
 ### About
 
