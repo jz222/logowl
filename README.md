@@ -2,10 +2,10 @@
 
 <div align="center">
   <p>
-    <h3>Log Owl</h3>
+    <h1>Log Owl</h3>
   </p>
   <p>
-    <i>Monitor your services and track errors in production. 🚀📈</i>
+    <h3>Monitor your services and track errors in production. 🚀📈</h3>
   </p>
 </div>
 
