@@ -12,9 +12,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jz222/loggy/internal/keys"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/templates"
+	"github.com/jz222/logowl/internal/keys"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/templates"
 	"github.com/mailgun/mailgun-go/v4"
 )
 
@@ -39,7 +39,7 @@ func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error
 				"author_name": errorEvent.Type,
 				"title":       errorEvent.Message,
 				"title_link":  fmt.Sprintf("%s/services/%s/error/%s", keys.GetKeys().CLIENT_URL, service.ID.Hex(), errorEvent.ID.Hex()),
-				"text":        "Visit your LOGGY dashboard for more details",
+				"text":        "Visit your Log Owl dashboard for more details",
 				"fields": []map[string]interface{}{
 					{
 						"title": "In Service",
@@ -62,7 +62,7 @@ func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error
 						"short": true,
 					},
 				},
-				"footer": "LOGGY",
+				"footer": "Log Owl",
 				"ts":     errorEvent.Timestamp,
 			},
 		},
@@ -138,11 +138,11 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	// Determine email template
 	switch event {
 	case "invitation":
-		subject = "You were invited to LOGGY"
+		subject = "You were invited to Log Owl"
 		emailTemplate = templates.Invitation
 		emailRawBody = templates.InvitationRaw
 	case "resetPassword":
-		subject = "Reset your LOGGY password"
+		subject = "Reset your Log Owl password"
 		emailTemplate = templates.ResetPassword
 		emailRawBody = templates.ResetPasswordRaw
 	default:
@@ -176,7 +176,7 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	// Setup Mailgun and send message
 	mg := mailgun.NewMailgun(mailgunDomain, mailgunPrivateKey)
 
-	message := mg.NewMessage("LOGGY <no-reply@loggy.io>", subject, parsedBody, recipient)
+	message := mg.NewMessage("Log Owl <no-reply@logowl.io>", subject, parsedBody, recipient)
 
 	message.SetHtml(parsedHTML)
 

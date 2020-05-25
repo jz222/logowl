@@ -1,8 +1,8 @@
-![loggy header](https://github.com/jz222/loggy/blob/master/assets/header.png?raw=true)
+![log owl header](https://github.com/jz222/logowl/blob/master/assets/header.png?raw=true)
 
 <div align="center">
   <p>
-    <h3>LOGGY</h3>
+    <h3>Log Owl</h3>
   </p>
   <p>
     <i>Monitor your services and track errors in production. 🚀📈</i>
@@ -13,11 +13,11 @@
 
 **Related:**
 
-💻 [**LOGGY Client**](https://github.com/jz222/loggy-client)
+💻 [**Log Owl Client**](https://github.com/jz222/logowl-client)
 
-📡 [**LOGGY NodeJS Adapter**](https://github.com/jz222/loggy-adapter-nodejs)
+📡 [**Log Owl NodeJS Adapter**](https://github.com/jz222/logowl-adapter-nodejs)
 
-🌐 [**LOGGY Browser Adapter**](https://github.com/jz222/loggy-adapter-browser)
+🌐 [**Log Owl Browser Adapter**](https://github.com/jz222/logowl-adapter-browser)
 
 <br />
 
@@ -60,16 +60,16 @@
 
 ## Run Locally
 
-Running the LOGGY Docker image is the easiest way to get started. All you need is Docker and a MongoDB instance. You can install MongoDB locally, run it as a separate container or use a remote instance provided by services like mLab or Atlas.
+Running the Log Owl Docker image is the easiest way to get started. All you need is Docker and a MongoDB instance. You can install MongoDB locally, run it as a separate container or use a remote instance provided by services like mLab or Atlas.
 
-![docker loggy](https://github.com/jz222/loggy/blob/master/assets/docker.gif?raw=true)
+![docker logowl](https://github.com/jz222/logowl/blob/master/assets/docker.gif?raw=true)
 
 ```
 docker run \
 --env PORT=2800 \
 --env SECRET=secret \
---env MONGO_URI=mongodb://admin:password0@ds263108.mlab.com:63108/loggy-test\?retryWrites=false \
---env MONGO_DB_NAME=loggy-test \
+--env MONGO_URI=mongodb://admin:password0@ds263108.mlab.com:63108/logowl-test\?retryWrites=false \
+--env MONGO_DB_NAME=logowl-test \
 --env MAILGUN_PRIVATE_KEY=aaa-aaa-aaa \
 --env MAILGUN_DOMAIN=example.com \
 --env CLIENT_URL=http://localhost:3000 \
@@ -77,7 +77,7 @@ docker run \
 --env IS_SELFHOSTED=true \
 -p 2800:2800 \
 -it \
-jz222/loggy:0.5.0
+jz222/logowl:2.0.0
 ```
 
 | Environment Variable | Description                                                                                                                                                                              |
@@ -88,17 +88,17 @@ jz222/loggy:0.5.0
 | MONGO_DB_NAME          | The name of the actual database.                                                                                                                                                         |
 | MAILGUN_PRIVATE_KEY    | Private key for Mailgun. The private key can be found in the Mailgun settings. This environment variable is optional.                                                                    |
 | MAILGUN_DOMAIN         | The domain that is connected to your Mailgun account. This environment variable is optional.                                                                                             |
-| CLIENT_URL             | The URL of the LOGGY client.                                                                                                                                                         |
+| CLIENT_URL             | The URL of the Log Owl client.                                                                                                                                                         |
 | MONTHLY_REQUEST_LIMIT  | Defines the maximum amount of requests tracked per month. If the limit was reached, incoming requests will no longer be tracked.     |
 | IS_SELFHOSTED          | Can either be `true` or `false`. If this environment variable is set to `true`, only one organization can be set up.                                                                 |
 
 ## Development Setup
 
-Clone the repository and install dependencies with `go get`. After adding an `.env` file that corresponds to the `.example.env` file, you can start the server with `go run cmd/loggy/main.go`.
+Clone the repository and install dependencies with `go get`. After adding an `.env` file that corresponds to the `.example.env` file, you can start the server with `go run cmd/logowl/main.go`.
 
 ## Build
 
-To build a Docker image run the script `build.dev.sh`. It will create a local Docker image called `loggy` that can be run with the Docker command shown above.
+To build a Docker image run the script `build.dev.sh`. It will create a local Docker image called `logowl` that can be run with the Docker command shown above.
 
 ## Register an Error
 
@@ -140,7 +140,7 @@ Use the NodeJS adapter to register errors or build your own. To register an erro
 	},
 	"timestamp": 1585689898,
 	"adapter": {
-		"name": "loggy-adapter-nodejs",
+		"name": "logowl-adapter-nodejs",
 		"type": "nodejs",
 		"version": "v0.1.0"
 	}

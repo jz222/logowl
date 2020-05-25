@@ -2,7 +2,7 @@ package middlewares
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/keys"
+	"github.com/jz222/logowl/internal/keys"
 )
 
 // Cors creates a new middleware that enables cors.

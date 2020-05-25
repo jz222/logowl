@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/jz222/loggy/internal/keys"
+	"github.com/jz222/logowl/internal/keys"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"

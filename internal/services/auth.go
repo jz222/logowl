@@ -6,10 +6,10 @@ import (
 	"time"
 
 	"github.com/dgrijalva/jwt-go"
-	"github.com/jz222/loggy/internal/keys"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/keys"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 

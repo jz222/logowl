@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/services"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/services"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )

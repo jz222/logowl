@@ -2,7 +2,7 @@ package mocks
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/models"
+	"github.com/jz222/logowl/internal/models"
 )
 
 func VerifyUserJWT(c *gin.Context) {

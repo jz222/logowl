@@ -7,7 +7,7 @@ const ResetPassword = `
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>LOGGY | Sign Up</title>
+    <title>Log Owl | Sign Up</title>
 
     <style type="text/css">
         html {
@@ -111,7 +111,7 @@ const ResetPassword = `
                         <p>Hi {{.FirstName}},</p>
 
 						<p>
-							you requested a new password for your LOGGY account. Please click the link below
+							you requested a new password for your Log Owl account. Please click the link below
 							to set a new password.
 						</p>
 
@@ -125,12 +125,12 @@ const ResetPassword = `
 
                         <p class="greeting">
                             Best Regards,<br />
-                            <b>LOGGY</b>
+                            <b>Log Owl</b>
                         </p>
 
                         <hr />
 
-                        <div class="footer">LOGGY</div>
+                        <div class="footer">Log Owl</div>
                     </td>
                 </tr>
             </table>
@@ -144,12 +144,12 @@ const ResetPassword = `
 const ResetPasswordRaw = `
 Hi {{.FirstName}},
 
-you requested a new password for your LOGGY account. Please click the link below to set a new password.
+you requested a new password for your Log Owl account. Please click the link below to set a new password.
 
 Keep in mind that the link is only valid for the next two hours.
 
 {{.URL}}
 
 Best Regards,
-LOGGY
+Log Owl
 `

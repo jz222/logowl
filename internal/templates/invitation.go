@@ -7,7 +7,7 @@ const Invitation = `
     <meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
 
-    <title>LOGGY | Sign Up</title>
+    <title>Log Owl | Sign Up</title>
 
     <style type="text/css">
         html {
@@ -111,7 +111,7 @@ const Invitation = `
                         <p>Hi {{.FirstName}},</p>
 
                         <p>
-                            you were invited to join a team on LOGGY. Please click the link below to
+                            you were invited to join a team on Log Owl. Please click the link below to
                             register your account. Make sure to use this email address when you set up your account.
                         </p>
 
@@ -121,12 +121,12 @@ const Invitation = `
 
                         <p class="greeting">
                             Best Regards,<br />
-                            <b>LOGGY</b>
+                            <b>Log Owl</b>
                         </p>
 
                         <hr />
 
-                        <div class="footer">LOGGY</div>
+                        <div class="footer">Log Owl</div>
                     </td>
                 </tr>
             </table>
@@ -140,11 +140,11 @@ const Invitation = `
 const InvitationRaw = `
 Hi {{.FirstName}},
 
-you were invited to join a team on LOGGY. Please click the link below to register your account.
+you were invited to join a team on Log Owl. Please click the link below to register your account.
 Make sure to use this email address when you set up your account.
 
 {{.URL}}
 
 Best Regards,
-LOGGY
+Log Owl
 `
