@@ -73,9 +73,13 @@ const Invitation = `
         }
 
         .logo {
-            height: 70px;
+            height: 50px;
             padding: 50px 0 25px 0;
             text-align: center;
+        }
+
+        .logo img {
+            height: 100%;
         }
 
         .button {
@@ -99,7 +103,7 @@ const Invitation = `
     <tr>
         <td>
             <div class="logo">
-                <img src="" alt="logo" />
+                <img src="https://storage.googleapis.com/logowl-assets/log-owl-logo-min.png" alt="logo" />
             </div>
 
             <table class="box" align="center">
@@ -126,7 +130,9 @@ const Invitation = `
 
                         <hr />
 
-                        <div class="footer">Log Owl</div>
+                        <div class="footer">
+                            logowl.io - monitor and analyze your web services
+                        </div>
                     </td>
                 </tr>
             </table>
