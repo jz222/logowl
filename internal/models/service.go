@@ -15,6 +15,7 @@ type Service struct {
 	OrganizationID  primitive.ObjectID `json:"organizationId" bson:"organizationId"`
 	Ticket          string             `json:"ticket" bson:"ticket"`
 	SlackWebhookURL string             `json:"slackWebhookURL,omitempty" bson:"slackWebhookURL,omitempty"`
+	WebhookURL      string             `json:"webhookURL, omitempty" bson:"webhookURL, omitempty"`
 	CreatedAt       time.Time          `json:"createdAt" bson:"createdAt"`
 	UpdatedAt       time.Time          `json:"updatedAt" bson:"updatedAt"`
 }

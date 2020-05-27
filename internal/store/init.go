@@ -5,7 +5,7 @@ import (
 	"log"
 	"time"
 
-	"github.com/jz222/loggy/internal/keys"
+	"github.com/jz222/logowl/internal/keys"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/mongo"
 	"go.mongodb.org/mongo-driver/mongo/options"
@@ -13,11 +13,12 @@ import (
 )
 
 const (
-	CollectionAnalytics     = "analytics"
-	CollectionErrors        = "errors"
-	CollectionOrganizations = "organizations"
-	CollectionServices      = "services"
-	CollectionUsers         = "users"
+	CollectionAnalytics           = "analytics"
+	CollectionErrors              = "errors"
+	CollectionOrganizations       = "organizations"
+	CollectionServices            = "services"
+	CollectionUsers               = "users"
+	CollectionPasswordResetTokens = "passwordResetTokens"
 )
 
 type InterfaceStore interface {
@@ -28,6 +29,7 @@ type InterfaceStore interface {
 	Organization() interfaceOrganization
 	Error() interfaceErrorEvent
 	Analytics() interfaceAnalytics
+	PasswordResetTokens() interfacePasswordResetTokens
 }
 
 type store struct {
@@ -56,6 +58,14 @@ func (s *store) Connect() {
 			Options: options.Index().SetUnique(true),
 		},
 		{
+			Keys:    bson.M{"message": 1},
+			Options: nil,
+		},
+		{
+			Keys:    bson.M{"createdAt": 1},
+			Options: nil,
+		},
+		{
 			Keys:    bson.M{"updatedAt": -1},
 			Options: nil,
 		},
@@ -76,6 +86,15 @@ func (s *store) Connect() {
 		{
 			Keys:    bson.M{"ticket": 1, "month": 1},
 			Options: options.Index().SetUnique(true),
+		},
+	}
+	collection.Indexes().CreateMany(ctx, indexModels)
+
+	collection = s.db.Collection(CollectionPasswordResetTokens)
+	indexModels = []mongo.IndexModel{
+		{
+			Keys:    bson.M{"createdAt": 1},
+			Options: options.Index().SetExpireAfterSeconds(60 * 60 * 2),
 		},
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
@@ -107,6 +126,10 @@ func (s *store) Error() interfaceErrorEvent {
 
 func (s *store) Analytics() interfaceAnalytics {
 	return &analytics{s.db}
+}
+
+func (s *store) PasswordResetTokens() interfacePasswordResetTokens {
+	return &passwordResetTokens{s.db}
 }
 
 func GetStore() InterfaceStore {

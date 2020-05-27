@@ -5,9 +5,9 @@ import (
 	"regexp"
 	"time"
 
-	"github.com/jz222/loggy/internal/keys"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/store"
+	"github.com/jz222/logowl/internal/keys"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/store"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -17,6 +17,7 @@ type InterfaceOrganization interface {
 	Create(models.Organization) (primitive.ObjectID, error)
 	Delete(primitive.ObjectID) error
 	FindOne(bson.M) (models.Organization, error)
+	FindOneAndUpdate(bson.M, bson.M) (models.Organization, error)
 }
 
 type Organization struct {
@@ -29,12 +30,20 @@ func (o *Organization) CheckPresence(filter bson.M) (bool, error) {
 
 func (o *Organization) Create(organization models.Organization) (primitive.ObjectID, error) {
 	timestamp := time.Now()
+
 	organization.MonthlyRequestLimit = keys.GetKeys().MONTHLY_REQUEST_LIMIT
+	organization.Plan = "free"
+	organization.SubscriptionID = ""
+	organization.IsSetUp = false
 	organization.CreatedAt = timestamp
 	organization.UpdatedAt = timestamp
 
+	if keys.GetKeys().IS_SELFHOSTED {
+		organization.IsSetUp = true
+	}
+
 	if !organization.Validate() {
-		return primitive.ObjectID{}, errors.New("the provided organization data is invalid")
+		return primitive.NilObjectID, errors.New("the provided organization data is invalid")
 	}
 
 	regex := regexp.MustCompile(`\s+`)
@@ -114,6 +123,12 @@ func (o *Organization) Delete(organizationID primitive.ObjectID) error {
 
 func (o *Organization) FindOne(filter bson.M) (models.Organization, error) {
 	return o.Store.Organization().FindOne(filter)
+}
+
+func (o *Organization) FindOneAndUpdate(filter, update bson.M) (models.Organization, error) {
+	update["updatedAt"] = time.Now()
+
+	return o.Store.Organization().FindOneAndUpdate(filter, bson.M{"$set": update})
 }
 
 func GetOrganizationService(store store.InterfaceStore) Organization {

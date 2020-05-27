@@ -1,5 +1,7 @@
 package models
 
+import "time"
+
 // Setup contains all properties related to the organization setup.
 type Setup struct {
 	Organization Organization `json:"organization"`
@@ -16,6 +18,22 @@ type Credentials struct {
 // SignInResponse contains the response for a successfull sign in.
 type SignInResponse struct {
 	User
-	JWT            string `json:"jwt"`
+	JWT            string `json:"jwt,omitempty"`
+	AccessPass     string `json:"accessPass,omitempty"`
 	ExpirationTime int64  `json:"expirationTime"`
+}
+
+// PasswordResetToken contains the password reset token and the associated email address.
+type PasswordResetToken struct {
+	Email     string    `json:"email" bson:"email"`
+	Token     string    `json:"token" bson:"token"`
+	Used      bool      `json:"used" bson:"used"`
+	ExpiresAt int64     `json:"expiresAt" bson:"expiresAt"`
+	CreatedAt time.Time `json:"createdAt" bson:"createdAt"`
+}
+
+type PasswordResetBody struct {
+	Email    string `json:"email"`
+	Token    string `json:"token"`
+	Password string `json:"password"`
 }

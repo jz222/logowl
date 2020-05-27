@@ -2,9 +2,9 @@ package routes
 
 import (
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/controllers"
-	"github.com/jz222/loggy/internal/middlewares"
-	"github.com/jz222/loggy/internal/store"
+	"github.com/jz222/logowl/internal/controllers"
+	"github.com/jz222/logowl/internal/middlewares"
+	"github.com/jz222/logowl/internal/store"
 )
 
 func eventRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
@@ -17,6 +17,7 @@ func eventRoutes(router *gin.RouterGroup, store store.InterfaceStore) {
 	router.GET(":service/errors/:pointer", controller.GetErrors)
 	router.PUT(":service/error/:id", controller.UpdateError)
 	router.DELETE(":service/error/:id", controller.DeleteError)
+	router.DELETE(":service/error/", controller.DeleteErrors)
 
 	router.GET(":service/analytics", controller.GetAnalytics)
 }

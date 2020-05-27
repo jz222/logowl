@@ -5,10 +5,10 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/services"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/services"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -103,6 +103,11 @@ func (s *ServiceController) Edit(c *gin.Context) {
 	slackWebHookURL, ok := serviceUpdate["slackWebhookURL"].(string)
 	if ok {
 		update["slackWebhookURL"] = slackWebHookURL
+	}
+
+	webhookURL, ok := serviceUpdate["webhookURL"].(string)
+	if ok {
+		update["webhookURL"] = webhookURL
 	}
 
 	_, err = s.ServiceService.FindOneAndUpdate(filter, update)

@@ -9,9 +9,9 @@ import (
 	"strings"
 	"time"
 
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"github.com/mssola/user_agent"
 	"go.mongodb.org/mongo-driver/bson"
 )
@@ -125,6 +125,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 
 	if service.SlackWebhookURL != "" {
 		l.Request.SendSlackAlert(service, updatedErrorEvent)
+	}
+
+	if service.WebhookURL != "" {
+		l.Request.Post(updatedErrorEvent, service.WebhookURL)
 	}
 }
 

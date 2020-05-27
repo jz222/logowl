@@ -5,9 +5,9 @@ import (
 	"sort"
 	"time"
 
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -16,6 +16,7 @@ type InterfaceEvent interface {
 	GetError(bson.M, primitive.ObjectID) (models.Error, error)
 	GetErrors(string, int64) ([]models.Error, error)
 	DeleteError(bson.M) (int64, error)
+	DeleteErrors(bson.M) (int64, error)
 	UpdateError(bson.M, bson.M) error
 	GetAnalytics(string, string) (models.AnalyticInsights, error)
 }
@@ -26,6 +27,10 @@ type Event struct {
 
 func (e *Event) DeleteError(filter bson.M) (int64, error) {
 	return e.Store.Error().DeleteOne(filter)
+}
+
+func (e *Event) DeleteErrors(filter bson.M) (int64, error) {
+	return e.Store.Error().DeleteMany(filter)
 }
 
 func (e *Event) GetError(filter bson.M, viewer primitive.ObjectID) (models.Error, error) {
@@ -155,6 +160,7 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 
 		prevIndex := len(aggregatedData) - 1
 
+		// Aggregate flat data
 		aggregatedData[prevIndex].NewVisitors += metrics.NewVisitors
 		aggregatedData[prevIndex].TotalSessions += metrics.TotalSessions
 		aggregatedData[prevIndex].Visits += metrics.Visits
@@ -168,7 +174,9 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 		aggregatedData[prevIndex].Mobile += metrics.Mobile
 		aggregatedData[prevIndex].Tablet += metrics.Tablet
 		aggregatedData[prevIndex].Desktop += metrics.Desktop
+		aggregatedData[prevIndex].TotalTimeOnPage += metrics.TotalTimeOnPage
 
+		// Aggregate referrers map
 		for k, v := range metrics.Referrer {
 			if _, ok := aggregatedData[prevIndex].Referrer[k]; ok {
 				aggregatedData[prevIndex].Referrer[k] += v
@@ -177,6 +185,18 @@ func (e *Event) GetAnalytics(ticket, mode string) (models.AnalyticInsights, erro
 					aggregatedData[prevIndex].Referrer = map[string]int{}
 				}
 				aggregatedData[prevIndex].Referrer[k] = v
+			}
+		}
+
+		// Aggregate visited pages map
+		for k, v := range metrics.Pages {
+			if _, ok := aggregatedData[prevIndex].Pages[k]; ok {
+				aggregatedData[prevIndex].Pages[k] += v
+			} else {
+				if aggregatedData[prevIndex].Pages == nil {
+					aggregatedData[prevIndex].Pages = map[string]int{}
+				}
+				aggregatedData[prevIndex].Pages[k] = v
 			}
 		}
 	}

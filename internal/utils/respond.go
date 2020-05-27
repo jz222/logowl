@@ -4,7 +4,7 @@ import (
 	"net/http"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/models"
+	"github.com/jz222/logowl/internal/models"
 )
 
 // RespondWithJSON returns a response in JSON to the client.
