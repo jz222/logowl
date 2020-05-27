@@ -2,11 +2,13 @@ package services
 
 import (
 	"errors"
+	"fmt"
 	"time"
 
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/keys"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"golang.org/x/crypto/bcrypt"
@@ -23,7 +25,8 @@ type InterfaceUser interface {
 }
 
 type User struct {
-	Store store.InterfaceStore
+	Store   store.InterfaceStore
+	Request InterfaceRequest
 }
 
 func (u *User) FetchAllInformation(filter bson.M) (models.User, error) {
@@ -81,12 +84,12 @@ func (u *User) Create(user models.User) (primitive.ObjectID, error) {
 	user.UpdatedAt = timestamp
 
 	if !user.Validate() {
-		return primitive.ObjectID{}, errors.New("the provided user data is invalid")
+		return primitive.NilObjectID, errors.New("the provided user data is invalid")
 	}
 
 	hash, err := bcrypt.GenerateFromPassword([]byte(user.Password), 12)
 	if err != nil {
-		return primitive.ObjectID{}, err
+		return primitive.NilObjectID, err
 	}
 
 	user.Password = string(hash)
@@ -94,7 +97,7 @@ func (u *User) Create(user models.User) (primitive.ObjectID, error) {
 
 	result, err := u.Store.User().InsertOne(user)
 	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving user to database")
+		return primitive.NilObjectID, errors.New("an error occured while saving user to database")
 	}
 
 	return result, nil
@@ -147,6 +150,13 @@ func (u *User) Invite(userData models.User) (models.User, error) {
 	userData.ID = result
 	userData.Password = ""
 
+	emailData := map[string]interface{}{
+		"FirstName": userData.FirstName,
+		"URL":       fmt.Sprintf("%s/auth/signup?code=%s", keys.GetKeys().CLIENT_URL, userData.InviteCode),
+	}
+
+	go u.Request.SendEmail(userData.Email, "invitation", emailData)
+
 	return userData, nil
 }
 
@@ -172,5 +182,5 @@ func (u *User) Update(filter, update bson.M) error {
 }
 
 func GetUserService(store store.InterfaceStore) User {
-	return User{store}
+	return User{store, &Request{}}
 }

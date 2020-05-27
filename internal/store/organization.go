@@ -4,7 +4,7 @@ import (
 	"context"
 	"errors"
 
-	"github.com/jz222/loggy/internal/models"
+	"github.com/jz222/logowl/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 	"go.mongodb.org/mongo-driver/mongo"
@@ -16,6 +16,7 @@ type interfaceOrganization interface {
 	InsertOne(models.Organization) (primitive.ObjectID, error)
 	DeleteOne(bson.M) (int64, error)
 	FindOne(bson.M) (models.Organization, error)
+	FindOneAndUpdate(filter, update bson.M) (models.Organization, error)
 }
 
 type organization struct {
@@ -34,7 +35,7 @@ func (o *organization) InsertOne(organization models.Organization) (primitive.Ob
 
 	result, err := collection.InsertOne(context.TODO(), organization)
 	if err != nil {
-		return primitive.ObjectID{}, errors.New("an error occured while saving organization to database")
+		return primitive.NilObjectID, errors.New("an error occured while saving organization to database")
 	}
 
 	return result.InsertedID.(primitive.ObjectID), nil
@@ -62,6 +63,30 @@ func (o *organization) FindOne(filter bson.M) (models.Organization, error) {
 	}
 
 	err := queryResult.Decode(&organization)
+	if err != nil {
+		return models.Organization{}, err
+	}
+
+	return organization, nil
+}
+
+func (o *organization) FindOneAndUpdate(filter, update bson.M) (models.Organization, error) {
+	collection := o.db.Collection(CollectionOrganizations)
+
+	res := collection.FindOneAndUpdate(
+		context.TODO(),
+		filter,
+		update,
+		options.MergeFindOneAndUpdateOptions().SetUpsert(true),
+		options.MergeFindOneAndUpdateOptions().SetReturnDocument(options.After),
+	)
+	if res.Err() != nil {
+		return models.Organization{}, res.Err()
+	}
+
+	var organization models.Organization
+
+	err := res.Decode(&organization)
 	if err != nil {
 		return models.Organization{}, err
 	}

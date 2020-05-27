@@ -3,11 +3,20 @@ package unittests
 import (
 	"testing"
 
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/utils"
 )
 
 func TestFormatTimestamp(t *testing.T) {
-	convertedTimestamp, convertedTimestampString, err := utils.FormatTimestamp(1585930192)
+	dateTool := utils.DateTool{
+		Timestamp: 1585930192,
+	}
+
+	convertedTimestamp, err := dateTool.GetTimestampBeginnOfDay()
+	if err != nil {
+		t.Errorf(err.Error())
+	}
+
+	convertedTimestampString, err := dateTool.GetTimestampBeginnOfDayString()
 	if err != nil {
 		t.Errorf(err.Error())
 	}

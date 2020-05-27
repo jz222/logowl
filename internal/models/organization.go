@@ -14,11 +14,19 @@ type SlackWebhooks struct {
 
 // Organization contains all properties of an organization.
 type Organization struct {
-	ID         primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
-	Name       string             `json:"name" bson:"name"`
-	Identifier string             `json:"identifier" bson:"identifier"`
-	CreatedAt  time.Time          `json:"createdAt" bson:"createdAt"`
-	UpdatedAt  time.Time          `json:"upadtedAt" bson:"updatedAt"`
+	ID               primitive.ObjectID `json:"id,omitempty" bson:"_id,omitempty"`
+	Name             string             `json:"name" bson:"name"`
+	Identifier       string             `json:"identifier" bson:"identifier"`
+	ReceivedRequests map[string]struct {
+		Errors    int `json:"errors" bson:"errors"`
+		Analytics int `json:"analytics" bson:"analytics"`
+	} `json:"receivedRequests,omitempty" bson:"receivedRequests,omitempty"`
+	MonthlyRequestLimit int       `json:"monthlyRequestLimit,omitempty" bson:"monthlyRequestLimit,omitempty"`
+	Plan                string    `json:"plan" bson:"plan"`
+	SubscriptionID      string    `json:"subscriptionId,omitempty" bson:"subscriptionId,omitempty"`
+	IsSetUp             bool      `json:"isSetUp" bson:"isSetUp"`
+	CreatedAt           time.Time `json:"createdAt" bson:"createdAt"`
+	UpdatedAt           time.Time `json:"upadtedAt" bson:"updatedAt"`
 }
 
 // Validate validates the data of an organization.

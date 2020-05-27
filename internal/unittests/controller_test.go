@@ -7,8 +7,8 @@ import (
 	"testing"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/controllers"
-	"github.com/jz222/loggy/internal/mocks"
+	"github.com/jz222/logowl/internal/controllers"
+	"github.com/jz222/logowl/internal/mocks"
 )
 
 func TestRegisterError(t *testing.T) {

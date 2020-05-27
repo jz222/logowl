@@ -11,10 +11,10 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/keys"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/routes"
-	"github.com/jz222/loggy/internal/store"
+	"github.com/jz222/logowl/internal/keys"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/routes"
+	"github.com/jz222/logowl/internal/store"
 )
 
 type instance struct {

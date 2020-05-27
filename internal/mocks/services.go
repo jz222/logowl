@@ -1,7 +1,7 @@
 package mocks
 
 import (
-	"github.com/jz222/loggy/internal/models"
+	"github.com/jz222/logowl/internal/models"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -9,6 +9,8 @@ import (
 type LoggingService struct{}
 
 func (l *LoggingService) SaveError(e models.Error) {}
+
+func (l *LoggingService) SaveAnalyticEvent(a models.AnalyticEvent) {}
 
 type UserService struct{}
 

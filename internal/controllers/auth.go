@@ -2,15 +2,15 @@ package controllers
 
 import (
 	"encoding/json"
-	"fmt"
 	"net/http"
+	"strings"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/keys"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/services"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/keys"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/services"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 )
 
@@ -65,7 +65,6 @@ func (a *authControllers) Setup(c *gin.Context) {
 
 	_, err = a.UserService.Create(setup.User)
 	if err != nil {
-		fmt.Println(err.Error())
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 	}
 
@@ -74,6 +73,13 @@ func (a *authControllers) Setup(c *gin.Context) {
 
 func (a *authControllers) SignUp(c *gin.Context) {
 	var credentials models.Credentials
+
+	authMode := c.Query("mode")
+
+	if authMode != "jwt" && authMode != "cookie" {
+		utils.RespondWithError(c, http.StatusBadRequest, "the query parameter mode is required but was not provided or is invalid")
+		return
+	}
 
 	err := json.NewDecoder(c.Request.Body).Decode(&credentials)
 	if err != nil {
@@ -120,11 +126,31 @@ func (a *authControllers) SignUp(c *gin.Context) {
 		ExpirationTime: expirationTime,
 	}
 
+	if authMode == "cookie" {
+		splitJWT := strings.Split(jwt, ".")
+
+		accessPass := splitJWT[0] + "." + splitJWT[1]
+		signature := splitJWT[2]
+
+		response.JWT = ""
+		response.AccessPass = accessPass
+
+		c.SetSameSite(http.SameSiteStrictMode)
+		c.SetCookie("auth-signature", signature, 60*60*keys.SESSION_TIMEOUT_IN_HOURS, "/", "", false, true)
+	}
+
 	utils.RespondWithJSON(c, response)
 }
 
 func (a *authControllers) SignIn(c *gin.Context) {
 	var credentials models.Credentials
+
+	authMode := c.Query("mode")
+
+	if authMode != "jwt" && authMode != "cookie" {
+		utils.RespondWithError(c, http.StatusBadRequest, "the query parameter mode is required but was not provided or is invalid")
+		return
+	}
 
 	err := json.NewDecoder(c.Request.Body).Decode(&credentials)
 	if err != nil {
@@ -158,13 +184,87 @@ func (a *authControllers) SignIn(c *gin.Context) {
 		ExpirationTime: expirationTime,
 	}
 
+	if authMode == "cookie" {
+		splitJWT := strings.Split(jwt, ".")
+
+		accessPass := splitJWT[0] + "." + splitJWT[1]
+		signature := splitJWT[2]
+
+		response.JWT = ""
+		response.AccessPass = accessPass
+
+		c.SetSameSite(http.SameSiteStrictMode)
+		c.SetCookie("auth-signature", signature, 60*60*keys.SESSION_TIMEOUT_IN_HOURS, "/", "", false, true)
+	}
+
 	utils.RespondWithJSON(c, response)
+}
+
+func (a *authControllers) ResetPassword(c *gin.Context) {
+	var requestBody models.PasswordResetBody
+
+	err := json.NewDecoder(c.Request.Body).Decode(&requestBody)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if requestBody.Email == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "no email address was provided")
+		return
+	}
+
+	user, err := a.UserService.FindOne(bson.M{"email": requestBody.Email})
+	if err != nil {
+		utils.RespondWithSuccess(c)
+		return
+	}
+
+	_, err = a.AuthService.ResetPassword(user)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, "an error occured while creating a reset token")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
+func (a *authControllers) SetNewPassword(c *gin.Context) {
+	var requestBody models.PasswordResetBody
+
+	err := json.NewDecoder(c.Request.Body).Decode(&requestBody)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	if requestBody.Email == "" || requestBody.Token == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "email or token were not provided")
+		return
+	}
+
+	ok, err := a.AuthService.InvalidatePasswordResetToken(requestBody.Email, requestBody.Token)
+	if err != nil || !ok {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided token is invalid or does not match the provided email")
+		return
+	}
+
+	err = a.UserService.Update(
+		bson.M{"email": requestBody.Email},
+		bson.M{"password": requestBody.Password},
+	)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithSuccess(c)
 }
 
 func GetAuthControllers(store store.InterfaceStore) authControllers {
 	organizationService := services.GetOrganizationService(store)
 	userService := services.GetUserService(store)
-	authService := services.GetAuthService()
+	authService := services.GetAuthService(store)
 
 	return authControllers{
 		UserService:         &userService,

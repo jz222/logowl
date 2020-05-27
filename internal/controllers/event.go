@@ -6,10 +6,10 @@ import (
 	"strconv"
 
 	"github.com/gin-gonic/gin"
-	"github.com/jz222/loggy/internal/models"
-	"github.com/jz222/loggy/internal/services"
-	"github.com/jz222/loggy/internal/store"
-	"github.com/jz222/loggy/internal/utils"
+	"github.com/jz222/logowl/internal/models"
+	"github.com/jz222/logowl/internal/services"
+	"github.com/jz222/logowl/internal/store"
+	"github.com/jz222/logowl/internal/utils"
 	"go.mongodb.org/mongo-driver/bson"
 	"go.mongodb.org/mongo-driver/bson/primitive"
 )
@@ -136,6 +136,65 @@ func (e *EventControllers) DeleteError(c *gin.Context) {
 	utils.RespondWithSuccess(c)
 }
 
+func (e *EventControllers) DeleteErrors(c *gin.Context) {
+	serviceID := c.Param("service")
+	requestBody := map[string][]string{}
+
+	err := json.NewDecoder(c.Request.Body).Decode(&requestBody)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	user, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user")
+		return
+	}
+
+	errorIDsToDelete, ok := requestBody["errorIds"]
+	if !ok {
+		utils.RespondWithError(c, http.StatusBadRequest, "the property errorIds is required but was not provided")
+		return
+	}
+
+	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided service ID is invalid")
+		return
+	}
+
+	service, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	parsedErrorIDs := []primitive.ObjectID{}
+
+	for _, errorID := range errorIDsToDelete {
+		parsedErrorID, err := primitive.ObjectIDFromHex(errorID)
+		if err != nil {
+			continue
+		}
+
+		parsedErrorIDs = append(parsedErrorIDs, parsedErrorID)
+	}
+
+	count, err := e.EventService.DeleteErrors(bson.M{"_id": bson.M{"$in": parsedErrorIDs}, "ticket": service.Ticket})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if count == 0 {
+		utils.RespondWithError(c, http.StatusBadRequest, "the error events with the provided IDs do not exist")
+		return
+	}
+
+	utils.RespondWithSuccess(c)
+}
+
 func (e *EventControllers) UpdateError(c *gin.Context) {
 	serviceID := c.Param("service")
 	errorID := c.Param("id")
@@ -144,7 +203,7 @@ func (e *EventControllers) UpdateError(c *gin.Context) {
 
 	err := json.NewDecoder(c.Request.Body).Decode(&update)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
 		return
 	}
 
@@ -156,7 +215,7 @@ func (e *EventControllers) UpdateError(c *gin.Context) {
 
 	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
 	if err != nil {
-		utils.RespondWithError(c, http.StatusInternalServerError, "the provided service ID is invalid")
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided service ID is invalid")
 		return
 	}
 
@@ -179,6 +238,42 @@ func (e *EventControllers) UpdateError(c *gin.Context) {
 	}
 
 	utils.RespondWithSuccess(c)
+}
+
+func (e *EventControllers) GetAnalytics(c *gin.Context) {
+	serviceID := c.Param("service")
+	mode := c.Query("mode")
+
+	if mode == "" {
+		utils.RespondWithError(c, http.StatusBadRequest, "the query parameter mode was not provided")
+		return
+	}
+
+	user, ok := c.Get("user")
+	if !ok {
+		utils.RespondWithError(c, http.StatusInternalServerError, "could not parse user")
+		return
+	}
+
+	parsedServiceID, err := primitive.ObjectIDFromHex(serviceID)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, "the provided service ID is invalid")
+		return
+	}
+
+	service, err := e.ServiceService.FindOne(bson.M{"_id": parsedServiceID, "organizationId": user.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
+	}
+
+	analyticInsights, err := e.EventService.GetAnalytics(service.Ticket, mode)
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	utils.RespondWithJSON(c, analyticInsights)
 }
 
 func GetEventController(db store.InterfaceStore) EventControllers {
