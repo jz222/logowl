@@ -131,7 +131,7 @@ const Invitation = `
                         <hr />
 
                         <div class="footer">
-                            logowl.io - monitor and analyze your web services
+                            Log Owl - monitor and analyze your web services
                         </div>
                     </td>
                 </tr>
