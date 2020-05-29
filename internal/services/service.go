@@ -54,18 +54,6 @@ func (s *Service) Create(service models.Service) (models.Service, error) {
 
 	service.ID = result
 
-	analytics := models.Analytics{
-		Ticket:    ticket,
-		Data:      map[string]models.AnalyticData{},
-		CreatedAt: timestamp,
-		UpdatedAt: timestamp,
-	}
-
-	_, err = s.Store.Analytics().InsertOne(analytics)
-	if err != nil {
-		return models.Service{}, err
-	}
-
 	return service, nil
 }
 

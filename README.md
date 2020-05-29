@@ -2,7 +2,7 @@
 
 <div align="center">
   <p>
-    <h3>Log Owl</h3>
+    <h3>Log Owl - Community Edition</h3>
   </p>
   <p>
     <i>Monitor your services and track errors in production. 🚀📈</i>
