@@ -28,3 +28,10 @@ Get the insights you need on how your IT services perform in production. Track e
 The Log Owl documentation helps you to get started quickly.
 
 📘 [**Documentation**](https://docs.logowl.io)
+
+## Insights
+
+![log owl services](./assets/logowl-services.png?raw=true)
+![log owl errors](./assets/logowl-errors.png?raw=true)
+![log owl error](./assets/logowl-error.png?raw=true)
+![log owl analytics](./assets/logowl-analytics.png?raw=true)
