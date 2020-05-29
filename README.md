@@ -23,6 +23,8 @@
 
 Get the insights you need on how your IT services perform in production. Track errors with all the details you need to fix issues and get detailed user analytics, transparent and all in one place. Log Owl is open-source and can be self-hosted.
 
+🦉 [**Website**](https://logowl.io)
+
 ## Getting started
 
 The Log Owl documentation helps you to get started quickly.
