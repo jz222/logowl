@@ -80,7 +80,7 @@ func (e *Error) IsValid() bool {
 		return false
 	}
 
-	if len(e.Badges) > 200 {
+	if len(e.Badges) > 100 {
 		return false
 	}
 
@@ -90,6 +90,24 @@ func (e *Error) IsValid() bool {
 
 	if len(e.Evolution) > 0 {
 		return false
+	}
+
+	for _, ui := range e.UserInteractions {
+		if len(ui.Element) > 200 || len(ui.ElementID) > 200 || len(ui.InnerText) > 200 || len(ui.Location) > 400 {
+			return false
+		}
+	}
+
+	for k, v := range e.Badges {
+		if len(k) > 100 || len(v) > 200 {
+			return false
+		}
+	}
+
+	for k, v := range e.Snippet {
+		if len(k) > 10 || len(v) > 1500 {
+			return false
+		}
 	}
 
 	return true
