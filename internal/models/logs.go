@@ -68,32 +68,45 @@ type Error struct {
 
 // IsValid validates an error event to make sure the data is not too large.
 func (e *Error) IsValid() bool {
-	if len(e.Logs) > 50 {
+	// Validate top-level arrays
+	if len(e.Logs) > 50 || len(e.UserInteractions) > 50 || len(e.SeenBy) > 0 {
 		return false
 	}
 
-	if len(e.UserInteractions) > 50 {
+	// Validate top-level strings
+	if len(e.Message) > 1000 || len(e.Type) > 100 || len(e.Path) > 800 || len(e.Line) > 10 || len(e.Ticket) > 70 || len(e.Host) > 200 || len(e.ClientIP) > 20 || len(e.Stacktrace) > 15000 {
 		return false
 	}
 
-	if len(e.SeenBy) > 0 {
+	// Validate top-level objects
+	if len(e.Badges) > 100 || len(e.Snippet) > 50 || len(e.Evolution) > 0 {
 		return false
 	}
 
-	if len(e.Badges) > 100 {
+	// Validate top-level numbers
+	if e.Timestamp > 9999999999 {
 		return false
 	}
 
-	if len(e.Snippet) > 50 {
+	// Validate adapter
+	if len(e.Adapter.Name) > 100 || len(e.Adapter.Type) > 100 || len(e.Adapter.Version) > 100 {
 		return false
 	}
 
-	if len(e.Evolution) > 0 {
+	// Validate metrics
+	if len(e.Metrics.Browser) > 500 || len(e.Metrics.Platform) > 500 {
 		return false
 	}
 
+	// Validate iterable elements
 	for _, ui := range e.UserInteractions {
-		if len(ui.Element) > 200 || len(ui.ElementID) > 200 || len(ui.InnerText) > 200 || len(ui.Location) > 400 {
+		if len(ui.Element) > 200 || len(ui.ElementID) > 200 || len(ui.InnerText) > 200 || len(ui.Location) > 400 || ui.Timestamp > 9999999999 {
+			return false
+		}
+	}
+
+	for _, log := range e.Logs {
+		if len(log.Log) > 1000 || len(log.Type) > 100 || log.Timestamp > 9999999999 {
 			return false
 		}
 	}
