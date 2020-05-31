@@ -30,6 +30,12 @@ func (u *UserControllers) Get(c *gin.Context) {
 		return
 	}
 
+	if !userDetails.IsOrganizationOwner {
+		userDetails.Organization.SubscriptionID = ""
+	}
+
+	userDetails.Password = ""
+
 	utils.RespondWithJSON(c, userDetails)
 }
 
