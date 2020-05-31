@@ -105,7 +105,7 @@ func (e *Error) IsValid() bool {
 	}
 
 	for k, v := range e.Snippet {
-		if len(k) > 10 || len(v) > 1500 {
+		if len(k) > 10 || len(v) > 800 {
 			return false
 		}
 	}
