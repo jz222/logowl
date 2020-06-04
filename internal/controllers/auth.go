@@ -119,6 +119,7 @@ func (a *authControllers) SignUp(c *gin.Context) {
 	}
 
 	userData.Password = ""
+	userData.Organization.SubscriptionID = ""
 
 	response := models.SignInResponse{
 		User:           userData,
@@ -177,6 +178,10 @@ func (a *authControllers) SignIn(c *gin.Context) {
 	}
 
 	persistedUser.Password = ""
+
+	if !persistedUser.IsOrganizationOwner {
+		persistedUser.Organization.SubscriptionID = ""
+	}
 
 	response := models.SignInResponse{
 		User:           persistedUser,
