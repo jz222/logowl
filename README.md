@@ -37,3 +37,10 @@ The Log Owl documentation helps you to get started quickly.
 ![log owl errors](./assets/logowl-errors.png?raw=true)
 ![log owl error](./assets/logowl-error.png?raw=true)
 ![log owl analytics](./assets/logowl-analytics.png?raw=true)
+
+## License
+
+Log Owl is licensed under the Business Source License 1.1
+
+License text copyright (c) 2017 MariaDB Corporation Ab, All Rights Reserved.
+"Business Source License" is a trademark of MariaDB Corporation Ab.
