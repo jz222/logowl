@@ -44,3 +44,5 @@ Log Owl is licensed under the Business Source License 1.1
 
 License text copyright (c) 2017 MariaDB Corporation Ab, All Rights Reserved.
 "Business Source License" is a trademark of MariaDB Corporation Ab.
+
+Additional Use Grant: You may use Log Owl to monitor and analyze your own and only your own services. You are not permitted offering Log Owl as managed service to anyone commercially or for free. When deploying Log Owl, the environment variable "IS_SELFHOSTED" must be set to "true". You are not allowed to rebrand the work.

@@ -13,7 +13,8 @@ Licensed Work:          Log Owl
 Additional Use Grant:   You may use Log Owl to monitor and analyze your own and only your own
                         services. You are not permitted offering Log Owl as managed service
                         to anyone commercially or for free. When deploying Log Owl, the
-                        environment variable "IS_SELFHOSTED" must be set to "true".
+                        environment variable "IS_SELFHOSTED" must be set to "true". You are
+                        not allowed to rebrand the work.
 
 Change Date:            2024-06-04
 
