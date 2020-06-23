@@ -30,8 +30,13 @@ type Organization struct {
 	UpdatedAt           time.Time `json:"upadtedAt" bson:"updatedAt"`
 }
 
+// CanBeDeleted determines if the organization can be deleted.
+func (o Organization) CanBeDeleted() bool {
+	return o.Plan == "free" || o.PaidThroughDate != ""
+}
+
 // Validate validates the data of an organization.
-func (o *Organization) Validate() bool {
+func (o Organization) Validate() bool {
 	if o.Name == "" {
 		return false
 	}
