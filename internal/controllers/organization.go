@@ -29,7 +29,18 @@ func (o *OrganizationControllers) Delete(c *gin.Context) {
 		return
 	}
 
-	err := o.OrganizationService.Delete(userData.(models.User).OrganizationID)
+	organization, err := o.OrganizationService.FindOne(bson.M{"_id": userData.(models.User).OrganizationID})
+	if err != nil {
+		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
+		return
+	}
+
+	if !organization.CanBeDeleted() {
+		utils.RespondWithError(c, http.StatusForbidden, "cannot delete organization with active subscription")
+		return
+	}
+
+	err = o.OrganizationService.Delete(userData.(models.User).OrganizationID)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusInternalServerError, err.Error())
 		return
