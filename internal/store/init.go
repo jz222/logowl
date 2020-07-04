@@ -51,6 +51,7 @@ func (s *store) Connect() {
 
 	s.db = client.Database(keys.GetKeys().MONGO_DB_NAME)
 
+	// Error indexes
 	collection := s.db.Collection(CollectionErrors)
 	indexModels := []mongo.IndexModel{
 		{
@@ -72,6 +73,7 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
+	// User indexes
 	collection = s.db.Collection(CollectionUsers)
 	indexModels = []mongo.IndexModel{
 		{
@@ -81,6 +83,7 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
+	// Analytics indexes
 	collection = s.db.Collection(CollectionAnalytics)
 	indexModels = []mongo.IndexModel{
 		{
@@ -90,11 +93,21 @@ func (s *store) Connect() {
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
 
+	// Password reset token indexes
 	collection = s.db.Collection(CollectionPasswordResetTokens)
 	indexModels = []mongo.IndexModel{
 		{
 			Keys:    bson.M{"createdAt": 1},
 			Options: options.Index().SetExpireAfterSeconds(60 * 60 * 2),
+		},
+		{
+			Keys: bson.M{"token": 1},
+		},
+		{
+			Keys: bson.M{"email": 1},
+		},
+		{
+			Keys: bson.M{"used": 1},
 		},
 	}
 	collection.Indexes().CreateMany(ctx, indexModels)
