@@ -6,6 +6,7 @@ type Keys struct {
 	MONGO_DB_NAME         string
 	MAILGUN_PRIVATE_KEY   string
 	MAILGUN_DOMAIN        string
+	MAILGUN_API_BASE      string
 	PORT                  string
 	SECRET                string
 	CLIENT_URL            string

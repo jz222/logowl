@@ -37,6 +37,10 @@ func loadEnvAsString(key string) string {
 		return ""
 	}
 
+	if key == "MAILGUN_API_BASE" {
+		return ""
+	}
+
 	log.Fatal("❌ Failed to load environment variable: ", key)
 
 	return ""
@@ -63,6 +67,7 @@ var envVariables = models.Keys{
 	MONGO_DB_NAME:         loadEnvAsString("MONGO_DB_NAME"),
 	MAILGUN_PRIVATE_KEY:   loadEnvAsString("MAILGUN_PRIVATE_KEY"),
 	MAILGUN_DOMAIN:        loadEnvAsString("MAILGUN_DOMAIN"),
+	MAILGUN_API_BASE:      loadEnvAsString("MAILGUN_API_BASE"),
 	PORT:                  loadEnvAsString("PORT"),
 	SECRET:                loadEnvAsString("SECRET"),
 	CLIENT_URL:            loadEnvAsString("CLIENT_URL"),
