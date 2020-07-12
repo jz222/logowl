@@ -176,6 +176,11 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	// Setup Mailgun and send message
 	mg := mailgun.NewMailgun(mailgunDomain, mailgunPrivateKey)
 
+	// Determine the API base
+	if keys.GetKeys().MAILGUN_API_BASE == "eu" {
+		mg.SetAPIBase(mailgun.APIBaseEU)
+	}
+
 	message := mg.NewMessage("Log Owl <no-reply@logowl.io>", subject, parsedBody, recipient)
 
 	message.SetHtml(parsedHTML)
