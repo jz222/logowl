@@ -105,6 +105,11 @@ func (s *ServiceController) Edit(c *gin.Context) {
 		update["slackWebhookURL"] = slackWebHookURL
 	}
 
+	discordWebhookURL, ok := serviceUpdate["discordWebhookURL"].(string)
+	if ok {
+		update["discordWebhookURL"] = discordWebhookURL
+	}
+
 	webhookURL, ok := serviceUpdate["webhookURL"].(string)
 	if ok {
 		update["webhookURL"] = webhookURL
