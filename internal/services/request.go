@@ -21,6 +21,7 @@ import (
 // InterfaceRequest represents the interface for the request service.
 type InterfaceRequest interface {
 	SendSlackAlert(models.Service, models.Error) error
+	SendDiscordAlert(models.Service, models.Error) error
 	Post(payload interface{}, url string) error
 	SendEmail(recipient, event string, data map[string]interface{}) error
 }
@@ -30,43 +31,7 @@ type Request struct{}
 
 // SendSlackAlert sends a formatted error notification as Slack webhook.
 func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error) error {
-	requestBody, err := json.Marshal(map[string]interface{}{
-		"attachments": []map[string]interface{}{
-			{
-				"mrkdwn_in":   []string{"text"},
-				"color":       "#FF0055",
-				"pretext":     fmt.Sprintf("An error occurred in %s", service.Name),
-				"author_name": errorEvent.Type,
-				"title":       errorEvent.Message,
-				"title_link":  fmt.Sprintf("%s/services/%s/error/%s", keys.GetKeys().CLIENT_URL, service.ID.Hex(), errorEvent.ID.Hex()),
-				"text":        "Visit your Log Owl dashboard for more details",
-				"fields": []map[string]interface{}{
-					{
-						"title": "In Service",
-						"value": service.Name,
-						"short": true,
-					},
-					{
-						"title": "Occurrences",
-						"value": fmt.Sprintf("%d", errorEvent.Count),
-						"short": true,
-					},
-					{
-						"title": "Resolved",
-						"value": strconv.FormatBool(errorEvent.Resolved),
-						"short": true,
-					},
-					{
-						"title": "Adapter",
-						"value": fmt.Sprintf("%s %s", errorEvent.Adapter.Name, errorEvent.Adapter.Version),
-						"short": true,
-					},
-				},
-				"footer": "Log Owl",
-				"ts":     errorEvent.Timestamp,
-			},
-		},
-	})
+	requestBody, err := getSlackFormattedMessage(service, errorEvent)
 	if err != nil {
 		return err
 	}
@@ -87,7 +52,34 @@ func (r *Request) SendSlackAlert(service models.Service, errorEvent models.Error
 	if err != nil {
 		return err
 	}
+	defer res.Body.Close()
 
+	return nil
+}
+
+// SendDiscordAlert sends a Slack formatted error message to a Discord channel.
+func (r *Request) SendDiscordAlert(service models.Service, errorEvent models.Error) error {
+	requestBody, err := getSlackFormattedMessage(service, errorEvent)
+	if err != nil {
+		return err
+	}
+
+	timeout := time.Duration(10 * time.Second)
+	client := http.Client{
+		Timeout: timeout,
+	}
+
+	req, err := http.NewRequest("POST", service.DiscordWebhookURL, bytes.NewBuffer(requestBody))
+	if err != nil {
+		return err
+	}
+
+	req.Header.Set("Content-Type", "application/json")
+
+	res, err := client.Do(req)
+	if err != nil {
+		return err
+	}
 	defer res.Body.Close()
 
 	return nil
@@ -194,4 +186,44 @@ func (r *Request) SendEmail(recipient, event string, data map[string]interface{}
 	}
 
 	return nil
+}
+
+func getSlackFormattedMessage(service models.Service, errorEvent models.Error) ([]byte, error) {
+	return json.Marshal(map[string]interface{}{
+		"attachments": []map[string]interface{}{
+			{
+				"mrkdwn_in":   []string{"text"},
+				"color":       "#FF0055",
+				"pretext":     fmt.Sprintf("An error occurred in %s", service.Name),
+				"author_name": errorEvent.Type,
+				"title":       errorEvent.Message,
+				"title_link":  fmt.Sprintf("%s/services/%s/error/%s", keys.GetKeys().CLIENT_URL, service.ID.Hex(), errorEvent.ID.Hex()),
+				"text":        "Visit your Log Owl dashboard for more details",
+				"fields": []map[string]interface{}{
+					{
+						"title": "In Service",
+						"value": service.Name,
+						"short": true,
+					},
+					{
+						"title": "Occurrences",
+						"value": fmt.Sprintf("%d", errorEvent.Count),
+						"short": true,
+					},
+					{
+						"title": "Resolved",
+						"value": strconv.FormatBool(errorEvent.Resolved),
+						"short": true,
+					},
+					{
+						"title": "Adapter",
+						"value": fmt.Sprintf("%s %s", errorEvent.Adapter.Name, errorEvent.Adapter.Version),
+						"short": true,
+					},
+				},
+				"footer": "Log Owl",
+				"ts":     errorEvent.Timestamp,
+			},
+		},
+	})
 }
