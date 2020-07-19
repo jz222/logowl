@@ -16,7 +16,7 @@ Additional Use Grant:   You may use Log Owl to monitor and analyze your own and 
                         environment variable "IS_SELFHOSTED" must be set to "true". You are
                         not allowed to rebrand the work.
 
-Change Date:            2024-06-04
+Change Date:            2024-07-19
 
 Change License:         Apache License, Version 2.0
 
