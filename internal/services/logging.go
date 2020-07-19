@@ -127,6 +127,10 @@ func (l *Logging) SaveError(errorEvent models.Error) {
 		l.Request.SendSlackAlert(service, updatedErrorEvent)
 	}
 
+	if service.DiscordWebhookURL != "" {
+		l.Request.SendDiscordAlert(service, updatedErrorEvent)
+	}
+
 	if service.WebhookURL != "" {
 		l.Request.Post(updatedErrorEvent, service.WebhookURL)
 	}
