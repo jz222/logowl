@@ -41,7 +41,7 @@ type User struct {
 
 // Validate validates the data of an user.
 func (u *User) Validate() bool {
-	if u.FirstName == "" || u.LastName == "" || u.Email == "" || u.Role == "" || len(u.Password) < 12 {
+	if u.FirstName == "" || u.LastName == "" || u.Email == "" || u.Role == "" || len(u.Password) < 8 {
 		return false
 	}
 
