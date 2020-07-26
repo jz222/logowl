@@ -66,6 +66,7 @@ func (a *authControllers) Setup(c *gin.Context) {
 	_, err = a.UserService.Create(setup.User)
 	if err != nil {
 		utils.RespondWithError(c, http.StatusBadRequest, err.Error())
+		return
 	}
 
 	utils.RespondWithSuccess(c)
@@ -92,7 +93,7 @@ func (a *authControllers) SignUp(c *gin.Context) {
 		return
 	}
 
-	if credentials.Password == "" || len(credentials.Password) < 12 {
+	if credentials.Password == "" || len(credentials.Password) < 8 {
 		utils.RespondWithError(c, http.StatusBadRequest, "password was not provided or is invalid")
 		return
 	}
