@@ -49,7 +49,7 @@ func (s *Service) Create(service models.Service) (models.Service, error) {
 
 	result, err := s.Store.Service().InsertOne(service)
 	if err != nil {
-		return models.Service{}, errors.New("an error occured while saving service to database")
+		return models.Service{}, errors.New("an error occurred while saving service to database")
 	}
 
 	service.ID = result
